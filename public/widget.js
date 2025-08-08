@@ -11,6 +11,12 @@
     }
     window.askEdInitialized = true;
     
+    // Store the current script location
+    const CURRENT_SCRIPT = document.currentScript || (function() {
+        const scripts = document.getElementsByTagName('script');
+        return scripts[scripts.length - 1];
+    })();
+    
     // Extract product information from Magento page
     function extractProductInfo() {
         // Try multiple selectors commonly used in Magento
@@ -243,14 +249,14 @@
             </div>
         `;
         
-        // Find the script tag and insert widget right after it
-        const scripts = document.querySelectorAll('script[src*="ask-ed-chatbot"]');
-        const currentScript = scripts[scripts.length - 1]; // Get the last matching script (current one)
-        if (currentScript) {
-            currentScript.insertAdjacentHTML('afterend', widgetHTML);
+        // Use the stored script reference to place widget exactly where script is
+        if (CURRENT_SCRIPT && CURRENT_SCRIPT.parentNode) {
+            CURRENT_SCRIPT.insertAdjacentHTML('afterend', widgetHTML);
+            console.log('Ask Ed widget placed after script in:', CURRENT_SCRIPT.parentNode);
         } else {
-            // Fallback to body if script not found
+            // Fallback: append to body (should rarely happen)
             document.body.insertAdjacentHTML('beforeend', widgetHTML);
+            console.log('Ask Ed widget placed in document body (fallback)');
         }
         
         // Event listeners

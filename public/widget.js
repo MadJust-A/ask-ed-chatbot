@@ -249,6 +249,14 @@
             send.textContent = '...';
             
             try {
+                console.log('Sending request to:', `${WIDGET_API_BASE}/api/ask`);
+                console.log('Request data:', {
+                    question: question,
+                    productSpecs: productInfo.specs,
+                    productTitle: productInfo.title,
+                    datasheetUrl: productInfo.datasheetUrl
+                });
+                
                 const response = await fetch(`${WIDGET_API_BASE}/api/ask`, {
                     method: 'POST',
                     headers: {
@@ -262,12 +270,14 @@
                     })
                 });
                 
+                console.log('Response status:', response.status);
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.error) {
                     addMessage(`Sorry, ${data.error}`, false);
                 } else {
-                    addMessage(data.answer, false);
+                    addMessage(data.answer || 'No answer received', false);
                 }
                 
             } catch (error) {

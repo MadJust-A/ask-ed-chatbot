@@ -23,7 +23,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: process.env.ALLOWED_ORIGINS || 'https://www.bravoelectro.com',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Methods',

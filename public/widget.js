@@ -19,6 +19,18 @@
                      document.querySelector('h1')?.textContent?.trim() ||
                      document.title;
                      
+        // Look for datasheet PDF links
+        let datasheetUrl = null;
+        const datasheetLinks = document.querySelectorAll('a[href*=".pdf"], a[href*="datasheet"], a[href*="spec"]');
+        datasheetLinks.forEach(link => {
+            const href = link.href;
+            const text = link.textContent.toLowerCase();
+            if ((href.includes('.pdf') || text.includes('datasheet') || text.includes('spec')) && 
+                !datasheetUrl) {
+                datasheetUrl = href;
+            }
+        });
+        
         // Extract specifications from various common locations
         let specs = '';
         
@@ -57,7 +69,8 @@
         
         return {
             title: title || 'Product',
-            specs: specs || 'No specifications available'
+            specs: specs || 'No specifications available',
+            datasheetUrl: datasheetUrl
         };
     }
     
@@ -244,7 +257,8 @@
                     body: JSON.stringify({
                         question: question,
                         productSpecs: productInfo.specs,
-                        productTitle: productInfo.title
+                        productTitle: productInfo.title,
+                        datasheetUrl: productInfo.datasheetUrl
                     })
                 });
                 

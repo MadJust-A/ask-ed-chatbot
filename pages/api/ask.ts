@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
+import pdf from 'pdf-parse';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -12,6 +13,7 @@ interface AskRequest {
   question: string;
   productSpecs: string;
   productTitle: string;
+  datasheetUrl?: string;
   userIP?: string;
 }
 
@@ -87,6 +89,24 @@ function validateInput(question: string): boolean {
   return !suspiciousPatterns.some(pattern => pattern.test(question));
 }
 
+async function fetchPDFContent(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PDF: ${response.statusText}`);
+    }
+    
+    const buffer = await response.arrayBuffer();
+    const data = await pdf(Buffer.from(buffer));
+    
+    // Return first 4000 characters to avoid token limits
+    return data.text.substring(0, 4000);
+  } catch (error) {
+    console.error('PDF fetch error:', error);
+    return '';
+  }
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AskResponse>
@@ -95,7 +115,7 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { question, productSpecs, productTitle }: AskRequest = req.body;
+  const { question, productSpecs, productTitle, datasheetUrl }: AskRequest = req.body;
   const userIP = req.headers['x-forwarded-for']?.toString()?.split(',')[0] || 
                  req.socket.remoteAddress || 'unknown';
 
@@ -118,10 +138,23 @@ export default async function handler(
   }
 
   try {
+    // Fetch PDF datasheet content if available
+    let datasheetContent = '';
+    if (datasheetUrl) {
+      console.log('Fetching datasheet:', datasheetUrl);
+      datasheetContent = await fetchPDFContent(datasheetUrl);
+      if (datasheetContent) {
+        console.log('Successfully extracted PDF content, length:', datasheetContent.length);
+      }
+    }
+
     const userMessage = `Product: ${productTitle}
 
 Product Specifications:
 ${productSpecs}
+
+${datasheetContent ? `Detailed Datasheet Information:
+${datasheetContent}` : ''}
 
 Customer Question: ${question}`;
 

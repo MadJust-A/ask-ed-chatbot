@@ -86,104 +86,118 @@
                 z-index: 9999;
                 font-family: Arial, sans-serif;
             ">
-                <div id="${WIDGET_ID}-chat" style="
-                    width: 350px;
-                    height: 450px;
+                <!-- Search Bar (slides out from right) -->
+                <div id="${WIDGET_ID}-searchbar" style="
+                    position: absolute;
+                    bottom: 60px;
+                    right: 0;
+                    width: 0;
+                    height: 50px;
                     background: white;
                     border: 1px solid #ddd;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                    display: none;
-                    flex-direction: column;
+                    border-radius: 25px;
+                    box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+                    overflow: hidden;
+                    transition: width 0.3s ease-in-out;
+                    display: flex;
+                    align-items: center;
+                    padding: 0;
                 ">
-                    <!-- Header -->
-                    <div style="
+                    <input id="${WIDGET_ID}-input" type="text" placeholder="Ask about this product..." style="
+                        flex: 1;
+                        border: none;
+                        outline: none;
+                        padding: 12px 20px;
+                        font-size: 14px;
+                        background: transparent;
+                        min-width: 0;
+                    ">
+                    <button id="${WIDGET_ID}-send" style="
                         background: #2c5aa0;
                         color: white;
-                        padding: 16px;
-                        border-radius: 12px 12px 0 0;
+                        border: none;
+                        width: 35px;
+                        height: 35px;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        font-size: 16px;
+                        margin-right: 8px;
                         display: flex;
-                        justify-content: space-between;
                         align-items: center;
-                    ">
-                        <div>
-                            <div style="font-weight: bold; font-size: 16px;">Ask Ed</div>
-                            <div style="font-size: 12px; opacity: 0.9;">Product Q&A Assistant</div>
-                        </div>
-                        <button id="${WIDGET_ID}-close" style="
-                            background: none;
-                            border: none;
-                            color: white;
-                            font-size: 20px;
-                            cursor: pointer;
-                            padding: 4px;
-                        ">×</button>
-                    </div>
-                    
-                    <!-- Messages -->
-                    <div id="${WIDGET_ID}-messages" style="
-                        flex: 1;
-                        padding: 16px;
-                        overflow-y: auto;
-                        background: #f8f9fa;
-                    ">
-                        <div style="
-                            background: #e3f2fd;
-                            padding: 12px;
-                            border-radius: 8px;
-                            margin-bottom: 12px;
-                            font-size: 14px;
-                        ">
-                            Hi! I'm Ask Ed, your Bravo Electro product assistant. Ask me anything about this ${productInfo.title.split(' ')[0]} power supply's specifications!
-                        </div>
-                    </div>
-                    
-                    <!-- Input -->
-                    <div style="
-                        padding: 16px;
-                        border-top: 1px solid #eee;
-                        background: white;
-                        border-radius: 0 0 12px 12px;
-                    ">
-                        <div style="display: flex; gap: 8px;">
-                            <input id="${WIDGET_ID}-input" type="text" placeholder="Ask about specs, features, compatibility..." style="
-                                flex: 1;
-                                padding: 8px 12px;
-                                border: 1px solid #ddd;
-                                border-radius: 6px;
-                                font-size: 14px;
-                                outline: none;
-                            ">
-                            <button id="${WIDGET_ID}-send" style="
-                                background: #2c5aa0;
-                                color: white;
-                                border: none;
-                                padding: 8px 16px;
-                                border-radius: 6px;
-                                cursor: pointer;
-                                font-size: 14px;
-                            ">Send</button>
-                        </div>
-                    </div>
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    ">→</button>
                 </div>
                 
-                <!-- Toggle Button -->
+                <!-- Response Bubble -->
+                <div id="${WIDGET_ID}-response" style="
+                    position: absolute;
+                    bottom: 120px;
+                    right: 0;
+                    max-width: 350px;
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    padding: 16px;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    display: none;
+                    transform: translateY(10px);
+                    transition: all 0.3s ease;
+                ">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 8px;
+                    ">
+                        <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                            width: 20px;
+                            height: 20px;
+                            margin-right: 8px;
+                        ">
+                        <strong style="color: #2c5aa0;">Ask Ed</strong>
+                    </div>
+                    <div id="${WIDGET_ID}-response-text"></div>
+                    <button id="${WIDGET_ID}-close-response" style="
+                        position: absolute;
+                        top: 8px;
+                        right: 8px;
+                        background: none;
+                        border: none;
+                        font-size: 18px;
+                        cursor: pointer;
+                        color: #999;
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">×</button>
+                </div>
+                
+                <!-- Toggle Button with Logo -->
                 <button id="${WIDGET_ID}-toggle" style="
-                    width: 60px;
-                    height: 60px;
+                    width: 50px;
+                    height: 50px;
                     border-radius: 50%;
-                    background: #2c5aa0;
-                    color: white;
-                    border: none;
+                    background: white;
+                    border: 2px solid #ddd;
                     cursor: pointer;
-                    font-size: 24px;
                     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    margin-left: auto;
-                    margin-top: 8px;
-                ">💬</button>
+                    padding: 0;
+                    transition: all 0.3s ease;
+                ">
+                    <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 50%;
+                    ">
+                </button>
             </div>
         `;
         
@@ -195,21 +209,48 @@
     
     function setupEventListeners(productInfo) {
         const toggle = document.getElementById(`${WIDGET_ID}-toggle`);
-        const chat = document.getElementById(`${WIDGET_ID}-chat`);
-        const close = document.getElementById(`${WIDGET_ID}-close`);
+        const searchbar = document.getElementById(`${WIDGET_ID}-searchbar`);
+        const response = document.getElementById(`${WIDGET_ID}-response`);
+        const closeResponse = document.getElementById(`${WIDGET_ID}-close-response`);
         const input = document.getElementById(`${WIDGET_ID}-input`);
         const send = document.getElementById(`${WIDGET_ID}-send`);
-        const messages = document.getElementById(`${WIDGET_ID}-messages`);
+        const responseText = document.getElementById(`${WIDGET_ID}-response-text`);
+        
+        let isSearchOpen = false;
         
         toggle.onclick = () => {
-            chat.style.display = chat.style.display === 'none' ? 'flex' : 'none';
-            if (chat.style.display === 'flex') {
-                input.focus();
+            if (!isSearchOpen) {
+                // Open search bar
+                searchbar.style.width = '300px';
+                send.style.opacity = '1';
+                setTimeout(() => input.focus(), 300);
+                isSearchOpen = true;
+                
+                // Add hover effect to toggle button
+                toggle.style.transform = 'scale(1.1)';
+            } else {
+                // Close search bar
+                searchbar.style.width = '0';
+                send.style.opacity = '0';
+                response.style.display = 'none';
+                isSearchOpen = false;
+                toggle.style.transform = 'scale(1)';
             }
         };
         
-        close.onclick = () => {
-            chat.style.display = 'none';
+        // Close search when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById(WIDGET_ID).contains(e.target) && isSearchOpen) {
+                searchbar.style.width = '0';
+                send.style.opacity = '0';
+                response.style.display = 'none';
+                isSearchOpen = false;
+                toggle.style.transform = 'scale(1)';
+            }
+        });
+        
+        closeResponse.onclick = () => {
+            response.style.display = 'none';
         };
         
         input.onkeypress = (e) => {
@@ -221,32 +262,19 @@
         
         send.onclick = sendMessage;
         
-        function addMessage(content, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = `
-                margin-bottom: 12px;
-                padding: 12px;
-                border-radius: 8px;
-                font-size: 14px;
-                line-height: 1.4;
-                ${isUser ? 
-                    'background: #2c5aa0; color: white; margin-left: 40px;' : 
-                    'background: white; border: 1px solid #e0e0e0; margin-right: 40px;'
-                }
-            `;
-            messageDiv.innerHTML = content.replace(/\n/g, '<br>');
-            messages.appendChild(messageDiv);
-            messages.scrollTop = messages.scrollHeight;
+        function showResponse(content) {
+            responseText.innerHTML = content.replace(/\n/g, '<br>');
+            response.style.display = 'block';
+            response.style.transform = 'translateY(0)';
         }
         
         async function sendMessage() {
             const question = input.value.trim();
             if (!question) return;
             
-            addMessage(question, true);
             input.value = '';
             send.disabled = true;
-            send.textContent = '...';
+            send.innerHTML = '⏳';
             
             try {
                 console.log('Sending request to:', `${WIDGET_API_BASE}/api/ask`);
@@ -257,7 +285,7 @@
                     datasheetUrl: productInfo.datasheetUrl
                 });
                 
-                const response = await fetch(`${WIDGET_API_BASE}/api/ask`, {
+                const apiResponse = await fetch(`${WIDGET_API_BASE}/api/ask`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -270,22 +298,22 @@
                     })
                 });
                 
-                console.log('Response status:', response.status);
-                const data = await response.json();
+                console.log('Response status:', apiResponse.status);
+                const data = await apiResponse.json();
                 console.log('Response data:', data);
                 
                 if (data.error) {
-                    addMessage(`Sorry, ${data.error}`, false);
+                    showResponse(`Sorry, ${data.error}`);
                 } else {
-                    addMessage(data.answer || 'No answer received', false);
+                    showResponse(data.answer || 'No answer received');
                 }
                 
             } catch (error) {
                 console.error('Ask Ed error:', error);
-                addMessage('Sorry, I\'m experiencing technical difficulties. Please contact a Bravo Power Expert via web chat or call 408-733-9090.', false);
+                showResponse('Sorry, I\'m experiencing technical difficulties. Please contact a Bravo Power Expert via web chat or call 408-733-9090.');
             } finally {
                 send.disabled = false;
-                send.textContent = 'Send';
+                send.innerHTML = '→';
             }
         }
     }

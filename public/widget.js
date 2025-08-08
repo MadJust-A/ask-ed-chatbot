@@ -2,7 +2,7 @@
     'use strict';
     
     // Configuration
-    const WIDGET_API_BASE = 'https://your-app.vercel.app'; // Replace with your actual Vercel URL
+    const WIDGET_API_BASE = 'https://ask-ed-chatbot.vercel.app';
     const WIDGET_ID = 'ask-ed-widget-' + Math.random().toString(36).substr(2, 9);
     
     // Prevent multiple initializations

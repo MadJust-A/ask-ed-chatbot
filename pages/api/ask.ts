@@ -1,6 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-// import pdf from 'pdf-parse';
+
+// Dynamic import for PDF processing to handle serverless environment
+let pdfParse: any = null;
+try {
+  pdfParse = require('pdf-parse');
+} catch (error) {
+  console.log('PDF processing not available in this environment');
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -90,15 +97,23 @@ function validateInput(question: string): boolean {
 }
 
 async function fetchPDFContent(url: string): Promise<string> {
+  // Skip PDF processing if library not available
+  if (!pdfParse) {
+    console.log('PDF processing unavailable, skipping:', url);
+    return '';
+  }
+  
   try {
+    console.log('Attempting to fetch PDF:', url);
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch PDF: ${response.statusText}`);
     }
     
     const buffer = await response.arrayBuffer();
-    const data = await pdf(Buffer.from(buffer));
+    const data = await pdfParse(Buffer.from(buffer));
     
+    console.log('PDF processing successful, extracted text length:', data.text.length);
     // Return first 4000 characters to avoid token limits
     return data.text.substring(0, 4000);
   } catch (error) {
@@ -138,15 +153,15 @@ export default async function handler(
   }
 
   try {
-    // Temporarily disable PDF processing to test
+    // Fetch PDF datasheet content if available
     let datasheetContent = '';
-    // if (datasheetUrl) {
-    //   console.log('Fetching datasheet:', datasheetUrl);
-    //   datasheetContent = await fetchPDFContent(datasheetUrl);
-    //   if (datasheetContent) {
-    //     console.log('Successfully extracted PDF content, length:', datasheetContent.length);
-    //   }
-    // }
+    if (datasheetUrl) {
+      console.log('Fetching datasheet:', datasheetUrl);
+      datasheetContent = await fetchPDFContent(datasheetUrl);
+      if (datasheetContent) {
+        console.log('Successfully extracted PDF content, length:', datasheetContent.length);
+      }
+    }
 
     const userMessage = `Product: ${productTitle}
 

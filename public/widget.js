@@ -96,8 +96,10 @@
         
         const widgetHTML = `
             <div id="${WIDGET_ID}" style="
-                display: inline-block;
-                position: relative;
+                position: fixed;
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
                 z-index: 9999;
                 font-family: Arial, sans-serif;
             ">
@@ -208,7 +210,7 @@
                 <div id="${WIDGET_ID}-searchbar" style="
                     position: absolute;
                     bottom: 20px;
-                    left: 120px;
+                    left: 110px;
                     width: 0;
                     height: 50px;
                     background: white;
@@ -259,15 +261,9 @@
             </div>
         `;
         
-        // Use the stored script reference to place widget exactly where script is
-        if (CURRENT_SCRIPT && CURRENT_SCRIPT.parentNode) {
-            CURRENT_SCRIPT.insertAdjacentHTML('afterend', widgetHTML);
-            console.log('Ask Ed widget placed after script in:', CURRENT_SCRIPT.parentNode);
-        } else {
-            // Fallback: append to body (should rarely happen)
-            document.body.insertAdjacentHTML('beforeend', widgetHTML);
-            console.log('Ask Ed widget placed in document body (fallback)');
-        }
+        // Add widget to body with fixed positioning (sticky left side, middle of page)
+        document.body.insertAdjacentHTML('beforeend', widgetHTML);
+        console.log('Ask Ed widget placed in document body with fixed positioning (left side, middle)');
         
         // Event listeners
         setupEventListeners(productInfo);

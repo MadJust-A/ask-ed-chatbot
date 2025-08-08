@@ -1,21 +1,29 @@
 (function() {
     'use strict';
     
+    console.log('Ask Ed widget script loaded');
+    
     // Configuration
     const WIDGET_API_BASE = 'https://ask-ed-chatbot.vercel.app';
     const WIDGET_ID = 'ask-ed-widget-' + Math.random().toString(36).substr(2, 9);
     
     // Prevent multiple initializations
     if (window.askEdInitialized) {
+        console.log('Ask Ed already initialized, skipping');
         return;
     }
     window.askEdInitialized = true;
+    console.log('Ask Ed initializing with ID:', WIDGET_ID);
     
     // Store the current script location
     const CURRENT_SCRIPT = document.currentScript || (function() {
         const scripts = document.getElementsByTagName('script');
+        console.log('Found', scripts.length, 'scripts, using last one');
         return scripts[scripts.length - 1];
     })();
+    
+    console.log('Current script:', CURRENT_SCRIPT);
+    console.log('Current script parent:', CURRENT_SCRIPT ? CURRENT_SCRIPT.parentNode : 'none');
     
     // Extract product information from Magento page
     function extractProductInfo() {
@@ -82,7 +90,9 @@
     
     // Create widget HTML
     function createWidget() {
+        console.log('createWidget function called');
         const productInfo = extractProductInfo();
+        console.log('Product info extracted:', productInfo);
         
         const widgetHTML = `
             <div id="${WIDGET_ID}" style="
@@ -445,9 +455,15 @@
     }
     
     // Initialize when DOM is ready
+    console.log('Document ready state:', document.readyState);
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', createWidget);
+        console.log('Waiting for DOM to load...');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, creating widget');
+            createWidget();
+        });
     } else {
+        console.log('DOM already loaded, creating widget immediately');
         createWidget();
     }
 })();

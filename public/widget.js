@@ -97,7 +97,7 @@
         const widgetHTML = `
             <div id="${WIDGET_ID}" style="
                 position: fixed;
-                left: 20px;
+                right: 20px;
                 top: 50%;
                 transform: translateY(-50%);
                 z-index: 9999;
@@ -107,7 +107,7 @@
                 <div id="${WIDGET_ID}-chat" style="
                     position: absolute;
                     bottom: 110px;
-                    left: 0;
+                    right: 0;
                     width: 400px;
                     height: 500px;
                     background: white;
@@ -210,18 +210,19 @@
                 <div id="${WIDGET_ID}-searchbar" style="
                     position: absolute;
                     bottom: 20px;
-                    left: 110px;
+                    right: 110px;
                     width: 0;
                     height: 50px;
                     background: white;
-                    border: 1px solid #ddd;
+                    border: none;
                     border-radius: 25px;
                     box-shadow: 0 2px 15px rgba(0,0,0,0.15);
                     overflow: hidden;
-                    transition: width 0.3s ease-in-out;
+                    transition: all 0.3s ease-in-out;
                     display: flex;
                     align-items: center;
                     padding: 0;
+                    opacity: 0;
                 ">
                     <input id="${WIDGET_ID}-input" type="text" placeholder="Ask about this product..." style="
                         flex: 1;
@@ -283,15 +284,26 @@
         let isSearchOpen = false;
         let isChatOpen = false;
         
-        // Click logo → open search bar
+        // Click logo → toggle search bar
         toggle.onclick = (e) => {
             e.stopPropagation();
             if (!isSearchOpen) {
+                // Open search bar
                 searchbar.style.width = '300px';
+                searchbar.style.opacity = '1';
+                searchbar.style.border = '1px solid #ddd';
                 send.style.opacity = '1';
                 setTimeout(() => input.focus(), 300);
                 isSearchOpen = true;
                 toggle.style.transform = 'scale(1.1)';
+            } else {
+                // Close search bar
+                searchbar.style.width = '0';
+                searchbar.style.opacity = '0';
+                searchbar.style.border = 'none';
+                send.style.opacity = '0';
+                isSearchOpen = false;
+                toggle.style.transform = 'scale(1)';
             }
         };
         
@@ -310,6 +322,8 @@
             if (!document.getElementById(WIDGET_ID).contains(e.target)) {
                 if (isSearchOpen) {
                     searchbar.style.width = '0';
+                    searchbar.style.opacity = '0';
+                    searchbar.style.border = 'none';
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
@@ -382,6 +396,8 @@
             // Clear and hide search bar
             input.value = '';
             searchbar.style.width = '0';
+            searchbar.style.opacity = '0';
+            searchbar.style.border = 'none';
             send.style.opacity = '0';
             isSearchOpen = false;
             toggle.style.transform = 'scale(1)';

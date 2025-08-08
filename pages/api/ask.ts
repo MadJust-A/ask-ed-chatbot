@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-import pdf from 'pdf-parse';
+// import pdf from 'pdf-parse';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -138,15 +138,15 @@ export default async function handler(
   }
 
   try {
-    // Fetch PDF datasheet content if available
+    // Temporarily disable PDF processing to test
     let datasheetContent = '';
-    if (datasheetUrl) {
-      console.log('Fetching datasheet:', datasheetUrl);
-      datasheetContent = await fetchPDFContent(datasheetUrl);
-      if (datasheetContent) {
-        console.log('Successfully extracted PDF content, length:', datasheetContent.length);
-      }
-    }
+    // if (datasheetUrl) {
+    //   console.log('Fetching datasheet:', datasheetUrl);
+    //   datasheetContent = await fetchPDFContent(datasheetUrl);
+    //   if (datasheetContent) {
+    //     console.log('Successfully extracted PDF content, length:', datasheetContent.length);
+    //   }
+    // }
 
     const userMessage = `Product: ${productTitle}
 

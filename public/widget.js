@@ -106,101 +106,134 @@
                 <!-- Chat Window -->
                 <div id="${WIDGET_ID}-chat" style="
                     position: absolute;
-                    bottom: 110px;
+                    bottom: 80px;
                     right: 0;
-                    width: 400px;
-                    height: 500px;
+                    width: 350px;
+                    height: 450px;
                     background: white;
-                    border: 1px solid #ddd;
-                    border-radius: 16px;
-                    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+                    border: 1px solid #e0e0e0;
+                    border-radius: 20px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
                     display: none;
                     flex-direction: column;
-                    transform: translateY(10px);
+                    transform: translateY(20px);
                     opacity: 0;
-                    transition: all 0.3s ease;
+                    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
                 ">
                     <!-- Header -->
                     <div style="
-                        background: #2c5aa0;
+                        background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%);
                         color: white;
-                        padding: 16px;
-                        border-radius: 16px 16px 0 0;
+                        padding: 20px;
+                        border-radius: 20px 20px 0 0;
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
+                        position: relative;
+                        overflow: hidden;
                     ">
-                        <div style="display: flex; align-items: center;">
+                        <div style="
+                            position: absolute;
+                            top: -50%;
+                            right: -10%;
+                            width: 100px;
+                            height: 100px;
+                            background: rgba(255,255,255,0.1);
+                            border-radius: 50%;
+                        "></div>
+                        <div style="display: flex; align-items: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                                width: 32px;
-                                height: 32px;
-                                margin-right: 12px;
+                                width: 40px;
+                                height: 40px;
+                                margin-right: 16px;
+                                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                             ">
                             <div>
-                                <div style="font-weight: bold; font-size: 16px;">Ask Ed</div>
-                                <div style="font-size: 12px; opacity: 0.9;">Product Q&A Assistant</div>
+                                <div style="
+                                    font-weight: 600; 
+                                    font-size: 18px;
+                                    letter-spacing: -0.5px;
+                                    margin-bottom: 2px;
+                                ">Ask Ed</div>
+                                <div style="
+                                    font-size: 13px; 
+                                    opacity: 0.85;
+                                    font-weight: 400;
+                                ">Product Expert Assistant</div>
                             </div>
                         </div>
                         <button id="${WIDGET_ID}-close" style="
-                            background: none;
+                            background: rgba(255,255,255,0.2);
                             border: none;
                             color: white;
-                            font-size: 20px;
+                            font-size: 18px;
                             cursor: pointer;
-                            padding: 4px;
-                            width: 28px;
-                            height: 28px;
+                            padding: 8px;
+                            width: 32px;
+                            height: 32px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            border-radius: 4px;
+                            border-radius: 50%;
+                            transition: all 0.2s ease;
+                            z-index: 1;
                         ">×</button>
                     </div>
                     
                     <!-- Messages -->
                     <div id="${WIDGET_ID}-messages" style="
                         flex: 1;
-                        padding: 16px;
+                        padding: 20px;
                         overflow-y: auto;
-                        background: #f8f9fa;
-                        min-height: 300px;
+                        background: #fafbfc;
+                        min-height: 280px;
+                        scrollbar-width: thin;
+                        scrollbar-color: #cbd5e0 transparent;
                     ">
                         <div style="
-                            background: #e3f2fd;
-                            padding: 12px;
-                            border-radius: 8px;
-                            margin-bottom: 12px;
+                            background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+                            padding: 16px;
+                            border-radius: 12px;
+                            margin-bottom: 16px;
                             font-size: 14px;
+                            line-height: 1.5;
+                            border-left: 4px solid #2c5aa0;
+                            box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
                         ">
-                            Hi! I'm Ask Ed, your Bravo Electro product assistant. Ask me anything about this product's specifications!
+                            👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
                         </div>
                     </div>
                     
                     <!-- Input -->
                     <div style="
-                        padding: 16px;
-                        border-top: 1px solid #eee;
+                        padding: 20px;
+                        border-top: 1px solid #e8eaed;
                         background: white;
-                        border-radius: 0 0 16px 16px;
+                        border-radius: 0 0 20px 20px;
                     ">
-                        <div style="display: flex; gap: 8px;">
-                            <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Ask about specs, features, compatibility..." style="
+                        <div style="display: flex; gap: 12px; align-items: flex-end;">
+                            <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Continue the conversation..." style="
                                 flex: 1;
-                                padding: 10px 14px;
-                                border: 1px solid #ddd;
-                                border-radius: 8px;
+                                padding: 12px 16px;
+                                border: 2px solid #e8eaed;
+                                border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
+                                transition: border-color 0.2s ease;
+                                font-family: inherit;
+                                background: #fafbfc;
                             ">
                             <button id="${WIDGET_ID}-chat-send" style="
-                                background: #2c5aa0;
+                                background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%);
                                 color: white;
                                 border: none;
-                                padding: 10px 18px;
-                                border-radius: 8px;
+                                padding: 12px 20px;
+                                border-radius: 12px;
                                 cursor: pointer;
                                 font-size: 14px;
-                                font-weight: 500;
+                                font-weight: 600;
+                                transition: all 0.2s ease;
+                                box-shadow: 0 2px 8px rgba(44, 90, 160, 0.3);
                             ">Send</button>
                         </div>
                     </div>
@@ -362,14 +395,26 @@
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.style.cssText = `
-                margin-bottom: 12px;
-                padding: 12px;
-                border-radius: 8px;
+                margin-bottom: 16px;
+                padding: 14px 18px;
                 font-size: 14px;
-                line-height: 1.4;
+                line-height: 1.5;
+                max-width: 85%;
+                animation: slideIn 0.3s ease-out;
                 ${isUser ? 
-                    'background: #2c5aa0; color: white; margin-left: 40px; border-radius: 8px 8px 4px 8px;' : 
-                    'background: white; border: 1px solid #e0e0e0; margin-right: 40px; border-radius: 8px 8px 8px 4px;'
+                    `background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%); 
+                     color: white; 
+                     margin-left: auto; 
+                     margin-right: 0;
+                     border-radius: 18px 18px 4px 18px;
+                     box-shadow: 0 2px 12px rgba(44, 90, 160, 0.3);` : 
+                    `background: white; 
+                     color: #2d3748;
+                     margin-left: 0;
+                     margin-right: auto;
+                     border-radius: 18px 18px 18px 4px;
+                     border: 1px solid #e2e8f0;
+                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);`
                 }
             `;
             messageDiv.innerHTML = content.replace(/\n/g, '<br>');

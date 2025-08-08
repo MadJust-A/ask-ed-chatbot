@@ -229,7 +229,7 @@
                         justify-content: center;
                         opacity: 0;
                         transition: opacity 0.3s ease;
-                    ">→</button>
+                    ">?</button>
                 </div>
                 
                 <!-- Logo Button -->
@@ -243,7 +243,15 @@
             </div>
         `;
         
-        document.body.insertAdjacentHTML('beforeend', widgetHTML);
+        // Find the script tag and insert widget right after it
+        const scripts = document.querySelectorAll('script[src*="ask-ed-chatbot"]');
+        const currentScript = scripts[scripts.length - 1]; // Get the last matching script (current one)
+        if (currentScript) {
+            currentScript.insertAdjacentHTML('afterend', widgetHTML);
+        } else {
+            // Fallback to body if script not found
+            document.body.insertAdjacentHTML('beforeend', widgetHTML);
+        }
         
         // Event listeners
         setupEventListeners(productInfo);

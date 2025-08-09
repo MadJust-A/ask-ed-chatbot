@@ -245,15 +245,6 @@
                         position: relative;
                         overflow: hidden;
                     ">
-                        <div style="
-                            position: absolute;
-                            top: -50%;
-                            right: -10%;
-                            width: 100px;
-                            height: 100px;
-                            background: rgba(255,255,255,0.1);
-                            border-radius: 50%;
-                        "></div>
                         <div style="display: flex; align-items: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
                                 width: 40px;
@@ -484,6 +475,7 @@
         let isSearchOpen = false;
         let isChatOpen = false;
         let welcomeShown = false;
+        let hasConversationStarted = false;
         
         // Update welcome text with product name
         const productName = productInfo.title ? 
@@ -507,30 +499,53 @@
             }
         }, 2000);
         
-        // Click logo → toggle search bar
+        // Click logo → toggle search bar or chat window
         toggle.onclick = (e) => {
             e.stopPropagation();
-            if (!isSearchOpen) {
-                // Hide welcome bubble
-                welcome.style.opacity = '0';
-                welcome.style.transform = 'translateX(20px)';
-                
-                // Open search bar
-                searchbar.style.width = '300px';
-                searchbar.style.opacity = '1';
-                searchbar.style.border = '1px solid #ddd';
-                send.style.opacity = '1';
-                setTimeout(() => input.focus(), 300);
-                isSearchOpen = true;
-                toggle.style.transform = 'scale(1.1)';
+            
+            // If conversation has started, toggle chat window instead
+            if (hasConversationStarted) {
+                if (!isChatOpen) {
+                    // Open chat window
+                    chat.style.display = 'flex';
+                    setTimeout(() => {
+                        chat.style.transform = 'translateY(0)';
+                        chat.style.opacity = '1';
+                    }, 10);
+                    isChatOpen = true;
+                } else {
+                    // Close chat window
+                    chat.style.transform = 'translateY(10px)';
+                    chat.style.opacity = '0';
+                    setTimeout(() => {
+                        chat.style.display = 'none';
+                    }, 300);
+                    isChatOpen = false;
+                }
             } else {
-                // Close search bar
-                searchbar.style.width = '0';
-                searchbar.style.opacity = '0';
-                searchbar.style.border = 'none';
-                send.style.opacity = '0';
-                isSearchOpen = false;
-                toggle.style.transform = 'scale(1)';
+                // Original behavior - toggle search bar
+                if (!isSearchOpen) {
+                    // Hide welcome bubble
+                    welcome.style.opacity = '0';
+                    welcome.style.transform = 'translateX(20px)';
+                    
+                    // Open search bar
+                    searchbar.style.width = '300px';
+                    searchbar.style.opacity = '1';
+                    searchbar.style.border = '1px solid #ddd';
+                    send.style.opacity = '1';
+                    setTimeout(() => input.focus(), 300);
+                    isSearchOpen = true;
+                    toggle.style.transform = 'scale(1.1)';
+                } else {
+                    // Close search bar
+                    searchbar.style.width = '0';
+                    searchbar.style.opacity = '0';
+                    searchbar.style.border = 'none';
+                    send.style.opacity = '0';
+                    isSearchOpen = false;
+                    toggle.style.transform = 'scale(1)';
+                }
             }
         };
         
@@ -621,6 +636,9 @@
             const question = input.value.trim();
             if (!question) return;
             
+            // Mark that conversation has started
+            hasConversationStarted = true;
+            
             // Open chat window
             chat.style.display = 'flex';
             setTimeout(() => {
@@ -649,6 +667,9 @@
         async function sendChatMessage() {
             const question = chatInput.value.trim();
             if (!question) return;
+            
+            // Mark that conversation has started (in case this is first message)
+            hasConversationStarted = true;
             
             addMessage(question, true);
             chatInput.value = '';

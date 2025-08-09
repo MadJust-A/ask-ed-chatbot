@@ -242,7 +242,7 @@
                         background-size: 400% 400%;
                         animation: gradient 6s ease infinite;
                         color: white;
-                        padding: 15px 20px;
+                        padding: 10px 20px;
                         border-radius: 20px 20px 0 0;
                         display: flex;
                         justify-content: space-between;
@@ -433,11 +433,6 @@
                     transition: all 0.4s ease;
                     pointer-events: none;
                 ">
-                    <div style="
-                        margin-bottom: 8px;
-                    ">
-                        <strong style="color: black; font-size: 15px;">Ask ED</strong>
-                    </div>
                     <div id="${WIDGET_ID}-welcome-text" style="color: black;">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
                     <div style="
@@ -479,11 +474,11 @@
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        width: 60px;
-                        height: 60px;
+                        width: 70px;
+                        height: 70px;
                         background: radial-gradient(circle, rgba(0, 90, 166, 0.9) 0%, rgba(0, 90, 166, 0.5) 60%, transparent 75%);
                         border-radius: 50%;
-                        filter: blur(4px);
+                        filter: blur(6px);
                         animation: pulse-glow 3s ease-in-out infinite alternate;
                     "></div>
                     <style>
@@ -499,9 +494,9 @@
                         }
                         .glow-bright {
                             background: radial-gradient(circle, rgba(0, 90, 166, 1.0) 0%, rgba(0, 90, 166, 0.8) 60%, transparent 75%) !important;
-                            filter: blur(4px) !important;
+                            filter: blur(6px) !important;
                             animation: none !important;
-                            transform: translate(-50%, -50%) scale(1.1) !important;
+                            transform: translate(-50%, -50%) scale(1.2) !important;
                             opacity: 1 !important;
                         }
                     </style>
@@ -550,7 +545,7 @@
         // Update welcome text with product name
         const productName = productInfo.title ? 
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
-        welcomeText.textContent = `I'm Ask ED! Ask me general questions about the ${productName}.`;
+        welcomeText.innerHTML = `<strong>I'm Ask ED!</strong> Ask me general questions about the ${productName}.`;
         
         // Update dynamic message with product name and datasheet link
         const shortProductName = productInfo.title ? 

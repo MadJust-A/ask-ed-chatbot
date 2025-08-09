@@ -147,6 +147,9 @@
                                 height: 40px;
                                 margin-right: 16px;
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                                object-fit: contain;
+                                border-radius: 50%;
+                                background: rgba(255,255,255,0.1);
                             ">
                             <div>
                                 <div style="
@@ -289,7 +292,7 @@
                     position: absolute;
                     bottom: 20px;
                     right: 120px;
-                    max-width: 350px;
+                    width: 280px;
                     background: white;
                     border: 1px solid #e0e0e0;
                     border-radius: 16px;
@@ -303,18 +306,11 @@
                     pointer-events: none;
                 ">
                     <div style="
-                        display: flex;
-                        align-items: center;
                         margin-bottom: 8px;
                     ">
-                        <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                            width: 24px;
-                            height: 24px;
-                            margin-right: 10px;
-                        ">
-                        <strong style="color: #2c5aa0;">Ask Ed</strong>
+                        <strong style="color: #2c5aa0; font-size: 15px;">Ask Ed</strong>
                     </div>
-                    <div id="${WIDGET_ID}-welcome-text">Ask me questions about this product!</div>
+                    <div id="${WIDGET_ID}-welcome-text" style="color: #4a5568;">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
                     <div style="
                         position: absolute;

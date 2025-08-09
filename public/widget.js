@@ -27,11 +27,15 @@
     
     // Extract product information from Magento page
     function extractProductInfo() {
+        console.log('Extracting product information...');
+        
         // Try multiple selectors commonly used in Magento
         const title = document.querySelector('.page-title-wrapper h1')?.textContent?.trim() ||
                      document.querySelector('.product-item-name')?.textContent?.trim() ||
                      document.querySelector('h1')?.textContent?.trim() ||
                      document.title;
+        
+        console.log('Product title:', title);
                      
         // Look for datasheet PDF links
         let datasheetUrl = null;
@@ -45,32 +49,103 @@
             }
         });
         
-        // Extract specifications from various common locations
+        console.log('Found datasheet URL:', datasheetUrl);
+        
+        // Extract specifications from various locations with better selectors
         let specs = '';
         
-        // Try product attribute tables
-        const specTable = document.querySelector('.data-table tbody') ||
-                         document.querySelector('.product-info-main .additional-attributes tbody') ||
-                         document.querySelector('.product-specs tbody');
-                         
+        // Try multiple specification table selectors
+        const specSelectors = [
+            '.data-table tbody',
+            '.product-info-main .additional-attributes tbody',
+            '.product-specs tbody',
+            'table.data-table tbody',
+            '.product-attribute-specs tbody',
+            '.specification-table tbody',
+            '.specs-table tbody',
+            '.product-specs-table tbody',
+            '.additional-attributes-table tbody'
+        ];
+        
+        let specTable = null;
+        for (const selector of specSelectors) {
+            specTable = document.querySelector(selector);
+            if (specTable) {
+                console.log('Found specs table with selector:', selector);
+                break;
+            }
+        }
+        
         if (specTable) {
             const rows = specTable.querySelectorAll('tr');
-            rows.forEach(row => {
+            console.log('Found', rows.length, 'specification rows');
+            rows.forEach((row, index) => {
                 const cells = row.querySelectorAll('td, th');
                 if (cells.length >= 2) {
-                    specs += cells[0].textContent.trim() + ': ' + cells[1].textContent.trim() + '\n';
+                    const label = cells[0].textContent.trim();
+                    const value = cells[1].textContent.trim();
+                    if (label && value) {
+                        specs += label + ': ' + value + '\n';
+                        console.log(`Row ${index}: ${label} = ${value}`);
+                    }
                 }
             });
         }
         
-        // Try product description sections
+        // Also try to find specifications in div structures
         if (!specs) {
-            const description = document.querySelector('.product.info.detailed .description') ||
-                              document.querySelector('.product-info-main .product-description') ||
-                              document.querySelector('.product.attribute.overview');
-            if (description) {
-                specs = description.textContent.trim();
+            const specDivs = document.querySelectorAll('.product-info-main .product-specs div, .specification div, .specs div');
+            specDivs.forEach(div => {
+                const text = div.textContent.trim();
+                if (text && text.includes(':')) {
+                    specs += text + '\n';
+                }
+            });
+        }
+        
+        // Try product description sections with more selectors
+        if (!specs) {
+            const descriptionSelectors = [
+                '.product.info.detailed .description',
+                '.product-info-main .product-description',
+                '.product.attribute.overview',
+                '.product-details',
+                '.product-specifications',
+                '.tab-content .description'
+            ];
+            
+            for (const selector of descriptionSelectors) {
+                const description = document.querySelector(selector);
+                if (description) {
+                    specs = description.textContent.trim();
+                    console.log('Found specs in description with selector:', selector);
+                    break;
+                }
             }
+        }
+        
+        // Look for any tables on the page that might contain specs
+        if (!specs) {
+            const allTables = document.querySelectorAll('table');
+            allTables.forEach((table, index) => {
+                const tableText = table.textContent.toLowerCase();
+                if (tableText.includes('dimension') || tableText.includes('specification') || 
+                    tableText.includes('voltage') || tableText.includes('current') ||
+                    tableText.includes('power') || tableText.includes('weight')) {
+                    console.log(`Found potential specs table ${index}:`, table);
+                    const rows = table.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td, th');
+                        if (cells.length >= 2) {
+                            const label = cells[0].textContent.trim();
+                            const value = cells[1].textContent.trim();
+                            if (label && value && label.length < 50) {
+                                specs += label + ': ' + value + '\n';
+                            }
+                        }
+                    });
+                }
+            });
         }
         
         // Fallback to any visible product information
@@ -78,8 +153,12 @@
             const productInfo = document.querySelector('.product-info-main');
             if (productInfo) {
                 specs = productInfo.textContent.trim().substring(0, 2000); // Limit length
+                console.log('Using fallback product info');
             }
         }
+        
+        console.log('Final extracted specs length:', specs.length);
+        console.log('Specs preview:', specs.substring(0, 500));
         
         return {
             title: title || 'Product',

@@ -223,13 +223,13 @@
                     right: 110px;
                     width: 350px;
                     height: 400px;
-                    background: rgba(102, 126, 234, 0.25);
+                    background: rgba(70, 130, 255, 0.25);
                     backdrop-filter: blur(25px);
                     -webkit-backdrop-filter: blur(25px);
                     border: 1px solid rgba(255, 255, 255, 0.15);
                     border-radius: 20px;
                     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
-                                0 8px 32px rgba(102, 126, 234, 0.1);
+                                0 8px 32px rgba(70, 130, 255, 0.1);
                     display: none;
                     flex-direction: column;
                     transform: translateY(20px);
@@ -238,7 +238,7 @@
                 ">
                     <!-- Header -->
                     <div style="
-                        background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
+                        background: linear-gradient(-45deg, #4682ff, #6fa8ff, #4682ff, #6fa8ff);
                         background-size: 400% 400%;
                         animation: gradient 6s ease infinite;
                         color: white;
@@ -264,7 +264,7 @@
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                                 object-fit: contain;
                                 opacity: 0.9;
-                                margin-bottom: 8px;
+                                margin-bottom: 4px;
                             ">
                             <div style="
                                 font-size: 13px; 
@@ -314,7 +314,7 @@
                             }
                         </style>
                         <div id="${WIDGET_ID}-welcome-msg" style="
-                            background: rgba(102, 126, 234, 0.35);
+                            background: rgba(70, 130, 255, 0.35);
                             backdrop-filter: blur(20px);
                             -webkit-backdrop-filter: blur(20px);
                             border: 2px solid rgba(255, 255, 255, 0.6);
@@ -324,7 +324,7 @@
                             font-size: 15px;
                             line-height: 1.5;
                             font-weight: 500;
-                            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
+                            box-shadow: 0 8px 32px rgba(70, 130, 255, 0.2), 
                                         0 4px 16px rgba(0, 0, 0, 0.05);
                             color: white;
                             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -348,14 +348,14 @@
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                background: rgba(102, 126, 234, 0.25);
+                                background: rgba(70, 130, 255, 0.25);
                                 backdrop-filter: blur(15px);
                                 color: white;
                                 transition: all 0.3s ease;
                                 font-family: inherit;
                             ">
                             <button id="${WIDGET_ID}-chat-send" style="
-                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                background: linear-gradient(135deg, #4682ff 0%, #6fa8ff 100%);
                                 color: white;
                                 border: none;
                                 padding: 12px 20px;
@@ -377,12 +377,12 @@
                     right: 110px;
                     width: 0;
                     height: 50px;
-                    background: rgba(102, 126, 234, 0.3);
+                    background: rgba(70, 130, 255, 0.3);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                     border-radius: 25px;
-                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2),
+                    box-shadow: 0 8px 32px rgba(70, 130, 255, 0.2),
                                 0 4px 16px rgba(0, 0, 0, 0.05);
                     overflow: hidden;
                     transition: all 0.3s ease-in-out;
@@ -402,7 +402,7 @@
                         min-width: 0;
                     ">
                     <button id="${WIDGET_ID}-send" style="
-                        background: #667eea;
+                        background: #4682ff;
                         color: white;
                         border: none;
                         width: 35px;
@@ -425,12 +425,12 @@
                     bottom: 20px;
                     right: 120px;
                     width: 280px;
-                    background: rgba(102, 126, 234, 0.3);
+                    background: rgba(70, 130, 255, 0.3);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
                     border: 1px solid rgba(255, 255, 255, 0.2);
                     border-radius: 16px;
-                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
+                    box-shadow: 0 8px 32px rgba(70, 130, 255, 0.2), 
                                 0 4px 16px rgba(0, 0, 0, 0.05);
                     padding: 16px;
                     font-size: 14px;
@@ -454,7 +454,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 8px solid rgba(102, 126, 234, 0.2);
+                        border-left: 8px solid rgba(70, 130, 255, 0.2);
                         border-top: 8px solid transparent;
                         border-bottom: 8px solid transparent;
                     "></div>
@@ -478,7 +478,7 @@
                     cursor: pointer;
                     transition: all 0.3s ease;
                     display: block;
-                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 35px rgba(102, 126, 234, 0.7)) drop-shadow(0 0 70px rgba(102, 126, 234, 0.4));
+                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(70, 130, 255, 0.9)) drop-shadow(0 0 90px rgba(70, 130, 255, 0.6)) drop-shadow(0 0 120px rgba(70, 130, 255, 0.3));
                 " id="${WIDGET_ID}-glow">
             </div>
         `;
@@ -550,13 +550,13 @@
         // Add hover effects for logo button
         toggle.addEventListener('mouseenter', () => {
             toggle.style.transform = 'scale(1.05)';
-            toggle.style.filter = 'drop-shadow(0 6px 16px rgba(0,0,0,0.25)) drop-shadow(0 0 50px rgba(102, 126, 234, 0.9)) drop-shadow(0 0 100px rgba(102, 126, 234, 0.6))';
+            toggle.style.filter = 'drop-shadow(0 6px 16px rgba(0,0,0,0.25)) drop-shadow(0 0 60px rgba(70, 130, 255, 1.0)) drop-shadow(0 0 120px rgba(70, 130, 255, 0.8)) drop-shadow(0 0 160px rgba(70, 130, 255, 0.4))';
         });
         
         toggle.addEventListener('mouseleave', () => {
             if (!isSearchOpen) {
                 toggle.style.transform = 'scale(1)';
-                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 35px rgba(102, 126, 234, 0.7)) drop-shadow(0 0 70px rgba(102, 126, 234, 0.4))';
+                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(70, 130, 255, 0.9)) drop-shadow(0 0 90px rgba(70, 130, 255, 0.6)) drop-shadow(0 0 120px rgba(70, 130, 255, 0.3))';
             }
         });
 
@@ -598,7 +598,7 @@
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.08)';
-                    toggle.style.filter = 'drop-shadow(0 8px 20px rgba(0,0,0,0.3)) drop-shadow(0 0 60px rgba(102, 126, 234, 1.0)) drop-shadow(0 0 120px rgba(102, 126, 234, 0.7))';
+                    toggle.style.filter = 'drop-shadow(0 8px 20px rgba(0,0,0,0.3)) drop-shadow(0 0 70px rgba(70, 130, 255, 1.0)) drop-shadow(0 0 140px rgba(70, 130, 255, 0.8)) drop-shadow(0 0 180px rgba(70, 130, 255, 0.5))';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -607,7 +607,7 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 35px rgba(102, 126, 234, 0.7)) drop-shadow(0 0 70px rgba(102, 126, 234, 0.4))';
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(70, 130, 255, 0.9)) drop-shadow(0 0 90px rgba(70, 130, 255, 0.6)) drop-shadow(0 0 120px rgba(70, 130, 255, 0.3))';
                 }
             }
         };
@@ -696,19 +696,19 @@
                 overflow-wrap: break-word;
                 animation: slideIn 0.3s ease-out;
                 ${isUser ? 
-                    `background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); 
+                    `background: linear-gradient(135deg, rgba(70, 130, 255, 0.9) 0%, rgba(111, 168, 255, 0.9) 100%); 
                      backdrop-filter: blur(15px);
                      -webkit-backdrop-filter: blur(15px);
                      color: white; 
                      margin-left: auto; 
                      margin-right: 0;
                      border-radius: 18px 18px 4px 18px;
-                     box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3),
+                     box-shadow: 0 8px 32px rgba(70, 130, 255, 0.3),
                                  0 4px 16px rgba(0, 0, 0, 0.1),
                                  inset 0 1px 0 rgba(255, 255, 255, 0.15);
                      border: 1px solid rgba(255, 255, 255, 0.3);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);` : 
-                    `background: rgba(102, 126, 234, 0.35); 
+                    `background: rgba(70, 130, 255, 0.35); 
                      backdrop-filter: blur(20px);
                      -webkit-backdrop-filter: blur(20px);
                      color: white;
@@ -716,7 +716,7 @@
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
                      border: 2px solid rgba(255, 255, 255, 0.6);
-                     box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
+                     box-shadow: 0 8px 32px rgba(70, 130, 255, 0.2), 
                                  0 4px 16px rgba(0, 0, 0, 0.05);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);`
                 }

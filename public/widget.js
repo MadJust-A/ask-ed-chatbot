@@ -242,7 +242,7 @@
                         background-size: 400% 400%;
                         animation: gradient 6s ease infinite;
                         color: white;
-                        padding: 20px;
+                        padding: 15px 20px;
                         border-radius: 20px 20px 0 0;
                         display: flex;
                         justify-content: space-between;
@@ -264,7 +264,7 @@
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                                 object-fit: contain;
                                 opacity: 0.9;
-                                margin-bottom: 2px;
+                                margin-bottom: 0px;
                             ">
                             <div style="
                                 font-size: 13px; 
@@ -480,16 +480,16 @@
                     justify-content: center;
                 ">
                     <!-- Circular Glow Background -->
-                    <div style="
+                    <div id="${WIDGET_ID}-glow-bg" style="
                         position: absolute;
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        width: 90px;
-                        height: 90px;
-                        background: radial-gradient(circle, rgba(0, 90, 166, 0.8) 0%, rgba(235, 176, 19, 0.6) 50%, transparent 70%);
+                        width: 70px;
+                        height: 70px;
+                        background: radial-gradient(circle, rgba(0, 90, 166, 0.9) 0%, rgba(0, 90, 166, 0.5) 60%, transparent 75%);
                         border-radius: 50%;
-                        filter: blur(8px);
+                        filter: blur(6px);
                         animation: pulse-glow 3s ease-in-out infinite alternate;
                     "></div>
                     <style>
@@ -502,6 +502,13 @@
                                 transform: translate(-50%, -50%) scale(1.1);
                                 opacity: 1;
                             }
+                        }
+                        .glow-bright {
+                            background: radial-gradient(circle, rgba(0, 90, 166, 1.0) 0%, rgba(0, 90, 166, 0.8) 60%, transparent 75%) !important;
+                            filter: blur(6px) !important;
+                            animation: none !important;
+                            transform: translate(-50%, -50%) scale(1.2) !important;
+                            opacity: 1 !important;
                         }
                     </style>
                     <!-- Logo Image -->
@@ -584,9 +591,11 @@
         }, 2000);
         
         // Add hover effects for logo button
+        const glowBg = document.getElementById(`${WIDGET_ID}-glow-bg`);
         toggle.addEventListener('mouseenter', () => {
             toggle.style.transform = 'scale(1.05)';
             toggle.style.filter = 'drop-shadow(0 6px 16px rgba(0,0,0,0.25)) drop-shadow(0 0 60px rgba(0, 90, 166, 1.0)) drop-shadow(0 0 120px rgba(0, 90, 166, 0.8)) drop-shadow(0 0 160px rgba(0, 90, 166, 0.4))';
+            if (glowBg) glowBg.classList.add('glow-bright');
         });
         
         toggle.addEventListener('mouseleave', () => {
@@ -594,6 +603,7 @@
                 toggle.style.transform = 'scale(1)';
                 toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(0, 90, 166, 0.9)) drop-shadow(0 0 90px rgba(0, 90, 166, 0.6)) drop-shadow(0 0 120px rgba(0, 90, 166, 0.3))';
             }
+            if (glowBg) glowBg.classList.remove('glow-bright');
         });
 
         // Click logo → toggle search bar or chat window

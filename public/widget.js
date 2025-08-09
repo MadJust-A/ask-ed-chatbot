@@ -294,10 +294,10 @@
                         flex: 1;
                         padding: 20px;
                         overflow-y: auto;
-                        background: rgba(255, 255, 255, 0.05);
+                        background: rgba(255, 255, 255, 0.02);
                         min-height: 200px;
                         scrollbar-width: thin;
-                        scrollbar-color: #cbd5e0 transparent;
+                        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
                     ">
                         <style>
                             @keyframes slideIn {
@@ -312,17 +312,19 @@
                             }
                         </style>
                         <div style="
-                            background: rgba(255, 255, 255, 0.15);
-                            backdrop-filter: blur(5px);
-                            -webkit-backdrop-filter: blur(5px);
-                            padding: 16px;
-                            border-radius: 12px;
+                            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+                            backdrop-filter: blur(12px);
+                            -webkit-backdrop-filter: blur(12px);
+                            border: 1px solid rgba(255, 255, 255, 0.25);
+                            padding: 20px;
+                            border-radius: 16px;
                             margin-bottom: 16px;
-                            font-size: 14px;
+                            font-size: 15px;
                             line-height: 1.5;
-                            border-left: 4px solid #667eea;
-                            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-                            color: #2d3748;
+                            font-weight: 500;
+                            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                            color: white;
+                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
                         ">
                             👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
                         </div>
@@ -331,21 +333,21 @@
                     <!-- Input -->
                     <div style="
                         padding: 20px;
-                        border-top: 1px solid rgba(255, 255, 255, 0.1);
-                        background: rgba(255, 255, 255, 0.05);
+                        border-top: 1px solid rgba(255, 255, 255, 0.15);
+                        background: rgba(255, 255, 255, 0.02);
                         border-radius: 0 0 20px 20px;
                     ">
                         <div style="display: flex; gap: 12px; align-items: flex-end;">
                             <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Continue the conversation..." style="
                                 flex: 1;
                                 padding: 12px 16px;
-                                border: none;
+                                border: 1px solid rgba(255, 255, 255, 0.2);
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                background: rgba(255, 255, 255, 0.15);
-                                backdrop-filter: blur(5px);
-                                color: #2d3748;
+                                background: rgba(255, 255, 255, 0.08);
+                                backdrop-filter: blur(8px);
+                                color: white;
                                 transition: all 0.3s ease;
                                 font-family: inherit;
                             ">
@@ -465,13 +467,44 @@
                 </div>
                 
                 <!-- Logo Button -->
-                <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                <div id="${WIDGET_ID}-toggle" style="
                     width: 100px;
-                    height: auto;
+                    height: 100px;
                     cursor: pointer;
-                    transition: all 0.3s ease;
-                    display: block;
+                    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(15px);
+                    -webkit-backdrop-filter: blur(15px);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                                0 0 0 0 rgba(102, 126, 234, 0.4),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                    position: relative;
+                    overflow: hidden;
                 ">
+                    <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                        width: 70px;
+                        height: auto;
+                        object-fit: contain;
+                        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+                        z-index: 1;
+                    ">
+                    <div style="
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+                        transform: translateX(-100%);
+                        transition: transform 0.6s ease;
+                        pointer-events: none;
+                    "></div>
+                </div>
             </div>
         `;
         
@@ -523,6 +556,23 @@
             }
         }, 2000);
         
+        // Add hover effects for logo button
+        toggle.addEventListener('mouseenter', () => {
+            toggle.style.transform = 'scale(1.05)';
+            toggle.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.5), 0 0 30px rgba(102, 126, 234, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4)';
+            const shimmer = toggle.querySelector('div:last-child');
+            if (shimmer) shimmer.style.transform = 'translateX(100%)';
+        });
+        
+        toggle.addEventListener('mouseleave', () => {
+            if (!isSearchOpen) {
+                toggle.style.transform = 'scale(1)';
+                toggle.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+            }
+            const shimmer = toggle.querySelector('div:last-child');
+            if (shimmer) shimmer.style.transform = 'translateX(-100%)';
+        });
+
         // Click logo → toggle search bar or chat window
         toggle.onclick = (e) => {
             e.stopPropagation();
@@ -561,6 +611,7 @@
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.1)';
+                    toggle.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4)';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -569,6 +620,7 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
+                    toggle.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
                 }
             }
         };
@@ -642,15 +694,16 @@
                      border-radius: 18px 18px 4px 18px;
                      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
                      border: 1px solid rgba(255, 255, 255, 0.2);` : 
-                    `background: rgba(255, 255, 255, 0.25); 
-                     backdrop-filter: blur(10px);
-                     -webkit-backdrop-filter: blur(10px);
-                     color: #2d3748;
+                    `background: rgba(255, 255, 255, 0.12); 
+                     backdrop-filter: blur(12px);
+                     -webkit-backdrop-filter: blur(12px);
+                     color: white;
                      margin-left: 0;
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
-                     border: 1px solid rgba(255, 255, 255, 0.3);
-                     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);`
+                     border: 1px solid rgba(255, 255, 255, 0.2);
+                     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3);
+                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);`
                 }
             `;
             messageDiv.innerHTML = content.replace(/\n/g, '<br>');

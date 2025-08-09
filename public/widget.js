@@ -249,8 +249,8 @@
                     ">
                         <div style="display: flex; align-items: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                                width: 40px;
-                                height: 40px;
+                                width: 50px;
+                                height: 50px;
                                 margin-right: 16px;
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                                 object-fit: contain;
@@ -263,12 +263,12 @@
                                     font-size: 18px;
                                     letter-spacing: -0.5px;
                                     margin-bottom: 2px;
-                                ">Ask Ed</div>
+                                ">Ask ED <span style="font-size: 12px; font-weight: 400; opacity: 0.8;">(beta)</span></div>
                                 <div style="
                                     font-size: 13px; 
                                     opacity: 0.85;
                                     font-weight: 400;
-                                ">Product Expert Assistant</div>
+                                ">Product Assistant</div>
                             </div>
                         </div>
                         <button id="${WIDGET_ID}-close" style="
@@ -294,7 +294,7 @@
                         flex: 1;
                         padding: 20px;
                         overflow-y: auto;
-                        background: rgba(255, 255, 255, 0.02);
+                        background: transparent;
                         min-height: 200px;
                         scrollbar-width: thin;
                         scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
@@ -311,11 +311,11 @@
                                 }
                             }
                         </style>
-                        <div style="
-                            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+                        <div id="${WIDGET_ID}-welcome-msg" style="
+                            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
                             backdrop-filter: blur(12px);
                             -webkit-backdrop-filter: blur(12px);
-                            border: 1px solid rgba(255, 255, 255, 0.25);
+                            border: 1px solid rgba(255, 255, 255, 0.3);
                             padding: 20px;
                             border-radius: 16px;
                             margin-bottom: 16px;
@@ -324,9 +324,9 @@
                             font-weight: 500;
                             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
                             color: white;
-                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                         ">
-                            👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
+                            <span id="${WIDGET_ID}-dynamic-message">👋 Hi! I'm Ask ED, ask me questions about this product and I'll do my best to answer them. Always check the datasheet for the latest information.</span>
                         </div>
                     </div>
                     
@@ -334,18 +334,18 @@
                     <div style="
                         padding: 20px;
                         border-top: 1px solid rgba(255, 255, 255, 0.15);
-                        background: rgba(255, 255, 255, 0.02);
+                        background: transparent;
                         border-radius: 0 0 20px 20px;
                     ">
                         <div style="display: flex; gap: 12px; align-items: flex-end;">
                             <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Continue the conversation..." style="
                                 flex: 1;
                                 padding: 12px 16px;
-                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                border: 1px solid rgba(255, 255, 255, 0.3);
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                background: rgba(255, 255, 255, 0.08);
+                                background: rgba(102, 126, 234, 0.2);
                                 backdrop-filter: blur(8px);
                                 color: white;
                                 transition: all 0.3s ease;
@@ -394,7 +394,7 @@
                         padding: 12px 20px;
                         font-size: 14px;
                         background: transparent;
-                        color: #2d3748;
+                        color: white;
                         min-width: 0;
                     ">
                     <button id="${WIDGET_ID}-send" style="
@@ -467,43 +467,39 @@
                 </div>
                 
                 <!-- Logo Button -->
-                <div id="${WIDGET_ID}-toggle" style="
-                    width: 100px;
-                    height: 100px;
-                    cursor: pointer;
-                    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(15px);
-                    -webkit-backdrop-filter: blur(15px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
-                                0 0 0 0 rgba(102, 126, 234, 0.4),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                <div style="
                     position: relative;
-                    overflow: hidden;
+                    width: 100px;
+                    height: auto;
                 ">
-                    <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                        width: 70px;
-                        height: auto;
-                        object-fit: contain;
-                        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
-                        z-index: 1;
-                    ">
+                    <!-- Glow background -->
                     <div style="
                         position: absolute;
-                        top: -50%;
-                        left: -50%;
-                        width: 200%;
-                        height: 200%;
-                        background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-                        transform: translateX(-100%);
-                        transition: transform 0.6s ease;
-                        pointer-events: none;
-                    "></div>
+                        top: -10px;
+                        left: -10px;
+                        right: -10px;
+                        bottom: -10px;
+                        border-radius: 50%;
+                        background: rgba(102, 126, 234, 0.15);
+                        backdrop-filter: blur(20px);
+                        -webkit-backdrop-filter: blur(20px);
+                        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                                    0 0 0 0 rgba(102, 126, 234, 0.4);
+                        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        opacity: 0.8;
+                    " id="${WIDGET_ID}-glow"></div>
+                    
+                    <!-- Logo Image -->
+                    <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                        width: 100px;
+                        height: auto;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        display: block;
+                        position: relative;
+                        z-index: 2;
+                        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+                    ">
                 </div>
             </div>
         `;
@@ -518,6 +514,7 @@
     
     function setupEventListeners(productInfo) {
         const toggle = document.getElementById(`${WIDGET_ID}-toggle`);
+        const glow = document.getElementById(`${WIDGET_ID}-glow`);
         const searchbar = document.getElementById(`${WIDGET_ID}-searchbar`);
         const chat = document.getElementById(`${WIDGET_ID}-chat`);
         const close = document.getElementById(`${WIDGET_ID}-close`);
@@ -528,6 +525,7 @@
         const messages = document.getElementById(`${WIDGET_ID}-messages`);
         const welcome = document.getElementById(`${WIDGET_ID}-welcome`);
         const welcomeText = document.getElementById(`${WIDGET_ID}-welcome-text`);
+        const dynamicMessage = document.getElementById(`${WIDGET_ID}-dynamic-message`);
         
         let isSearchOpen = false;
         let isChatOpen = false;
@@ -538,6 +536,21 @@
         const productName = productInfo.title ? 
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
         welcomeText.textContent = `Ask me questions about the ${productName}!`;
+        
+        // Update dynamic message with product name and datasheet link
+        const shortProductName = productInfo.title ? 
+            productInfo.title.split(' ').slice(0, 2).join(' ') : 'this product';
+        
+        let messageContent = `👋 Hi! I'm Ask ED, ask me questions about the ${shortProductName} and I'll do my best to answer them. Always check the `;
+        
+        if (productInfo.datasheetUrl) {
+            messageContent += `<a href="${productInfo.datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>`;
+        } else {
+            messageContent += 'datasheet';
+        }
+        messageContent += ' for the latest information.';
+        
+        dynamicMessage.innerHTML = messageContent;
         
         // Show welcome bubble after a delay
         setTimeout(() => {
@@ -559,18 +572,20 @@
         // Add hover effects for logo button
         toggle.addEventListener('mouseenter', () => {
             toggle.style.transform = 'scale(1.05)';
-            toggle.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.5), 0 0 30px rgba(102, 126, 234, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4)';
-            const shimmer = toggle.querySelector('div:last-child');
-            if (shimmer) shimmer.style.transform = 'translateX(100%)';
+            if (glow) {
+                glow.style.opacity = '1';
+                glow.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.8)';
+            }
         });
         
         toggle.addEventListener('mouseleave', () => {
             if (!isSearchOpen) {
                 toggle.style.transform = 'scale(1)';
-                toggle.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                if (glow) {
+                    glow.style.opacity = '0.8';
+                    glow.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4)';
+                }
             }
-            const shimmer = toggle.querySelector('div:last-child');
-            if (shimmer) shimmer.style.transform = 'translateX(-100%)';
         });
 
         // Click logo → toggle search bar or chat window
@@ -611,7 +626,10 @@
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.1)';
-                    toggle.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4)';
+                    if (glow) {
+                        glow.style.opacity = '1';
+                        glow.style.boxShadow = '0 16px 50px rgba(102, 126, 234, 0.8), 0 0 50px rgba(102, 126, 234, 0.9)';
+                    }
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -620,7 +638,10 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    toggle.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                    if (glow) {
+                        glow.style.opacity = '0.8';
+                        glow.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4)';
+                    }
                 }
             }
         };
@@ -694,16 +715,16 @@
                      border-radius: 18px 18px 4px 18px;
                      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
                      border: 1px solid rgba(255, 255, 255, 0.2);` : 
-                    `background: rgba(255, 255, 255, 0.12); 
+                    `background: rgba(102, 126, 234, 0.6); 
                      backdrop-filter: blur(12px);
                      -webkit-backdrop-filter: blur(12px);
                      color: white;
                      margin-left: 0;
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
-                     border: 1px solid rgba(255, 255, 255, 0.2);
+                     border: 1px solid rgba(255, 255, 255, 0.3);
                      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3);
-                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);`
+                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);`
                 }
             `;
             messageDiv.innerHTML = content.replace(/\n/g, '<br>');

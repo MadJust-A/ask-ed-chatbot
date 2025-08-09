@@ -54,7 +54,7 @@
         // Extract specifications from various locations with better selectors
         let specs = '';
         
-        // Try multiple specification table selectors
+        // Try multiple specification table selectors for Magento/Bravo Electro pages
         const specSelectors = [
             '.data-table tbody',
             '.product-info-main .additional-attributes tbody',
@@ -64,7 +64,13 @@
             '.specification-table tbody',
             '.specs-table tbody',
             '.product-specs-table tbody',
-            '.additional-attributes-table tbody'
+            '.additional-attributes-table tbody',
+            '.product-info-main table tbody',
+            '.product-collateral table tbody',
+            '.tab-content table tbody',
+            '#product-attribute-specs-table tbody',
+            '[data-role="content"] table tbody',
+            '.product-specs-wrapper table tbody'
         ];
         
         let specTable = null;
@@ -103,7 +109,7 @@
             });
         }
         
-        // Try product description sections with more selectors
+        // Try product description sections with more selectors for Magento
         if (!specs) {
             const descriptionSelectors = [
                 '.product.info.detailed .description',
@@ -111,7 +117,13 @@
                 '.product.attribute.overview',
                 '.product-details',
                 '.product-specifications',
-                '.tab-content .description'
+                '.tab-content .description',
+                '.product.info.detailed .value',
+                '.short-description .std',
+                '.product-info-main .short-description',
+                '[data-role="content"] .value',
+                '.product-view .std',
+                '.product.attribute.description .value'
             ];
             
             for (const selector of descriptionSelectors) {
@@ -131,7 +143,11 @@
                 const tableText = table.textContent.toLowerCase();
                 if (tableText.includes('dimension') || tableText.includes('specification') || 
                     tableText.includes('voltage') || tableText.includes('current') ||
-                    tableText.includes('power') || tableText.includes('weight')) {
+                    tableText.includes('power') || tableText.includes('weight') ||
+                    tableText.includes('size') || tableText.includes('length') ||
+                    tableText.includes('width') || tableText.includes('height') ||
+                    tableText.includes('depth') || tableText.includes('output') ||
+                    tableText.includes('input') || tableText.includes('efficiency')) {
                     console.log(`Found potential specs table ${index}:`, table);
                     const rows = table.querySelectorAll('tr');
                     rows.forEach(row => {
@@ -139,11 +155,29 @@
                         if (cells.length >= 2) {
                             const label = cells[0].textContent.trim();
                             const value = cells[1].textContent.trim();
-                            if (label && value && label.length < 50) {
+                            if (label && value && label.length < 100) {
                                 specs += label + ': ' + value + '\n';
                             }
                         }
                     });
+                }
+            });
+        }
+        
+        // Additional search in all visible text areas for specifications
+        if (!specs) {
+            console.log('Searching all page content for specifications...');
+            const allElements = document.querySelectorAll('div, p, span, td, th');
+            allElements.forEach(element => {
+                const text = element.textContent.trim();
+                if (text.length > 10 && text.length < 500 && 
+                    (text.toLowerCase().includes('dimension') || 
+                     text.toLowerCase().includes('size') ||
+                     text.toLowerCase().includes('specification') ||
+                     text.match(/\d+.*?x.*?\d+.*?x.*?\d+/i) || // Pattern like "200 x 100 x 50"
+                     text.match(/\d+\.?\d*\s*(mm|cm|inch|in)\s*x\s*\d+\.?\d*\s*(mm|cm|inch|in)/i))) {
+                    specs += text + '\n';
+                    console.log('Found spec content:', text.substring(0, 100));
                 }
             });
         }

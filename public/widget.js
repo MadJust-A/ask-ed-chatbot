@@ -223,10 +223,12 @@
                     right: 110px;
                     width: 350px;
                     height: 400px;
-                    background: white;
-                    border: 1px solid #e0e0e0;
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.18);
                     border-radius: 20px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
                     display: none;
                     flex-direction: column;
                     transform: translateY(20px);
@@ -292,20 +294,23 @@
                         flex: 1;
                         padding: 20px;
                         overflow-y: auto;
-                        background: #fafbfc;
+                        background: rgba(255, 255, 255, 0.05);
                         min-height: 200px;
                         scrollbar-width: thin;
                         scrollbar-color: #cbd5e0 transparent;
                     ">
                         <div style="
-                            background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+                            background: rgba(255, 255, 255, 0.15);
+                            backdrop-filter: blur(5px);
+                            -webkit-backdrop-filter: blur(5px);
                             padding: 16px;
                             border-radius: 12px;
                             margin-bottom: 16px;
                             font-size: 14px;
                             line-height: 1.5;
                             border-left: 4px solid #667eea;
-                            box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
+                            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+                            color: rgba(255, 255, 255, 0.95);
                         ">
                             👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
                         </div>
@@ -314,21 +319,23 @@
                     <!-- Input -->
                     <div style="
                         padding: 20px;
-                        border-top: 1px solid #e8eaed;
-                        background: white;
+                        border-top: 1px solid rgba(255, 255, 255, 0.1);
+                        background: rgba(255, 255, 255, 0.05);
                         border-radius: 0 0 20px 20px;
                     ">
                         <div style="display: flex; gap: 12px; align-items: flex-end;">
                             <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Continue the conversation..." style="
                                 flex: 1;
                                 padding: 12px 16px;
-                                border: 2px solid #e8eaed;
+                                border: none;
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                transition: border-color 0.2s ease;
+                                background: rgba(255, 255, 255, 0.15);
+                                backdrop-filter: blur(5px);
+                                color: #ffffff;
+                                transition: all 0.3s ease;
                                 font-family: inherit;
-                                background: #fafbfc;
                             ">
                             <button id="${WIDGET_ID}-chat-send" style="
                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -353,10 +360,12 @@
                     right: 110px;
                     width: 0;
                     height: 50px;
-                    background: white;
-                    border: none;
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.18);
                     border-radius: 25px;
-                    box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
                     overflow: hidden;
                     transition: all 0.3s ease-in-out;
                     display: flex;
@@ -371,6 +380,7 @@
                         padding: 12px 20px;
                         font-size: 14px;
                         background: transparent;
+                        color: #ffffff;
                         min-width: 0;
                     ">
                     <button id="${WIDGET_ID}-send" style="
@@ -397,10 +407,12 @@
                     bottom: 20px;
                     right: 120px;
                     width: 280px;
-                    background: white;
-                    border: 1px solid #e0e0e0;
+                    background: rgba(255, 255, 255, 0.1);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.18);
                     border-radius: 16px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
                     padding: 16px;
                     font-size: 14px;
                     line-height: 1.4;
@@ -414,7 +426,7 @@
                     ">
                         <strong style="color: #667eea; font-size: 15px;">Ask Ed</strong>
                     </div>
-                    <div id="${WIDGET_ID}-welcome-text" style="color: #4a5568;">Ask me questions about this product!</div>
+                    <div id="${WIDGET_ID}-welcome-text" style="color: rgba(255, 255, 255, 0.9);">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
                     <div style="
                         position: absolute;
@@ -423,7 +435,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 8px solid white;
+                        border-left: 8px solid rgba(255, 255, 255, 0.1);
                         border-top: 8px solid transparent;
                         border-bottom: 8px solid transparent;
                     "></div>
@@ -434,7 +446,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 9px solid #e0e0e0;
+                        border-left: 9px solid rgba(255, 255, 255, 0.18);
                         border-top: 9px solid transparent;
                         border-bottom: 9px solid transparent;
                     "></div>

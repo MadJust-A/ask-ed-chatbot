@@ -289,7 +289,7 @@
                     position: absolute;
                     bottom: 20px;
                     right: 120px;
-                    max-width: 280px;
+                    max-width: 350px;
                     background: white;
                     border: 1px solid #e0e0e0;
                     border-radius: 16px;
@@ -379,7 +379,7 @@
         // Update welcome text with product name
         const productName = productInfo.title ? 
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
-        welcomeText.textContent = `Ask me questions about ${productName}!`;
+        welcomeText.textContent = `Ask me questions about the ${productName}!`;
         
         // Show welcome bubble after a delay
         setTimeout(() => {

@@ -633,7 +633,7 @@
                     searchbar.style.opacity = '1';
                     searchbar.style.border = '1px solid #ddd';
                     send.style.opacity = '1';
-                    setTimeout(() => input.focus(), 300);
+                    // Don't auto-focus to keep placeholder visible
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.08)';
                     toggle.style.filter = 'drop-shadow(0 8px 20px rgba(0,0,0,0.3)) drop-shadow(0 0 70px rgba(0, 90, 166, 1.0)) drop-shadow(0 0 140px rgba(0, 90, 166, 0.8)) drop-shadow(0 0 180px rgba(0, 90, 166, 0.5))';

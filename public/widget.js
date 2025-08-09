@@ -218,9 +218,9 @@
             ">
                 <!-- Chat Window -->
                 <div id="${WIDGET_ID}-chat" style="
-                    position: fixed;
-                    top: 150px;
-                    right: 120px;
+                    position: absolute;
+                    top: -200px;
+                    right: 110px;
                     width: 350px;
                     height: 400px;
                     background: white;
@@ -235,7 +235,7 @@
                 ">
                     <!-- Header -->
                     <div style="
-                        background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%);
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                         color: white;
                         padding: 20px;
                         border-radius: 20px 20px 0 0;
@@ -313,7 +313,7 @@
                             margin-bottom: 16px;
                             font-size: 14px;
                             line-height: 1.5;
-                            border-left: 4px solid #2c5aa0;
+                            border-left: 4px solid #667eea;
                             box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
                         ">
                             👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
@@ -340,7 +340,7 @@
                                 background: #fafbfc;
                             ">
                             <button id="${WIDGET_ID}-chat-send" style="
-                                background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%);
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                 color: white;
                                 border: none;
                                 padding: 12px 20px;
@@ -383,7 +383,7 @@
                         min-width: 0;
                     ">
                     <button id="${WIDGET_ID}-send" style="
-                        background: #2c5aa0;
+                        background: #667eea;
                         color: white;
                         border: none;
                         width: 35px;
@@ -421,7 +421,7 @@
                     <div style="
                         margin-bottom: 8px;
                     ">
-                        <strong style="color: #2c5aa0; font-size: 15px;">Ask Ed</strong>
+                        <strong style="color: #667eea; font-size: 15px;">Ask Ed</strong>
                     </div>
                     <div id="${WIDGET_ID}-welcome-text" style="color: #4a5568;">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
@@ -596,7 +596,7 @@
                 max-width: 85%;
                 animation: slideIn 0.3s ease-out;
                 ${isUser ? 
-                    `background: linear-gradient(135deg, #2c5aa0 0%, #3d6db0 100%); 
+                    `background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                      color: white; 
                      margin-left: auto; 
                      margin-right: 0;

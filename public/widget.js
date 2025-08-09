@@ -299,6 +299,18 @@
                         scrollbar-width: thin;
                         scrollbar-color: #cbd5e0 transparent;
                     ">
+                        <style>
+                            @keyframes slideIn {
+                                from { 
+                                    opacity: 0; 
+                                    transform: translateY(15px); 
+                                }
+                                to { 
+                                    opacity: 1; 
+                                    transform: translateY(0); 
+                                }
+                            }
+                        </style>
                         <div style="
                             background: rgba(255, 255, 255, 0.15);
                             backdrop-filter: blur(5px);
@@ -310,7 +322,7 @@
                             line-height: 1.5;
                             border-left: 4px solid #667eea;
                             box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-                            color: rgba(255, 255, 255, 0.95);
+                            color: #2d3748;
                         ">
                             👋 Hi! I'm Ask Ed, your Bravo Electro product expert. Ask me anything about this product's specifications, features, or compatibility!
                         </div>
@@ -333,7 +345,7 @@
                                 outline: none;
                                 background: rgba(255, 255, 255, 0.15);
                                 backdrop-filter: blur(5px);
-                                color: #ffffff;
+                                color: #2d3748;
                                 transition: all 0.3s ease;
                                 font-family: inherit;
                             ">
@@ -380,7 +392,7 @@
                         padding: 12px 20px;
                         font-size: 14px;
                         background: transparent;
-                        color: #ffffff;
+                        color: #2d3748;
                         min-width: 0;
                     ">
                     <button id="${WIDGET_ID}-send" style="
@@ -426,7 +438,7 @@
                     ">
                         <strong style="color: #667eea; font-size: 15px;">Ask Ed</strong>
                     </div>
-                    <div id="${WIDGET_ID}-welcome-text" style="color: rgba(255, 255, 255, 0.9);">Ask me questions about this product!</div>
+                    <div id="${WIDGET_ID}-welcome-text" style="color: #4a5568;">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
                     <div style="
                         position: absolute;
@@ -628,14 +640,17 @@
                      margin-left: auto; 
                      margin-right: 0;
                      border-radius: 18px 18px 4px 18px;
-                     box-shadow: 0 2px 12px rgba(44, 90, 160, 0.3);` : 
-                    `background: white; 
+                     box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+                     border: 1px solid rgba(255, 255, 255, 0.2);` : 
+                    `background: rgba(255, 255, 255, 0.25); 
+                     backdrop-filter: blur(10px);
+                     -webkit-backdrop-filter: blur(10px);
                      color: #2d3748;
                      margin-left: 0;
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
-                     border: 1px solid #e2e8f0;
-                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);`
+                     border: 1px solid rgba(255, 255, 255, 0.3);
+                     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);`
                 }
             `;
             messageDiv.innerHTML = content.replace(/\n/g, '<br>');

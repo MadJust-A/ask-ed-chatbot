@@ -6,7 +6,7 @@ let pdfParse: any = null;
 try {
   pdfParse = require('pdf-parse');
 } catch (error) {
-  console.log('PDF processing not available in this environment');
+  console.log('PDF processing not available in this environment:', error instanceof Error ? error.message : String(error));
 }
 
 const openai = new OpenAI({

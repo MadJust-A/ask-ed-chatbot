@@ -242,7 +242,7 @@
                         background-size: 400% 400%;
                         animation: gradient 6s ease infinite;
                         color: white;
-                        padding: 10px 20px;
+                        padding: 8px 20px;
                         border-radius: 20px 20px 0 0;
                         display: flex;
                         justify-content: space-between;
@@ -259,8 +259,8 @@
                         </style>
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; width: 100%;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                                width: 60px;
-                                height: 60px;
+                                width: 75px;
+                                height: 75px;
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                                 object-fit: contain;
                                 opacity: 0.9;
@@ -562,8 +562,8 @@
         
         dynamicMessage.innerHTML = messageContent;
         
-        // Set slider input placeholder with product name
-        input.placeholder = `Ask a question on the ${productName}`;
+        // Set slider input placeholder
+        input.placeholder = `Ask a question on this product`;
         
         // Show welcome bubble after a delay
         setTimeout(() => {
@@ -682,24 +682,16 @@
             }
         });
         
-        // Search bar input handlers - keep placeholder until user starts typing
+        // Search bar input handlers - clear placeholder on focus/click
         input.onfocus = () => {
-            // Don't clear placeholder on focus, only when user starts typing
-        };
-        
-        input.oninput = () => {
-            // Clear placeholder when user starts typing
-            if (input.value.length > 0) {
-                input.placeholder = '';
-            } else {
-                input.placeholder = `Ask a question on the ${productName}`;
-            }
+            // Clear placeholder when user clicks to type
+            input.placeholder = '';
         };
         
         input.onblur = () => {
             // Restore placeholder if no value
             if (!input.value) {
-                input.placeholder = `Ask a question on the ${productName}`;
+                input.placeholder = `Ask a question on this product`;
             }
         };
         

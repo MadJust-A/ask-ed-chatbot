@@ -266,12 +266,6 @@
                                 opacity: 0.9;
                                 margin-bottom: 0px;
                             ">
-                            <div style="
-                                font-size: 13px; 
-                                opacity: 0.85;
-                                font-weight: 400;
-                                text-align: center;
-                            ">Product Assistant</div>
                         </div>
                         <button id="${WIDGET_ID}-close" style="
                             background: rgba(255,255,255,0.2);
@@ -485,11 +479,11 @@
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        width: 70px;
-                        height: 70px;
+                        width: 60px;
+                        height: 60px;
                         background: radial-gradient(circle, rgba(0, 90, 166, 0.9) 0%, rgba(0, 90, 166, 0.5) 60%, transparent 75%);
                         border-radius: 50%;
-                        filter: blur(6px);
+                        filter: blur(4px);
                         animation: pulse-glow 3s ease-in-out infinite alternate;
                     "></div>
                     <style>
@@ -505,9 +499,9 @@
                         }
                         .glow-bright {
                             background: radial-gradient(circle, rgba(0, 90, 166, 1.0) 0%, rgba(0, 90, 166, 0.8) 60%, transparent 75%) !important;
-                            filter: blur(6px) !important;
+                            filter: blur(4px) !important;
                             animation: none !important;
-                            transform: translate(-50%, -50%) scale(1.2) !important;
+                            transform: translate(-50%, -50%) scale(1.1) !important;
                             opacity: 1 !important;
                         }
                     </style>
@@ -556,7 +550,7 @@
         // Update welcome text with product name
         const productName = productInfo.title ? 
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
-        welcomeText.textContent = `Ask me questions about the ${productName}!`;
+        welcomeText.textContent = `I'm Ask ED! Ask me general questions about the ${productName}.`;
         
         // Update dynamic message with product name and datasheet link
         const shortProductName = productInfo.title ? 
@@ -696,6 +690,7 @@
         };
         
         input.onblur = () => {
+            // Keep the placeholder visible until user actually types something
             if (!input.value) {
                 input.placeholder = 'Ask about this product...';
             }
@@ -757,17 +752,25 @@
                     `background: rgba(0, 90, 166, 0.35); 
                      backdrop-filter: blur(20px);
                      -webkit-backdrop-filter: blur(20px);
-                     color: white;
+                     color: black;
                      margin-left: 0;
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
                      border: 2px solid rgba(255, 255, 255, 0.6);
                      box-shadow: 0 8px 32px rgba(0, 90, 166, 0.2), 
-                                 0 4px 16px rgba(0, 0, 0, 0.05);
-                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);`
+                                 0 4px 16px rgba(0, 0, 0, 0.05);`
                 }
             `;
             messageDiv.innerHTML = content.replace(/\n/g, '<br>');
+            
+            // Style links in Ask ED responses (non-user messages)
+            if (!isUser) {
+                const links = messageDiv.querySelectorAll('a');
+                links.forEach(link => {
+                    link.style.color = 'white';
+                    link.style.textDecoration = 'underline';
+                });
+            }
             messages.appendChild(messageDiv);
             messages.scrollTop = messages.scrollHeight;
         }

@@ -109,7 +109,7 @@
                     bottom: 80px;
                     right: 0;
                     width: 350px;
-                    height: 450px;
+                    height: 350px;
                     background: white;
                     border: 1px solid #e0e0e0;
                     border-radius: 20px;
@@ -186,7 +186,7 @@
                         padding: 20px;
                         overflow-y: auto;
                         background: #fafbfc;
-                        min-height: 280px;
+                        min-height: 200px;
                         scrollbar-width: thin;
                         scrollbar-color: #cbd5e0 transparent;
                     ">
@@ -284,6 +284,62 @@
                     ">?</button>
                 </div>
                 
+                <!-- Welcome Bubble -->
+                <div id="${WIDGET_ID}-welcome" style="
+                    position: absolute;
+                    bottom: 20px;
+                    right: 120px;
+                    max-width: 280px;
+                    background: white;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    padding: 16px;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    opacity: 0;
+                    transform: translateX(20px);
+                    transition: all 0.4s ease;
+                    pointer-events: none;
+                ">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 8px;
+                    ">
+                        <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
+                            width: 24px;
+                            height: 24px;
+                            margin-right: 10px;
+                        ">
+                        <strong style="color: #2c5aa0;">Ask Ed</strong>
+                    </div>
+                    <div id="${WIDGET_ID}-welcome-text">Ask me questions about this product!</div>
+                    <!-- Speech bubble arrow -->
+                    <div style="
+                        position: absolute;
+                        top: 50%;
+                        right: -8px;
+                        transform: translateY(-50%);
+                        width: 0;
+                        height: 0;
+                        border-left: 8px solid white;
+                        border-top: 8px solid transparent;
+                        border-bottom: 8px solid transparent;
+                    "></div>
+                    <div style="
+                        position: absolute;
+                        top: 50%;
+                        right: -9px;
+                        transform: translateY(-50%);
+                        width: 0;
+                        height: 0;
+                        border-left: 9px solid #e0e0e0;
+                        border-top: 9px solid transparent;
+                        border-bottom: 9px solid transparent;
+                    "></div>
+                </div>
+                
                 <!-- Logo Button -->
                 <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
                     width: 100px;
@@ -313,14 +369,43 @@
         const chatInput = document.getElementById(`${WIDGET_ID}-chat-input`);
         const chatSend = document.getElementById(`${WIDGET_ID}-chat-send`);
         const messages = document.getElementById(`${WIDGET_ID}-messages`);
+        const welcome = document.getElementById(`${WIDGET_ID}-welcome`);
+        const welcomeText = document.getElementById(`${WIDGET_ID}-welcome-text`);
         
         let isSearchOpen = false;
         let isChatOpen = false;
+        let welcomeShown = false;
+        
+        // Update welcome text with product name
+        const productName = productInfo.title ? 
+            productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
+        welcomeText.textContent = `Ask me questions about ${productName}!`;
+        
+        // Show welcome bubble after a delay
+        setTimeout(() => {
+            if (!welcomeShown && !isSearchOpen && !isChatOpen) {
+                welcome.style.opacity = '1';
+                welcome.style.transform = 'translateX(0)';
+                welcomeShown = true;
+                
+                // Auto-hide welcome bubble after 5 seconds
+                setTimeout(() => {
+                    if (welcomeShown && !isSearchOpen && !isChatOpen) {
+                        welcome.style.opacity = '0';
+                        welcome.style.transform = 'translateX(20px)';
+                    }
+                }, 5000);
+            }
+        }, 2000);
         
         // Click logo → toggle search bar
         toggle.onclick = (e) => {
             e.stopPropagation();
             if (!isSearchOpen) {
+                // Hide welcome bubble
+                welcome.style.opacity = '0';
+                welcome.style.transform = 'translateX(20px)';
+                
                 // Open search bar
                 searchbar.style.width = '300px';
                 searchbar.style.opacity = '1';

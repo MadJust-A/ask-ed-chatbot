@@ -223,12 +223,12 @@
                     right: 110px;
                     width: 350px;
                     height: 400px;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.18);
+                    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95) 0%, rgba(20, 20, 40, 0.95) 100%);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
                     border-radius: 20px;
-                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(102, 126, 234, 0.2);
                     display: none;
                     flex-direction: column;
                     transform: translateY(20px);
@@ -374,12 +374,12 @@
                     right: 110px;
                     width: 0;
                     height: 50px;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.18);
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+                    backdrop-filter: blur(15px);
+                    -webkit-backdrop-filter: blur(15px);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     border-radius: 25px;
-                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
                     overflow: hidden;
                     transition: all 0.3s ease-in-out;
                     display: flex;
@@ -421,12 +421,12 @@
                     bottom: 20px;
                     right: 120px;
                     width: 280px;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.18);
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+                    backdrop-filter: blur(15px);
+                    -webkit-backdrop-filter: blur(15px);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     border-radius: 16px;
-                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
                     padding: 16px;
                     font-size: 14px;
                     line-height: 1.4;
@@ -438,9 +438,9 @@
                     <div style="
                         margin-bottom: 8px;
                     ">
-                        <strong style="color: #667eea; font-size: 15px;">Ask Ed</strong>
+                        <strong style="color: white; font-size: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Ask ED</strong>
                     </div>
-                    <div id="${WIDGET_ID}-welcome-text" style="color: #4a5568;">Ask me questions about this product!</div>
+                    <div id="${WIDGET_ID}-welcome-text" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Ask me questions about this product!</div>
                     <!-- Speech bubble arrow -->
                     <div style="
                         position: absolute;
@@ -449,7 +449,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 8px solid rgba(255, 255, 255, 0.1);
+                        border-left: 8px solid rgba(102, 126, 234, 0.9);
                         border-top: 8px solid transparent;
                         border-bottom: 8px solid transparent;
                     "></div>
@@ -467,40 +467,14 @@
                 </div>
                 
                 <!-- Logo Button -->
-                <div style="
-                    position: relative;
+                <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
                     width: 100px;
                     height: auto;
-                ">
-                    <!-- Glow background -->
-                    <div style="
-                        position: absolute;
-                        top: -10px;
-                        left: -10px;
-                        right: -10px;
-                        bottom: -10px;
-                        border-radius: 50%;
-                        background: rgba(102, 126, 234, 0.15);
-                        backdrop-filter: blur(20px);
-                        -webkit-backdrop-filter: blur(20px);
-                        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
-                                    0 0 0 0 rgba(102, 126, 234, 0.4);
-                        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                        opacity: 0.8;
-                    " id="${WIDGET_ID}-glow"></div>
-                    
-                    <!-- Logo Image -->
-                    <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                        width: 100px;
-                        height: auto;
-                        cursor: pointer;
-                        transition: all 0.3s ease;
-                        display: block;
-                        position: relative;
-                        z-index: 2;
-                        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
-                    ">
-                </div>
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: block;
+                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.4));
+                " id="${WIDGET_ID}-glow">
             </div>
         `;
         
@@ -514,7 +488,6 @@
     
     function setupEventListeners(productInfo) {
         const toggle = document.getElementById(`${WIDGET_ID}-toggle`);
-        const glow = document.getElementById(`${WIDGET_ID}-glow`);
         const searchbar = document.getElementById(`${WIDGET_ID}-searchbar`);
         const chat = document.getElementById(`${WIDGET_ID}-chat`);
         const close = document.getElementById(`${WIDGET_ID}-close`);
@@ -572,19 +545,13 @@
         // Add hover effects for logo button
         toggle.addEventListener('mouseenter', () => {
             toggle.style.transform = 'scale(1.05)';
-            if (glow) {
-                glow.style.opacity = '1';
-                glow.style.boxShadow = '0 12px 40px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.8)';
-            }
+            toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 30px rgba(102, 126, 234, 0.8))';
         });
         
         toggle.addEventListener('mouseleave', () => {
             if (!isSearchOpen) {
                 toggle.style.transform = 'scale(1)';
-                if (glow) {
-                    glow.style.opacity = '0.8';
-                    glow.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4)';
-                }
+                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.4))';
             }
         });
 
@@ -626,10 +593,7 @@
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.1)';
-                    if (glow) {
-                        glow.style.opacity = '1';
-                        glow.style.boxShadow = '0 16px 50px rgba(102, 126, 234, 0.8), 0 0 50px rgba(102, 126, 234, 0.9)';
-                    }
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 40px rgba(102, 126, 234, 0.9))';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -638,10 +602,7 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    if (glow) {
-                        glow.style.opacity = '0.8';
-                        glow.style.boxShadow = '0 8px 32px rgba(102, 126, 234, 0.3), 0 0 0 0 rgba(102, 126, 234, 0.4)';
-                    }
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.4))';
                 }
             }
         };
@@ -679,6 +640,16 @@
         });
         
         // Search bar input handlers
+        input.onfocus = () => {
+            input.placeholder = '';
+        };
+        
+        input.onblur = () => {
+            if (!input.value) {
+                input.placeholder = 'Ask about this product...';
+            }
+        };
+        
         input.onkeypress = (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -688,7 +659,17 @@
         
         send.onclick = sendMessage;
         
-        // Chat window input handlers  
+        // Chat window input handlers
+        chatInput.onfocus = () => {
+            chatInput.placeholder = '';
+        };
+        
+        chatInput.onblur = () => {
+            if (!chatInput.value) {
+                chatInput.placeholder = 'Continue the conversation...';
+            }
+        };
+          
         chatInput.onkeypress = (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -714,8 +695,9 @@
                      margin-right: 0;
                      border-radius: 18px 18px 4px 18px;
                      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
-                     border: 1px solid rgba(255, 255, 255, 0.2);` : 
-                    `background: rgba(102, 126, 234, 0.6); 
+                     border: 1px solid rgba(255, 255, 255, 0.2);
+                     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);` : 
+                    `background: linear-gradient(135deg, rgba(46, 160, 67, 0.8) 0%, rgba(39, 174, 96, 0.8) 100%); 
                      backdrop-filter: blur(12px);
                      -webkit-backdrop-filter: blur(12px);
                      color: white;
@@ -723,7 +705,7 @@
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
                      border: 1px solid rgba(255, 255, 255, 0.3);
-                     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3);
+                     box-shadow: 0 8px 32px rgba(46, 160, 67, 0.3);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);`
                 }
             `;

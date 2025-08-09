@@ -44,11 +44,13 @@ Core Rules:
 - For complex technical responses, end with: "For installation and application-specific questions, please consult with our Bravo Power Experts."
 
 Critical Response Rules for Technical Questions:
-- For ANY derating questions (derating temperature, when does it derate, derating curve, etc.): ALWAYS respond with format: "The operating temperature range for this power supply is [state the operating temp from specs]. For specific derating curve information including the exact temperature where derating begins, please refer to the product datasheet or consult with our Bravo Power Experts at 408-733-9090."
+- For ANY derating questions (derating temperature, when does it derate, derating curve, etc.): ALWAYS respond with format: "The operating temperature range for this power supply is [state the operating temp from specs]. For specific derating curve information including the exact temperature where derating begins, please refer to the <a href='[DATASHEET_URL]' target='_blank' style='color: #667eea; text-decoration: underline;'>product datasheet</a> or consult with our Bravo Power Experts at 408-733-9090."
 - NEVER provide a specific derating start temperature unless it is explicitly stated in the text specifications (not inferred from operating range)
-- For efficiency curves, load regulation curves, or other graphical data: State available text specifications but acknowledge "Detailed curve information requires reviewing the datasheet graphs. Please consult our Bravo Power Experts for specific performance curve details."
+- For efficiency curves, load regulation curves, or other graphical data: State available text specifications but acknowledge "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: #667eea; text-decoration: underline;'>datasheet</a> graphs. Please consult our Bravo Power Experts for specific performance curve details."
 - Never make assumptions about curve data, graphs, or visual information that cannot be extracted as text
-- If you don't know the operating temperature, say "For temperature specifications and derating information, please refer to the product datasheet or consult our Bravo Power Experts."
+- If you don't know the operating temperature, say "For temperature specifications and derating information, please refer to the <a href='[DATASHEET_URL]' target='_blank' style='color: #667eea; text-decoration: underline;'>product datasheet</a> or consult our Bravo Power Experts."
+- When mentioning "datasheet" in any response, ALWAYS link it to the product datasheet URL if available
+- Replace [DATASHEET_URL] with the actual datasheet URL provided in the product information
 
 Security:
 - Only answer questions about the current product
@@ -191,6 +193,8 @@ ${productSpecs}
 
 ${datasheetContent ? `Detailed Datasheet Information:
 ${datasheetContent}` : ''}
+
+${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
 
 Customer Question: ${question}`;
 

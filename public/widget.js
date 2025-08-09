@@ -223,7 +223,7 @@
                     right: 110px;
                     width: 350px;
                     height: 400px;
-                    background: rgba(102, 126, 234, 0.08);
+                    background: rgba(102, 126, 234, 0.15);
                     backdrop-filter: blur(25px);
                     -webkit-backdrop-filter: blur(25px);
                     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -238,7 +238,9 @@
                 ">
                     <!-- Header -->
                     <div style="
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
+                        background-size: 400% 400%;
+                        animation: gradient 6s ease infinite;
                         color: white;
                         padding: 20px;
                         border-radius: 20px 20px 0 0;
@@ -248,6 +250,13 @@
                         position: relative;
                         overflow: hidden;
                     ">
+                        <style>
+                            @keyframes gradient {
+                                0% { background-position: 0% 50%; }
+                                50% { background-position: 100% 50%; }
+                                100% { background-position: 0% 50%; }
+                            }
+                        </style>
                         <div style="display: flex; align-items: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
                                 width: 60px;
@@ -313,7 +322,7 @@
                             }
                         </style>
                         <div id="${WIDGET_ID}-welcome-msg" style="
-                            background: rgba(102, 126, 234, 0.15);
+                            background: rgba(102, 126, 234, 0.25);
                             backdrop-filter: blur(20px);
                             -webkit-backdrop-filter: blur(20px);
                             border: 2px solid rgba(255, 255, 255, 0.6);
@@ -347,7 +356,7 @@
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                background: rgba(102, 126, 234, 0.08);
+                                background: rgba(102, 126, 234, 0.15);
                                 backdrop-filter: blur(15px);
                                 color: white;
                                 transition: all 0.3s ease;
@@ -376,7 +385,7 @@
                     right: 110px;
                     width: 0;
                     height: 50px;
-                    background: rgba(102, 126, 234, 0.1);
+                    background: rgba(102, 126, 234, 0.2);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
                     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -424,7 +433,7 @@
                     bottom: 20px;
                     right: 120px;
                     width: 280px;
-                    background: rgba(102, 126, 234, 0.1);
+                    background: rgba(102, 126, 234, 0.2);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
                     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -453,7 +462,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 8px solid rgba(102, 126, 234, 0.1);
+                        border-left: 8px solid rgba(102, 126, 234, 0.2);
                         border-top: 8px solid transparent;
                         border-bottom: 8px solid transparent;
                     "></div>
@@ -477,7 +486,7 @@
                     cursor: pointer;
                     transition: all 0.3s ease;
                     display: block;
-                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
+                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)) drop-shadow(0 0 25px rgba(102, 126, 234, 0.5));
                 " id="${WIDGET_ID}-glow">
             </div>
         `;
@@ -549,13 +558,13 @@
         // Add hover effects for logo button
         toggle.addEventListener('mouseenter', () => {
             toggle.style.transform = 'scale(1.05)';
-            toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.15)) drop-shadow(0 0 30px rgba(102, 126, 234, 0.5))';
+            toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 35px rgba(102, 126, 234, 0.7))';
         });
         
         toggle.addEventListener('mouseleave', () => {
             if (!isSearchOpen) {
                 toggle.style.transform = 'scale(1)';
-                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3))';
+                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.15)) drop-shadow(0 0 25px rgba(102, 126, 234, 0.5))';
             }
         });
 
@@ -597,7 +606,7 @@
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.08)';
-                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 40px rgba(102, 126, 234, 0.6))';
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.25)) drop-shadow(0 0 45px rgba(102, 126, 234, 0.8))';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -606,7 +615,7 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3))';
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.15)) drop-shadow(0 0 25px rgba(102, 126, 234, 0.5))';
                 }
             }
         };
@@ -705,7 +714,7 @@
                                  inset 0 1px 0 rgba(255, 255, 255, 0.15);
                      border: 1px solid rgba(255, 255, 255, 0.3);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);` : 
-                    `background: rgba(102, 126, 234, 0.15); 
+                    `background: rgba(102, 126, 234, 0.25); 
                      backdrop-filter: blur(20px);
                      -webkit-backdrop-filter: blur(20px);
                      color: white;

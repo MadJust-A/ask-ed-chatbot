@@ -211,18 +211,18 @@
             <div id="${WIDGET_ID}" style="
                 position: fixed;
                 right: 20px;
-                top: 50%;
+                top: 60%;
                 transform: translateY(-50%);
                 z-index: 9999;
                 font-family: Arial, sans-serif;
             ">
                 <!-- Chat Window -->
                 <div id="${WIDGET_ID}-chat" style="
-                    position: absolute;
-                    bottom: 80px;
-                    right: 0;
+                    position: fixed;
+                    top: 150px;
+                    right: 120px;
                     width: 350px;
-                    height: 350px;
+                    height: 400px;
                     background: white;
                     border: 1px solid #e0e0e0;
                     border-radius: 20px;

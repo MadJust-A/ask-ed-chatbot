@@ -223,14 +223,13 @@
                     right: 110px;
                     width: 350px;
                     height: 400px;
-                    background: rgba(255, 255, 255, 0.1);
+                    background: rgba(102, 126, 234, 0.08);
                     backdrop-filter: blur(25px);
                     -webkit-backdrop-filter: blur(25px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
                     border-radius: 20px;
-                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 
-                                0 8px 32px rgba(102, 126, 234, 0.15),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                                0 8px 32px rgba(102, 126, 234, 0.1);
                     display: none;
                     flex-direction: column;
                     transform: translateY(20px);
@@ -251,8 +250,8 @@
                     ">
                         <div style="display: flex; align-items: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
-                                width: 50px;
-                                height: 50px;
+                                width: 60px;
+                                height: 60px;
                                 margin-right: 16px;
                                 filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
                                 object-fit: contain;
@@ -314,10 +313,10 @@
                             }
                         </style>
                         <div id="${WIDGET_ID}-welcome-msg" style="
-                            background: rgba(255, 255, 255, 0.15);
+                            background: rgba(102, 126, 234, 0.15);
                             backdrop-filter: blur(20px);
                             -webkit-backdrop-filter: blur(20px);
-                            border: 1px solid rgba(255, 255, 255, 0.25);
+                            border: 2px solid rgba(255, 255, 255, 0.6);
                             padding: 20px;
                             border-radius: 16px;
                             margin-bottom: 16px;
@@ -325,8 +324,7 @@
                             line-height: 1.5;
                             font-weight: 500;
                             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
-                                        0 4px 16px rgba(0, 0, 0, 0.1),
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                                        0 4px 16px rgba(0, 0, 0, 0.05);
                             color: white;
                             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                         ">
@@ -345,16 +343,15 @@
                             <input id="${WIDGET_ID}-chat-input" type="text" placeholder="Continue the conversation..." style="
                                 flex: 1;
                                 padding: 12px 16px;
-                                border: 1px solid rgba(255, 255, 255, 0.25);
+                                border: 1px solid rgba(255, 255, 255, 0.2);
                                 border-radius: 12px;
                                 font-size: 14px;
                                 outline: none;
-                                background: rgba(255, 255, 255, 0.1);
+                                background: rgba(102, 126, 234, 0.08);
                                 backdrop-filter: blur(15px);
                                 color: white;
                                 transition: all 0.3s ease;
                                 font-family: inherit;
-                                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
                             ">
                             <button id="${WIDGET_ID}-chat-send" style="
                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -379,14 +376,13 @@
                     right: 110px;
                     width: 0;
                     height: 50px;
-                    background: rgba(255, 255, 255, 0.15);
+                    background: rgba(102, 126, 234, 0.1);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                     border-radius: 25px;
-                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3),
-                                0 4px 16px rgba(0, 0, 0, 0.1),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2),
+                                0 4px 16px rgba(0, 0, 0, 0.05);
                     overflow: hidden;
                     transition: all 0.3s ease-in-out;
                     display: flex;
@@ -428,14 +424,13 @@
                     bottom: 20px;
                     right: 120px;
                     width: 280px;
-                    background: rgba(255, 255, 255, 0.15);
+                    background: rgba(102, 126, 234, 0.1);
                     backdrop-filter: blur(20px);
                     -webkit-backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.25);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                     border-radius: 16px;
-                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
-                                0 4px 16px rgba(0, 0, 0, 0.1),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
+                                0 4px 16px rgba(0, 0, 0, 0.05);
                     padding: 16px;
                     font-size: 14px;
                     line-height: 1.4;
@@ -458,7 +453,7 @@
                         transform: translateY(-50%);
                         width: 0;
                         height: 0;
-                        border-left: 8px solid rgba(255, 255, 255, 0.15);
+                        border-left: 8px solid rgba(102, 126, 234, 0.1);
                         border-top: 8px solid transparent;
                         border-bottom: 8px solid transparent;
                     "></div>
@@ -480,13 +475,9 @@
                     width: 100px;
                     height: auto;
                     cursor: pointer;
-                    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    transition: all 0.3s ease;
                     display: block;
-                    filter: drop-shadow(0 6px 20px rgba(0,0,0,0.15)) 
-                            drop-shadow(0 0 30px rgba(102, 126, 234, 0.5)) 
-                            drop-shadow(0 0 60px rgba(102, 126, 234, 0.2));
-                    border-radius: 50%;
-                    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+                    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
                 " id="${WIDGET_ID}-glow">
             </div>
         `;
@@ -557,20 +548,14 @@
         
         // Add hover effects for logo button
         toggle.addEventListener('mouseenter', () => {
-            toggle.style.transform = 'scale(1.08)';
-            toggle.style.filter = `drop-shadow(0 8px 25px rgba(0,0,0,0.2)) 
-                                   drop-shadow(0 0 50px rgba(102, 126, 234, 0.8)) 
-                                   drop-shadow(0 0 100px rgba(102, 126, 234, 0.4))`;
-            toggle.style.boxShadow = '0 0 0 10px rgba(102, 126, 234, 0.1)';
+            toggle.style.transform = 'scale(1.05)';
+            toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.15)) drop-shadow(0 0 30px rgba(102, 126, 234, 0.5))';
         });
         
         toggle.addEventListener('mouseleave', () => {
             if (!isSearchOpen) {
                 toggle.style.transform = 'scale(1)';
-                toggle.style.filter = `drop-shadow(0 6px 20px rgba(0,0,0,0.15)) 
-                                       drop-shadow(0 0 30px rgba(102, 126, 234, 0.5)) 
-                                       drop-shadow(0 0 60px rgba(102, 126, 234, 0.2))`;
-                toggle.style.boxShadow = '0 0 0 0 rgba(102, 126, 234, 0.4)';
+                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3))';
             }
         });
 
@@ -611,11 +596,8 @@
                     send.style.opacity = '1';
                     setTimeout(() => input.focus(), 300);
                     isSearchOpen = true;
-                    toggle.style.transform = 'scale(1.12)';
-                    toggle.style.filter = `drop-shadow(0 10px 30px rgba(0,0,0,0.3)) 
-                                           drop-shadow(0 0 60px rgba(102, 126, 234, 0.9)) 
-                                           drop-shadow(0 0 120px rgba(102, 126, 234, 0.5))`;
-                    toggle.style.boxShadow = '0 0 0 15px rgba(102, 126, 234, 0.15)';
+                    toggle.style.transform = 'scale(1.08)';
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 40px rgba(102, 126, 234, 0.6))';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -624,10 +606,7 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    toggle.style.filter = `drop-shadow(0 6px 20px rgba(0,0,0,0.15)) 
-                                           drop-shadow(0 0 30px rgba(102, 126, 234, 0.5)) 
-                                           drop-shadow(0 0 60px rgba(102, 126, 234, 0.2))`;
-                    toggle.style.boxShadow = '0 0 0 0 rgba(102, 126, 234, 0.4)';
+                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(102, 126, 234, 0.3))';
                 }
             }
         };
@@ -726,17 +705,16 @@
                                  inset 0 1px 0 rgba(255, 255, 255, 0.15);
                      border: 1px solid rgba(255, 255, 255, 0.3);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);` : 
-                    `background: rgba(255, 255, 255, 0.15); 
+                    `background: rgba(102, 126, 234, 0.15); 
                      backdrop-filter: blur(20px);
                      -webkit-backdrop-filter: blur(20px);
                      color: white;
                      margin-left: 0;
                      margin-right: auto;
                      border-radius: 18px 18px 18px 4px;
-                     border: 1px solid rgba(255, 255, 255, 0.25);
+                     border: 2px solid rgba(255, 255, 255, 0.6);
                      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2), 
-                                 0 4px 16px rgba(0, 0, 0, 0.1),
-                                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                                 0 4px 16px rgba(0, 0, 0, 0.05);
                      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);`
                 }
             `;

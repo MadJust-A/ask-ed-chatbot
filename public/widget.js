@@ -547,18 +547,18 @@
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
         welcomeText.innerHTML = `<strong>I'm Ask ED!</strong> Ask me general questions about the ${productName}.`;
         
-        // Update dynamic message with product name and datasheet link
-        const shortProductName = productInfo.title ? 
-            productInfo.title.split(' ').slice(0, 2).join(' ') : 'this product';
+        // Update dynamic message with part number and beta text
+        const partNumber = productInfo.title ? 
+            productInfo.title.split(' ')[0] : 'this product';
         
-        let messageContent = `👋 Hi! I'm Ask ED, ask me questions about the ${shortProductName} and I'll do my best to answer them. Always check the `;
+        let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently in beta, always check the `;
         
         if (productInfo.datasheetUrl) {
             messageContent += `<a href="${productInfo.datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>`;
         } else {
             messageContent += 'datasheet';
         }
-        messageContent += ' for the latest information.';
+        messageContent += ' for the most accurate information.';
         
         dynamicMessage.innerHTML = messageContent;
         

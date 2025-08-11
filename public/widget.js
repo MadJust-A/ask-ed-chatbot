@@ -549,8 +549,10 @@
         
         // Update dynamic message with part number and beta text
         // Extract part number - usually the first segment before any descriptive text
+        console.log('Product title for part number extraction:', productInfo.title);
         const partNumber = productInfo.title ? 
-            (productInfo.title.match(/^[A-Z0-9\-]+/i)?.[0] || productInfo.title.split(' ')[0]) : 'this product';
+            (productInfo.title.match(/[A-Z0-9]+[\-A-Z0-9]*/i)?.[0] || productInfo.title.split(' ')[0]) : 'this product';
+        console.log('Extracted part number:', partNumber);
         
         let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently in beta, always check the `;
         

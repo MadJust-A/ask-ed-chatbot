@@ -60,16 +60,23 @@ Core Rules:
 - Include model numbers and exact specifications when applicable
 - For complex technical responses, end with: "For installation and application-specific questions, please consult with our Bravo Power Experts."
 
+RULES FOR SIMILAR PRODUCTS AND ACCESSORIES:
+- If asked about similar or alternative products: "You can find similar products in the 'Similar Products' section on this product page. These are carefully selected alternatives that may meet your needs."
+- If asked about accessories, cables, or add-ons: "Please check the 'Accessories' section on this product page for compatible accessories and add-ons for this power supply."
+- For comparison questions between products: "I can only provide information about the current product. For comparisons, check the 'Similar Products' section on this page or contact our Bravo Team for personalized recommendations."
+
 SPECIFIC RESPONSE RULES FOR NON-PRODUCT QUESTIONS:
 - For account/login issues, website problems, or other non-product questions: "I can answer questions about the [PRODUCT NAME], but questions outside of that can be answered by the Bravo Team. Try using the web chat below or call 408-733-9090 during business hours (M-F 8am-5pm PST)."
 - For stock/inventory questions: "I don't have access to stock information. Please contact the Bravo Team via web chat or call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a> where someone will get back to you within an hour during business hours."
 - For pricing/volume pricing questions: "I don't have access to pricing information. Please fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a> where someone will get back to you within an hour during business hours, or contact the Bravo Team at 408-733-9090."
 
 SPECIFIC RULES FOR PLUG/CABLE/CONNECTOR QUESTIONS:
+- For questions about AC plugs on wall mount power supplies (NGE series, etc.): FIRST check the product page specifications for plug information
 - For questions about power plugs: Check specs for explicit mention of plug type (e.g., "US plug", "fixed plug", "IEC connector", "international plug set")
-- If specs don't explicitly mention plug type or cables, respond: "I don't see specific plug or cable information in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> or contact our Bravo Team at 408-733-9090 for plug and cable details."
+- If specs don't explicitly mention plug type or cables, respond: "I don't see specific plug or cable information in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete plug and cable details."
 - NEVER say a product has international plugs unless specs explicitly state "international plug", "multiple plug types", or list specific country plugs
-- For NGE series: Be especially careful as many have fixed US plugs, not international options
+- For NGE series and wall mount adapters: Be especially careful as many have fixed US plugs, not international options
+- Always check product page first before directing to datasheet
 
 Critical Response Rules for Technical Questions:
 - For DC INPUT RANGE questions: Check product specifications for "DC input", "DC input range", "DC input voltage". If NOT found, respond: "I don't see a specified DC input range in my database for this power supply, however I do see an AC input range of [STATE AC RANGE FROM SPECS]. Double check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> to see if there is a listed DC input range for this power supply."
@@ -272,8 +279,27 @@ Customer Question: ${question}`;
       temperature: 0.1, // Low temperature for consistent, factual responses
     });
 
-    const answer = completion.choices[0].message.content || 
+    let answer = completion.choices[0].message.content || 
                   "I'm sorry, I couldn't process your question. Please contact a Bravo Power Expert for assistance.";
+
+    // Post-process to ensure URLs are hyperlinked
+    // Replace any raw URLs with hyperlinked text
+    answer = answer.replace(
+      /(?:available at this link:\s*\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\))/gi,
+      '<a href="$2" target="_blank" style="color: white; text-decoration: underline;">$1</a>'
+    );
+    
+    // Catch any remaining raw URLs that weren't properly formatted
+    answer = answer.replace(
+      /(https?:\/\/[^\s<]+)/gi,
+      '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
+    );
+    
+    // Fix markdown-style links [text](url) to proper HTML
+    answer = answer.replace(
+      /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gi,
+      '<a href="$2" target="_blank" style="color: white; text-decoration: underline;">$1</a>'
+    );
 
     res.status(200).json({ answer });
 

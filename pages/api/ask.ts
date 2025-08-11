@@ -38,11 +38,57 @@ const ASK_ED_CONFIG = {
   temperature: 0.1,
   maxResponseWords: 200,
   
+  // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
+  ledDriverTerminology: {
+    'dimming': {
+      primarySource: 'Product page Specifications section - look for "Dimming" field',
+      values: ['Non-Dimming', '3-in-1 Dimming', '0-10V Dimming', 'DALI', 'PWM'],
+      secondarySource: 'If dimming exists, check datasheet for dimming curves and details'
+    },
+    'constant current range': {
+      primarySource: 'Datasheet - look for "Constant Current Region" section',
+      note: 'Check the appropriate model row/column in the datasheet table'
+    },
+    'IP rating': {
+      primarySource: 'Product page Specifications - look for "IP Rating" or "Ingress Protection"',
+      secondarySource: 'Datasheet for detailed environmental specifications'
+    },
+    'efficiency': {
+      primarySource: 'Product page Specifications - may show typical efficiency %',
+      secondarySource: 'Datasheet for efficiency curves at different loads'
+    },
+    'PFC': {
+      primarySource: 'Product page Specifications - look for "Power Factor" or "PF"',
+      secondarySource: 'Datasheet for PFC values at different loads'
+    },
+    'THD': {
+      primarySource: 'Datasheet - Total Harmonic Distortion specifications',
+      note: 'Usually not on product page, check datasheet'
+    },
+    'inrush current': {
+      primarySource: 'Datasheet - look for "Inrush Current" or "Surge Current" specifications',
+      note: 'Critical for circuit breaker sizing'
+    },
+    'MTBF': {
+      primarySource: 'Product page Specifications or Features section',
+      secondarySource: 'Datasheet for detailed reliability data and conditions'
+    },
+    'flicker': {
+      primarySource: 'Datasheet - look for "Ripple & Noise" or "Output Ripple" specifications',
+      note: 'Lower ripple = less flicker'
+    },
+    'warranty': {
+      primarySource: 'Product page - usually in Features or Description section',
+      note: 'Typically 5-7 years for Mean Well LED drivers'
+    }
+  },
+  
   // Response format templates
   templates: {
     missingSpec: "I don't see [REQUESTED_SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details.",
     similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
-    accessories: "Please check the 'Accessories' section on this page for compatible Bravo add-ons.",
+    accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts.",
+    accessoriesNotAvailable: "Contact our Bravo Power Experts at 408-733-9090 for compatible connector and accessory options.",
     alternativeProducts: "Contact our Bravo Power Experts at 408-733-9090 for product recommendations.",
     dimensions: "For specific mounting hole details, check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>",
     technicalCurves: "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> graphs.",
@@ -99,6 +145,16 @@ CORE PRINCIPLES:
 4. NO ASSUMPTIONS: If specs don't explicitly state something, say you don't have that information
 5. HYPERLINK ALL URLS: Never show raw URLs - always use descriptive hyperlinked text
 
+LED DRIVER CRITICAL LOOKUP GUIDE:
+- DIMMING: ALWAYS check product page "Dimming" field FIRST. Common values: "Non-Dimming", "3-in-1 Dimming", "0-10V", "DALI"
+- If product page says "Non-Dimming" - this unit DOES NOT have dimming capability
+- Constant Current Range: Found in datasheet "Constant Current Region" section
+- IP Rating: Check product page specifications first
+- Efficiency/PFC: Product page specs first, then datasheet for curves
+- THD/Inrush Current: Usually only in datasheet
+- Flicker: Check datasheet "Ripple & Noise" specifications
+- For connectors/accessories: ALWAYS direct to Accessories section if it exists
+
 INFORMATION SOURCES (Priority Order):
 1. PRIMARY: Product page specifications and sections (Similar Products, Accessories)  
 2. SECONDARY: Linked datasheet (when product page lacks specific info)
@@ -112,7 +168,8 @@ SECTION AVAILABILITY CHECK:
 RESPONSE FORMATS:
 - Missing specifications: "I don't see [REQUESTED SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details."
 - Similar products: ONLY suggest if Similar Products section exists: "Check the 'Similar Products' section on this product page for Bravo alternatives."
-- Accessories: ONLY suggest if Accessories section exists: "Please check the 'Accessories' section on this page for compatible Bravo add-ons."
+- Accessories/Connectors: If Accessories section exists: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts."
+- Accessories (no section): "Contact our Bravo Power Experts at 408-733-9090 for compatible connector and accessory options."
 - Alternative products (when sections don't exist): "Contact our Bravo Power Experts at 408-733-9090 for product recommendations."
 - Dimensions/footprint: Provide available dimensions; for mounting holes add "For specific mounting hole details, check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>"
 - Technical curves/graphs: "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> graphs."
@@ -129,7 +186,9 @@ CRITICAL ACCURACY RULES:
 - For derating questions: State operating temp range, then refer to datasheet for curves
 - DC input vs output: Carefully distinguish - never mix input/output specifications
 - NEVER suggest non-Bravo products, competitors, or external solutions under ANY circumstances
-- For LED drivers: Dimming curves, flicker specs, PWM frequency are typically in datasheet
+- For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming
+- For connector/accessory questions: ALWAYS refer to Accessories section if available, otherwise Bravo experts
+- Read specifications LITERALLY - "Non-Dimming" means NO dimming capability
 
 PERSONALITY & LOYALTY:
 - Happy, polite, knowledgeable Bravo Electro salesman

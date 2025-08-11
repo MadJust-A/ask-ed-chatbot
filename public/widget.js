@@ -548,10 +548,30 @@
         welcomeText.innerHTML = `<strong>I'm Ask ED!</strong> Ask me general questions about the ${productName}.`;
         
         // Update dynamic message with part number and beta text
-        // Extract part number - usually the first segment before any descriptive text
+        // Extract part number - look for patterns like ABC-123-45 or ABC123
         console.log('Product title for part number extraction:', productInfo.title);
-        const partNumber = productInfo.title ? 
-            (productInfo.title.match(/[A-Z0-9]+[\-A-Z0-9]*/i)?.[0] || productInfo.title.split(' ')[0]) : 'this product';
+        let partNumber = 'this product';
+        if (productInfo.title) {
+            // Look for common part number patterns
+            const patterns = [
+                /\b[A-Z]{2,}[\-]?[0-9]+[A-Z0-9\-]*/i,  // Like LRS-1200-48, NGE90U12-P1J
+                /\b[A-Z0-9]{3,}[\-][A-Z0-9]+/i,        // Like ABC-123
+                /\b[A-Z]+[0-9]+[A-Z0-9]*/i             // Like NGE90U12
+            ];
+            
+            for (const pattern of patterns) {
+                const match = productInfo.title.match(pattern);
+                if (match) {
+                    partNumber = match[0];
+                    break;
+                }
+            }
+            
+            // Fallback to first word if no pattern matches
+            if (partNumber === 'this product') {
+                partNumber = productInfo.title.split(' ')[0];
+            }
+        }
         console.log('Extracted part number:', partNumber);
         
         let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently in beta, always check the `;

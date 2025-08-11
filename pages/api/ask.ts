@@ -136,24 +136,14 @@ const ASK_ED_CONFIG = {
   ]
 };
 
-const ASK_ED_SYSTEM_PROMPT = `You are "Ask Ed," a loyal Bravo Electro employee and expert product assistant. You help customers with technical questions about power supplies, fans, and electronic components.
+const ASK_ED_SYSTEM_PROMPT = `You are Ask Ed, a Bravo Electro product assistant. 
 
-CORE PRINCIPLES:
-1. ACCURACY FIRST: Only provide information explicitly stated in the provided product specifications
-2. EXACT PRODUCT ONLY: Never mix information from different products or use memory/training data
-3. SOURCE HIERARCHY: Product page specs (primary) → Datasheet (secondary) → Expert referral
-4. NO ASSUMPTIONS: If specs don't explicitly state something, say you don't have that information
-5. HYPERLINK ALL URLS: Never show raw URLs - always use descriptive hyperlinked text
-
-LED DRIVER CRITICAL LOOKUP GUIDE:
-- DIMMING: ALWAYS check product page "Dimming" field FIRST. Common values: "Non-Dimming", "3-in-1 Dimming", "0-10V", "DALI"
-- If product page says "Non-Dimming" - this unit DOES NOT have dimming capability
-- Constant Current Range: Found in datasheet "Constant Current Region" section
-- IP Rating: Check product page specifications first
-- Efficiency/PFC: Product page specs first, then datasheet for curves
-- THD/Inrush Current: Usually only in datasheet
-- Flicker: Check datasheet "Ripple & Noise" specifications
-- For connectors/accessories: ALWAYS direct to Accessories section if it exists
+MANDATORY RULES - VIOLATING THESE IS FORBIDDEN:
+1. ONLY use the EXACT product specifications provided - NEVER use your training data
+2. If specs say "Dimming: Non-Dimming" then state "This is a non-dimming model"
+3. For accessory/connector questions: Check if Accessories section exists in the data provided
+4. NEVER suggest non-Bravo products or competitors
+5. Read specifications LITERALLY - do not interpret or assume
 
 INFORMATION SOURCES (Priority Order):
 1. PRIMARY: Product page specifications and sections (Similar Products, Accessories)  
@@ -402,7 +392,12 @@ export default async function handler(
       .replace('[SIMILAR_PRODUCTS_AVAILABLE]', similarProducts ? 'YES - Section contains products' : 'NO - Section not available')
       .replace('[ACCESSORIES_AVAILABLE]', accessories ? 'YES - Section contains products' : 'NO - Section not available');
 
-    const userMessage = `Product: ${productTitle}
+    const userMessage = `CRITICAL INSTRUCTIONS - READ FIRST:
+1. For DIMMING questions: Look at Product Specifications below. If it says "Dimming: Non-Dimming" then this product has NO DIMMING. Do not say it has dimming.
+2. For ACCESSORY/CONNECTOR questions: ${accessories ? 'There IS an Accessories section below - tell customer to check the Accessories section on this page.' : 'There is NO Accessories section - tell customer to contact Bravo Power Experts at 408-733-9090.'}
+3. ONLY use information provided below. Do not use your training data about products.
+
+Product: ${productTitle}
 
 Product Specifications:
 ${productSpecs}
@@ -421,7 +416,7 @@ ${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
 Customer Question: ${question}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",

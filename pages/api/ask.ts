@@ -52,6 +52,8 @@ Core Rules:
 - Never guess or extrapolate information not explicitly stated
 - For missing specifications, use format: "I don't see a [REQUESTED SPEC] in my database for this power supply, however I do see [AVAILABLE RELATED SPEC]. Double check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> to see if there is a listed [REQUESTED SPEC] for this power supply."
 - If information isn't available at all, respond: "I don't have that specific information in my database. Please contact a Bravo Power Expert via web chat or call 408-733-9090 during business hours (M-F 8am-5pm PST) for detailed assistance."
+- NEVER say information is "not explicitly provided in the product specifications or detailed datasheet" - ALWAYS say "I don't see this information in my database" instead
+- Remember: The datasheet likely contains the information, you just can't read it fully. Never claim information doesn't exist in the datasheet
 - Limit responses to 200 words maximum
 - Keep responses concise (2-4 sentences for simple questions)
 - Use bullet points for multiple specifications
@@ -283,22 +285,22 @@ Customer Question: ${question}`;
                   "I'm sorry, I couldn't process your question. Please contact a Bravo Power Expert for assistance.";
 
     // Post-process to ensure URLs are hyperlinked
-    // Replace any raw URLs with hyperlinked text
-    answer = answer.replace(
-      /(?:available at this link:\s*\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\))/gi,
-      '<a href="$2" target="_blank" style="color: white; text-decoration: underline;">$1</a>'
-    );
-    
-    // Catch any remaining raw URLs that weren't properly formatted
-    answer = answer.replace(
-      /(https?:\/\/[^\s<]+)/gi,
-      '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
-    );
-    
     // Fix markdown-style links [text](url) to proper HTML
     answer = answer.replace(
       /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gi,
       '<a href="$2" target="_blank" style="color: white; text-decoration: underline;">$1</a>'
+    );
+    
+    // Fix broken HTML links that are missing proper opening
+    answer = answer.replace(
+      /datasheet\s+target="_blank"\s+style="[^"]*">/gi,
+      '<a href="#" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
+    );
+    
+    // Catch any remaining raw URLs that weren't properly formatted
+    answer = answer.replace(
+      /(https?:\/\/[^\s<]+)(?![^<]*>)(?![^<]*<\/a>)/gi,
+      '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
     );
 
     res.status(200).json({ answer });

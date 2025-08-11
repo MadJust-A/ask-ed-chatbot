@@ -848,7 +848,7 @@
             const originalText = sendButton.textContent;
             
             sendButton.disabled = true;
-            sendButton.textContent = 'Sending...';
+            sendButton.textContent = 'Thinking...';
             
             try {
                 console.log('Sending request to:', `${WIDGET_API_BASE}/api/ask`);

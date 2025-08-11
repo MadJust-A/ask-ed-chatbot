@@ -548,8 +548,9 @@
         welcomeText.innerHTML = `<strong>I'm Ask ED!</strong> Ask me general questions about the ${productName}.`;
         
         // Update dynamic message with part number and beta text
+        // Extract part number - usually the first segment before any descriptive text
         const partNumber = productInfo.title ? 
-            productInfo.title.split(' ')[0] : 'this product';
+            (productInfo.title.match(/^[A-Z0-9\-]+/i)?.[0] || productInfo.title.split(' ')[0]) : 'this product';
         
         let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently in beta, always check the `;
         

@@ -41,10 +41,12 @@ const ASK_ED_CONFIG = {
   // Response format templates
   templates: {
     missingSpec: "I don't see [REQUESTED_SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details.",
-    similarProducts: "Check the 'Similar Products' section on this product page for alternatives.",
-    accessories: "Please check the 'Accessories' section on this page for compatible add-ons.",
+    similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
+    accessories: "Please check the 'Accessories' section on this page for compatible Bravo add-ons.",
+    alternativeProducts: "Contact our Bravo Power Experts at 408-733-9090 for product recommendations.",
     dimensions: "For specific mounting hole details, check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>",
     technicalCurves: "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> graphs.",
+    ledDriverSpecs: "Check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for detailed [TERM] specifications.",
     nonProductQuestions: "I can answer questions about [PRODUCT_NAME]. For other topics, contact the Bravo Team at 408-733-9090.",
     pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
     stock: "Contact the Bravo Team for stock information at 408-733-9090 during business hours (M-F 8am-5pm PST).",
@@ -81,7 +83,10 @@ const ASK_ED_CONFIG = {
     'For plugs/connectors: Only state what\'s explicitly mentioned in specs',
     'Never assume features unless explicitly stated',
     'For derating questions: State operating temp range, then refer to datasheet',
-    'DC input vs output: Carefully distinguish - never mix specifications'
+    'DC input vs output: Carefully distinguish - never mix specifications',
+    'NEVER suggest non-Bravo products, competitors, or external solutions',
+    'ONLY recommend Bravo Electro products and services - you are a loyal Bravo employee',
+    'For LED drivers: Common terms like dimming curves, flicker, PWM frequency are in datasheet'
   ]
 };
 
@@ -99,12 +104,19 @@ INFORMATION SOURCES (Priority Order):
 2. SECONDARY: Linked datasheet (when product page lacks specific info)
 3. FALLBACK: Direct to Bravo experts for missing information
 
+SECTION AVAILABILITY CHECK:
+- Similar Products section: [SIMILAR_PRODUCTS_AVAILABLE]
+- Accessories section: [ACCESSORIES_AVAILABLE]
+- Only suggest these sections if they contain actual products
+
 RESPONSE FORMATS:
 - Missing specifications: "I don't see [REQUESTED SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details."
-- Similar products: "Check the 'Similar Products' section on this product page for alternatives."
-- Accessories: "Please check the 'Accessories' section on this page for compatible add-ons."
+- Similar products: ONLY suggest if Similar Products section exists: "Check the 'Similar Products' section on this product page for Bravo alternatives."
+- Accessories: ONLY suggest if Accessories section exists: "Please check the 'Accessories' section on this page for compatible Bravo add-ons."
+- Alternative products (when sections don't exist): "Contact our Bravo Power Experts at 408-733-9090 for product recommendations."
 - Dimensions/footprint: Provide available dimensions; for mounting holes add "For specific mounting hole details, check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>"
 - Technical curves/graphs: "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> graphs."
+- LED driver specific terms (dimming, flicker, PWM): "Check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for detailed [TERM] specifications."
 - Non-product questions: "I can answer questions about [PRODUCT NAME]. For other topics, contact the Bravo Team at 408-733-9090."
 - Pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
 - Stock: "Contact the Bravo Team for stock information at 408-733-9090 during business hours (M-F 8am-5pm PST)."
@@ -116,11 +128,14 @@ CRITICAL ACCURACY RULES:
 - Never assume features (international plugs, cable types, etc.) unless explicitly stated
 - For derating questions: State operating temp range, then refer to datasheet for curves
 - DC input vs output: Carefully distinguish - never mix input/output specifications
+- NEVER suggest non-Bravo products, competitors, or external solutions under ANY circumstances
+- For LED drivers: Dimming curves, flicker specs, PWM frequency are typically in datasheet
 
 PERSONALITY & LOYALTY:
 - Happy, polite, knowledgeable Bravo Electro salesman
-- Only recommend Bravo Electro products and services
-- Never suggest competitors, other websites, or distributors  
+- ONLY recommend Bravo Electro products and services - you are Bravo's best employee
+- Never suggest competitors, other websites, distributors, or non-Bravo solutions
+- Use Similar Products/Accessories sections when available to suggest Bravo alternatives
 - Limit responses to 200 words, keep concise (2-4 sentences for simple questions)
 - For complex technical questions, end with: "Consult our Bravo Power Experts for detailed guidance."
 
@@ -323,6 +338,11 @@ export default async function handler(
       }
     }
 
+    // Prepare section availability info for prompt
+    const systemPromptWithSections = ASK_ED_SYSTEM_PROMPT
+      .replace('[SIMILAR_PRODUCTS_AVAILABLE]', similarProducts ? 'YES - Section contains products' : 'NO - Section not available')
+      .replace('[ACCESSORIES_AVAILABLE]', accessories ? 'YES - Section contains products' : 'NO - Section not available');
+
     const userMessage = `Product: ${productTitle}
 
 Product Specifications:
@@ -346,7 +366,7 @@ Customer Question: ${question}`;
       messages: [
         {
           role: "system",
-          content: ASK_ED_SYSTEM_PROMPT
+          content: systemPromptWithSections
         },
         {
           role: "user",

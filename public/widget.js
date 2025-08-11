@@ -191,13 +191,66 @@
             }
         }
         
+        // Extract Similar Products and Accessories sections
+        let similarProducts = '';
+        let accessories = '';
+        
+        // Look for Similar Products section
+        const similarSelectors = [
+            '[data-content-type="products"] .product-item-name',
+            '.similar-products .product-name',
+            '.related-products .product-name',
+            '.recommended-products .product-name',
+            '.upsell-products .product-name',
+            '.crosssell-products .product-name',
+            '.block-related .product-name',
+            '.block-upsell .product-name'
+        ];
+        
+        for (const selector of similarSelectors) {
+            const products = document.querySelectorAll(selector);
+            if (products.length > 0) {
+                products.forEach(product => {
+                    if (product.textContent.trim()) {
+                        similarProducts += product.textContent.trim() + '\n';
+                    }
+                });
+                if (similarProducts) break;
+            }
+        }
+        
+        // Look for Accessories section
+        const accessorySelectors = [
+            '.accessories .product-name',
+            '.related-accessories .product-name', 
+            '.compatible-accessories .product-name',
+            '.block-accessories .product-name',
+            '[data-content-type="accessories"] .product-item-name'
+        ];
+        
+        for (const selector of accessorySelectors) {
+            const accessoryItems = document.querySelectorAll(selector);
+            if (accessoryItems.length > 0) {
+                accessoryItems.forEach(item => {
+                    if (item.textContent.trim()) {
+                        accessories += item.textContent.trim() + '\n';
+                    }
+                });
+                if (accessories) break;
+            }
+        }
+        
+        console.log('Similar Products found:', similarProducts ? 'Yes' : 'No');
+        console.log('Accessories found:', accessories ? 'Yes' : 'No');
         console.log('Final extracted specs length:', specs.length);
         console.log('Specs preview:', specs.substring(0, 500));
         
         return {
             title: title || 'Product',
             specs: specs || 'No specifications available',
-            datasheetUrl: datasheetUrl
+            datasheetUrl: datasheetUrl,
+            similarProducts: similarProducts || '',
+            accessories: accessories || ''
         };
     }
     
@@ -856,7 +909,9 @@
                     question: question,
                     productSpecs: productInfo.specs,
                     productTitle: productInfo.title,
-                    datasheetUrl: productInfo.datasheetUrl
+                    datasheetUrl: productInfo.datasheetUrl,
+                    similarProducts: productInfo.similarProducts,
+                    accessories: productInfo.accessories
                 });
                 
                 const apiResponse = await fetch(`${WIDGET_API_BASE}/api/ask`, {
@@ -868,7 +923,9 @@
                         question: question,
                         productSpecs: productInfo.specs,
                         productTitle: productInfo.title,
-                        datasheetUrl: productInfo.datasheetUrl
+                        datasheetUrl: productInfo.datasheetUrl,
+                        similarProducts: productInfo.similarProducts,
+                        accessories: productInfo.accessories
                     })
                 });
                 

@@ -332,10 +332,7 @@ async function fetchPDFContent(url: string): Promise<string> {
     }
     
     const buffer = await response.arrayBuffer();
-    const data = await pdfParse(Buffer.from(buffer), {
-      max: 0, // Parse all pages
-      version: 'v2.0.550'
-    });
+    const data = await pdfParse(Buffer.from(buffer));
     
     console.log('PDF processing successful, extracted text length:', data.text.length);
     console.log('PDF total pages:', data.numpages);
@@ -353,10 +350,20 @@ async function fetchPDFContent(url: string): Promise<string> {
     };
     
     // Combine sections with priority
-    let combinedContent = `DATASHEET CONTENT:\n`;
-    if (sections.features) combinedContent += `FEATURES:\n${sections.features}\n\n`;
-    if (sections.dimming) combinedContent += `DIMMING INFO:\n${sections.dimming}\n\n`;
-    if (sections.electrical) combinedContent += `ELECTRICAL SPECS:\n${sections.electrical}\n\n`;
+    let combinedContent = `DATASHEET CONTENT:
+`;
+    if (sections.features) combinedContent += `FEATURES:
+${sections.features}
+
+`;
+    if (sections.dimming) combinedContent += `DIMMING INFO:
+${sections.dimming}
+
+`;
+    if (sections.electrical) combinedContent += `ELECTRICAL SPECS:
+${sections.electrical}
+
+`;
     
     // Cache the result
     pdfCache.set(url, {

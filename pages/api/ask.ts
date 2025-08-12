@@ -33,6 +33,9 @@ interface AskRequest {
 interface AskResponse {
   answer?: string;
   error?: string;
+  model?: string;
+  version?: string;
+  cacheSize?: number;
 }
 
 // Ask ED Configuration - Easy to modify behavior

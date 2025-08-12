@@ -578,11 +578,24 @@
                             animation: scanline 1.5s ease-in-out !important;
                         }
                         
+                        /* CURRENT: Pixelated Effect */
+                        .logo-ai-transform {
+                            transform: scale(1.08) !important;
+                            filter: contrast(1.3) brightness(1.1) !important;
+                            image-rendering: pixelated !important;
+                            image-rendering: -moz-crisp-edges !important;
+                            image-rendering: crisp-edges !important;
+                            transition: all 0.2s ease !important;
+                        }
+                        
+                        /* PREVIOUS: Digital Flicker Effect - Uncomment to switch back */
+                        /*
                         .logo-ai-transform {
                             transform: scale(1.08) !important;
                             filter: contrast(1.2) brightness(1.1) hue-rotate(10deg) !important;
                             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
                         }
+                        */
                     </style>
                     <!-- Logo Image -->
                     <img id="${WIDGET_ID}-toggle" src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
@@ -694,7 +707,7 @@
         
         toggle.addEventListener('mouseenter', () => {
             toggle.classList.add('logo-ai-transform');
-            toggle.classList.add('ai-hover-active');
+            // toggle.classList.add('ai-hover-active'); // Disabled for pixelated effect - uncomment for flicker animation
             
             // Trigger scanning effect
             if (scanline) {

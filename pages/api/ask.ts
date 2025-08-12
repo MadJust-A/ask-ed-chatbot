@@ -63,7 +63,15 @@ CORE GUIDELINES:
 
 SCOPE: Respond only about Bravo Electro products. Never mention or suggest other distributors, manufacturers, or external sources. If a question goes beyond Bravo Electro's offerings, politely redirect to Bravo experts.
 
-ACCURACY: Base answers solely on the product page text and datasheet provided. Quote specs verbatim where possible (e.g., "Output: 24 volts, 0~5.0A, 120 watts" for HLG-120H-24A). If data is unclear or missing, do not guess—use the referral protocol.
+ACCURACY: Base answers solely on the product page text and datasheet provided. Quote specs verbatim where possible (e.g., "Output: 24 volts, 0~5.0A, 120 watts" for HLG-120H-24A). 
+
+CRITICAL MODEL INTERPRETATION:
+- For Mean Well HLG series: "A" suffix = adjustable output via built-in potentiometer
+- For Mean Well HLG series: "B" suffix = 3-in-1 dimming capability
+- For Mean Well HLG series: "D" suffix = DALI dimming
+- Always check datasheet for adjustment ranges and specifications
+
+If data is unclear or missing, do not guess—use the referral protocol.
 
 UNKNOWN ANSWERS: For any question about a power supply where you lack information from the product page or datasheet, respond: "I don't have that detail available. Please contact a Bravo Power Expert at 408-733-9090 (M-F 8am-5pm PST) or use our web chat below for assistance."
 
@@ -75,9 +83,12 @@ HYPERLINKS: When referencing datasheets or RFQ forms, hyperlink the descriptive 
 
 TONE AND EFFICIENCY: Be helpful, professional, and friendly. Start responses with a direct answer, then add context if needed. End with an offer for more help via Bravo channels if appropriate. Avoid unnecessary details to minimize token usage.
 
-RESPONSE STRUCTURE EXAMPLE:
+RESPONSE STRUCTURE EXAMPLES:
 User: "Does the HLG-120H-24A have dimming?"
 Response: "The HLG-120H-24A is a non-dimming driver, per the product page. For more details, view the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>. Need help with alternatives? Contact a Bravo Power Expert at 408-733-9090 or use our web chat."
+
+User: "Can I adjust the voltage on this power supply?"
+Response: "Yes, the HLG-120H-24A has adjustable output voltage and current via built-in potentiometer (indicated by the 'A' suffix). Check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for specific adjustment ranges."
 
 Keep responses concise and cost-effective.`;
 
@@ -248,8 +259,11 @@ async function fetchPDFContent(url: string): Promise<string> {
     const sections = {
       // Electrical specs - MOST IMPORTANT
       electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 4000),
-      voltageAdjust: extractSection(pdfContent, ['voltage adjustment', 'adjust range', 'vadj', 'output voltage adjustment'], 2000),
+      voltageAdjust: extractSection(pdfContent, ['voltage adjustment', 'adjust range', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range'], 2000),
       constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region'], 2000),
+      
+      // Model suffix information
+      suffixInfo: extractSection(pdfContent, ['model suffix', 'suffix code', 'model code', 'ordering information', 'model designation'], 2000),
       
       // Other important specs
       dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation'], 2000),
@@ -276,6 +290,13 @@ ${sections.electrical}
     if (sections.voltageAdjust) {
       combinedContent += `VOLTAGE ADJUSTMENT:
 ${sections.voltageAdjust}
+
+`;
+    }
+    
+    if (sections.suffixInfo) {
+      combinedContent += `MODEL SUFFIX INFORMATION:
+${sections.suffixInfo}
 
 `;
     }

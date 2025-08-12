@@ -130,11 +130,13 @@ function evictOldCacheEntries(cache: Map<string, { content: string; timestamp: n
   const now = Date.now();
   
   // Remove expired entries
-  for (const [key, value] of cache.entries()) {
+  const keysToDelete: string[] = [];
+  cache.forEach((value, key) => {
     if (now - value.timestamp > CACHE_DURATION) {
-      cache.delete(key);
+      keysToDelete.push(key);
     }
-  }
+  });
+  keysToDelete.forEach(key => cache.delete(key));
   
   // If still over limit, remove least recently used
   if (cache.size > MAX_CACHE_SIZE) {

@@ -160,26 +160,45 @@ function setCachedContent(cache: Map<string, { content: string; timestamp: numbe
 }
 
 function processAskEdResponse(answer: string, datasheetUrl?: string, productTitle?: string): string {
-  // Replace datasheet URL placeholder
+  // CRITICAL: Clean up AI's markdown hyperlinking mistakes
+  console.log('Processing response - Original:', answer.substring(0, 200));
+  
+  // Step 1: Remove ALL broken/invalid markdown links
+  // Remove [Mean Well](anything), [Mean](anything), [link](anything)
+  answer = answer.replace(/\[(Mean Well|Mean|Meanwell|link)\]\([^)]*\)/gi, '$1');
+  
+  // Remove markdown links to .html files that aren't full URLs
+  answer = answer.replace(/\[([^\]]+)\]\((?!https?:\/\/)[^)]*\.html\)/gi, '$1');
+  
+  // Remove [datasheet](link) or similar broken patterns
+  answer = answer.replace(/\[([^\]]+)\]\((link|#|javascript:|data:)\)/gi, '$1');
+  
+  // Step 2: Track what we've already linked to prevent duplicates
+  const linkedItems = new Set<string>();
+  let processedAnswer = answer;
+  
+  // Step 3: Process valid markdown links (ONLY FIRST OCCURRENCE)
+  // Handle RFQ Form markdown links
+  let rfqLinked = false;
+  processedAnswer = processedAnswer.replace(/\[RFQ Form\]\(https:\/\/www\.bravoelectro\.com\/rfq-form\)/gi, (match) => {
+    if (rfqLinked) return 'RFQ Form'; // Already linked, return plain text
+    rfqLinked = true;
+    return '<a href="https://www.bravoelectro.com/rfq-form" target="_blank" style="color: white; text-decoration: underline;">RFQ Form</a>';
+  });
+  
+  // Handle datasheet markdown links
+  let datasheetLinked = false;
   if (datasheetUrl) {
-    answer = answer.replace(/\[DATASHEET_URL\]/g, datasheetUrl);
+    // Match any variation of [datasheet](URL)
+    processedAnswer = processedAnswer.replace(/\[datasheet\]\([^)]+\)/gi, (match) => {
+      if (datasheetLinked) return 'datasheet'; // Already linked, return plain text
+      datasheetLinked = true;
+      return `<a href="${datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>`;
+    });
   }
   
-  // Hyperlink RFQ Form references that aren't already linked
-  answer = answer.replace(
-    /(?<!href=['"][^'"]*)\bRFQ Form\b(?![^<]*<\/a>)/gi,
-    '<a href="https://www.bravoelectro.com/rfq-form" target="_blank" style="color: white; text-decoration: underline;">RFQ Form</a>'
-  );
-  
-  // Hyperlink datasheet references that aren't already linked
-  answer = answer.replace(
-    /(?<!href=['"][^'"]*)\bdatasheet\b(?![^<]*<\/a>)/gi,
-    datasheetUrl ? 
-      `<a href="${datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>` :
-      'datasheet'
-  );
-  
-  // Generate product URLs based on model number (convert to Bravo URL format)
+  // Handle product SKU markdown links
+  let productLinked = false;
   if (productTitle) {
     const modelMatch = productTitle.match(/^([A-Z0-9\-\.]+)/i);
     if (modelMatch) {
@@ -187,22 +206,65 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
       const urlSlug = modelNumber.toLowerCase().replace(/\./g, '-');
       const productUrl = `https://www.bravoelectro.com/${urlSlug}.html`;
       
-      // Hyperlink product model references
-      const modelRegex = new RegExp(`\\b${modelNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b(?![^<]*<\/a>)`, 'gi');
-      answer = answer.replace(
-        modelRegex,
-        `<a href="${productUrl}" target="_blank" style="color: white; text-decoration: underline;">${modelNumber}</a>`
-      );
+      // Match markdown format for this specific product
+      const mdRegex = new RegExp(`\\[${modelNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]\\([^)]+\\)`, 'gi');
+      processedAnswer = processedAnswer.replace(mdRegex, (match) => {
+        if (productLinked) return modelNumber; // Already linked, return plain text
+        productLinked = true;
+        return `<a href="${productUrl}" target="_blank" style="color: white; text-decoration: underline;">${modelNumber}</a>`;
+      });
     }
   }
   
-  // Fix any remaining raw URLs to be hyperlinked
-  answer = answer.replace(
-    /(https?:\/\/[^\s<]+)(?![^<]*>)(?![^<]*<\/a>)/gi,
-    '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">link</a>'
-  );
+  // Step 4: Handle plain text mentions (ONLY if not already linked)
+  // Link first plain "RFQ Form" if not already linked
+  if (!rfqLinked) {
+    processedAnswer = processedAnswer.replace(/\bRFQ Form\b/, (match) => {
+      if (rfqLinked) return match;
+      rfqLinked = true;
+      return '<a href="https://www.bravoelectro.com/rfq-form" target="_blank" style="color: white; text-decoration: underline;">RFQ Form</a>';
+    });
+  }
   
-  return answer.trim();
+  // Link first plain "datasheet" if not already linked
+  if (datasheetUrl && !datasheetLinked) {
+    processedAnswer = processedAnswer.replace(/\bdatasheet\b/, (match) => {
+      if (datasheetLinked) return match;
+      datasheetLinked = true;
+      return `<a href="${datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>`;
+    });
+  }
+  
+  // Link first plain product model if not already linked
+  if (productTitle && !productLinked) {
+    const modelMatch = productTitle.match(/^([A-Z0-9\-\.]+)/i);
+    if (modelMatch) {
+      const modelNumber = modelMatch[1];
+      const urlSlug = modelNumber.toLowerCase().replace(/\./g, '-');
+      const productUrl = `https://www.bravoelectro.com/${urlSlug}.html`;
+      
+      const modelRegex = new RegExp(`\\b${modelNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+      processedAnswer = processedAnswer.replace(modelRegex, (match) => {
+        if (productLinked) return match;
+        productLinked = true;
+        return `<a href="${productUrl}" target="_blank" style="color: white; text-decoration: underline;">${modelNumber}</a>`;
+      });
+    }
+  }
+  
+  // Step 5: Clean up any remaining broken markdown or HTML
+  // Remove empty markdown links
+  processedAnswer = processedAnswer.replace(/\[([^\]]+)\]\(\)/g, '$1');
+  
+  // Remove any links to "mean.html" that somehow got through
+  processedAnswer = processedAnswer.replace(/<a[^>]*href="[^"]*mean\.html"[^>]*>([^<]+)<\/a>/gi, '$1');
+  
+  // Remove any standalone "link" that got hyperlinked
+  processedAnswer = processedAnswer.replace(/<a[^>]*>link<\/a>/gi, 'link');
+  
+  console.log('Processing response - Final:', processedAnswer.substring(0, 200));
+  
+  return processedAnswer.trim();
 }
 
 

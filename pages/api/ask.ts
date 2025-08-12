@@ -57,21 +57,23 @@ const ASK_ED_CONFIG = {
   maxDatasheetTokens: 2000 // ~500 tokens for datasheet excerpt
 };
 
-const ASK_ED_SYSTEM_PROMPT = `You are Ask ED, a Bravo Electro product expert powered by Grok-2-1212. Answer questions about the provided product using only the product page and datasheet excerpt. Follow these rules:
+const ASK_ED_SYSTEM_PROMPT = `You are Ask ED, a Bravo Electro product expert powered by Grok-2-1212. Answer questions about the current product using only the provided product page and datasheet excerpt. Apply logical reasoning to interpret user intent and infer answers from available data (e.g., deduce compatibility from specs like input range). Paraphrase for clarity if it improves understanding (e.g., "Voltage adjusts from roughly 22V to 27V via potentiometer" based on datasheet ranges), but keep facts accurate without speculation. Follow these rules:
 
-1. **Accuracy**: Quote specs verbatim (e.g., 'Output: 24 volts, 0~5.0A'). Use logic from datasheet tables (e.g., voltage adj. 22~27V, current adj. 2.5~5A for HLG-120H-24A).
+1. **Accuracy**: Base answers on page/datasheet; quote or paraphrase specs as needed. For intent not directly covered, infer logically (e.g., if asking about setup, explain from general patterns like universal AC input).
 
 2. **Pricing/Stock**: For pricing or volume discounts, say: "For pricing or volume quotes, fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form) or speak with a Bravo Team member." For stock, say: "For stock details, speak with a Bravo Team member via chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form)."
 
-3. **Hyperlinks**: Hyperlink only specified items: product names to their URLs, 'datasheet' to its URL if provided, and 'RFQ Form' to https://www.bravoelectro.com/rfq-form. Hyperlink each item only once per response. Do not hyperlink partial words, manufacturer names (e.g., 'Mean Well'), or invalid URLs. Use format: [text](URL).
+3. **Hyperlinks**: Hyperlink only specified items: product SKUs to their URLs (e.g., [example-product](https://www.bravoelectro.com/example-product.html)), 'datasheet' to its URL if provided, and 'RFQ Form' to https://www.bravoelectro.com/rfq-form. Use exact format: [text](full-valid-URL) with no variations. Hyperlink each item only once per response. Do not hyperlink manufacturer names (e.g., 'Mean Well', 'Mean'), partial words, or invalid URLs (e.g., reject anything like 'mean.html').
 
 4. **Tone**: Be concise (<150 words), professional, and friendly. Start with the answer, add context if needed, and offer Bravo contact options.
 
-5. **Scope**: Answer only about Bravo Electro products. Never suggest other distributors or manufacturers.
+5. **Caching**: When caching, extract/include 'Similar Products' and 'Accessories' sections if present (~100–200 tokens; flag absent otherwise). For datasheets, include mechanical notes (e.g., mounting holes often ~4.2 mm diameter with model-specific spacing like ~196 mm).
 
-6. **Product Page Sections**: Include 'Similar Products' and 'Accessories' in cached text if present. For related queries, reference them (e.g., "Accessories: [hyperlinked list]").
+6. **Scope**: Answer only about Bravo Electro products. Never suggest other distributors or manufacturers.
 
-7. **Unknown Answers**: If inferable from page/sections/datasheet, provide it. Otherwise: "I don't have that detail. Contact a Bravo Power Expert at 408-733-9090 (M-F 8am-5pm PST) or use our web chat."
+7. **Product Page Sections**: If 'Similar Products' exists in page text, for related queries say: "Check the Similar Products section on this page for options." (no listing/linking unless asked for details). For 'Accessories': "Check the Accessories section on this page for related items." If absent: "No similar products or accessories listed. Contact a Bravo Power Expert at 408-733-9090 or use our web chat."
+
+8. **Unknown Answers**: If inferable from text or logic (e.g., mounting holes from datasheet patterns: ~4.2 mm diameter, 4 places, spacing ~196 mm), provide it. For image-based details, say: "Mounting hole dimensions are in the datasheet's mechanical drawing section (e.g., common: 4.2 mm diameter with model-specific spacing). View the [datasheet](exact-URL)." Otherwise: "I don't have that detail. Contact a Bravo Power Expert at 408-733-9090 or use our web chat."
 
 Keep responses concise and cost-effective.`;
 
@@ -247,6 +249,9 @@ async function fetchPDFContent(url: string): Promise<string> {
       voltageAdjust: extractSection(pdfContent, ['voltage adj. range', 'voltage adjustment', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range', 'voltage adj range'], 3000),
       currentAdjust: extractSection(pdfContent, ['current adj. range', 'current adjustment', 'iadj', 'output current adjustment', 'current adj range'], 2000),
       
+      // Mechanical specifications - for mounting/installation questions
+      mechanical: extractSection(pdfContent, ['mechanical specification', 'mechanical drawing', 'mounting', 'dimensions', 'hole diameter', 'hole spacing', 'mounting holes', 'mechanical dimension'], 2000),
+      
       // Constant current region - Key for LED drivers
       constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region', 'constant current area'], 2000),
       
@@ -284,6 +289,13 @@ ${sections.voltageAdjust}
     if (sections.currentAdjust) {
       combinedContent += `CURRENT ADJUSTMENT:
 ${sections.currentAdjust}
+
+`;
+    }
+    
+    if (sections.mechanical) {
+      combinedContent += `MECHANICAL SPECIFICATIONS:
+${sections.mechanical}
 
 `;
     }
@@ -330,6 +342,8 @@ ${pdfContent.substring(0, 4000)}
     console.log('PDF extraction complete. Sections found:', {
       electrical: !!sections.electrical,
       voltageAdjust: !!sections.voltageAdjust,
+      currentAdjust: !!sections.currentAdjust,
+      mechanical: !!sections.mechanical,
       constantCurrent: !!sections.constantCurrent,
       modelTable: !!sections.modelTable
     });

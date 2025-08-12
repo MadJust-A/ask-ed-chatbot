@@ -556,22 +556,30 @@
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            25% { 
-                                opacity: 0.95;
-                                transform: scale(1.02) rotate(0.5deg);
-                            }
-                            50% { 
+                            15% { 
                                 opacity: 0.98;
-                                transform: scale(1.01) rotate(-0.5deg);
+                                transform: scale(1.008) rotate(0.2deg);
+                            }
+                            35% { 
+                                opacity: 0.96;
+                                transform: scale(1.012) rotate(-0.3deg);
+                            }
+                            55% { 
+                                opacity: 0.99;
+                                transform: scale(1.006) rotate(0.1deg);
                             }
                             75% { 
-                                opacity: 0.96;
-                                transform: scale(1.02) rotate(0.3deg);
+                                opacity: 0.97;
+                                transform: scale(1.01) rotate(0.25deg);
+                            }
+                            90% { 
+                                opacity: 0.995;
+                                transform: scale(1.004) rotate(-0.1deg);
                             }
                         }
                         
                         .ai-hover-active {
-                            animation: digital-flicker 0.4s ease-in-out !important;
+                            animation: digital-flicker 2.5s ease-in-out infinite !important;
                         }
                         
                         .scanline-active {

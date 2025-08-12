@@ -43,6 +43,8 @@ interface AskResponse {
   model?: string;
   version?: string;
   cacheSize?: number;
+  productPageCacheSize?: number;
+  maxTokens?: number;
   debug?: string;
 }
 

@@ -18,6 +18,10 @@ const openai = new OpenAI({
   baseURL: 'https://api.x.ai/v1',
 });
 
+// Add debug logging for API key
+console.log('XAI_API_KEY present:', !!process.env.XAI_API_KEY);
+console.log('XAI_API_KEY length:', process.env.XAI_API_KEY?.length || 0);
+
 // Rate limiting storage (in production, use Redis or similar)
 const rateLimitStore = new Map<string, { count: number; resetTime: number; dailyCount: number; dailyResetTime: number }>();
 
@@ -592,9 +596,15 @@ Customer Question: ${question}`;
     res.status(200).json({ answer });
 
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('Grok API error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      hasApiKey: !!process.env.XAI_API_KEY
+    });
     res.status(500).json({ 
-      error: 'I\'m experiencing technical difficulties. Please contact a Bravo Power Expert via web chat or call 408-733-9090.' 
+      error: 'I\'m experiencing technical difficulties. Please contact a Bravo Power Expert via web chat or call 408-733-9090.',
+      debug: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : String(error) : undefined
     });
   }
 }

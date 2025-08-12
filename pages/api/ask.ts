@@ -170,11 +170,19 @@ UNDERSTANDING CUSTOMER INTENT:
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
 
 IMPORTANT DATASHEET INFORMATION:
-When asked about technical specifications like:
-- Voltage adjustment range: Look in VOLTAGE ADJUSTMENT or ELECTRICAL SPECIFICATIONS sections
-- Constant current region: Look in CONSTANT CURRENT REGION or MODEL/SPECIFICATIONS TABLE
-- Output voltage/current: Check ELECTRICAL SPECIFICATIONS or model tables
-- Always provide specific numbers when available in the datasheet
+The datasheet contains these key sections - USE THEM:
+- MODEL/SPECIFICATIONS TABLE: Complete product specifications by model number
+- ELECTRICAL SPECIFICATIONS: Input/output ratings, tolerances, ripple & noise
+- VOLTAGE/CURRENT ADJUSTMENT: Specific adjustment ranges for "A" suffix models
+- CONSTANT CURRENT REGION: Operating ranges for LED applications
+- PROTECTION FEATURES: OVP, OCP, SCP, OTP specifications
+- DIMMING INFORMATION: Dimming methods, ranges, and compatibility
+- ENVIRONMENTAL SPECIFICATIONS: Operating/storage temps, humidity, altitude
+- MECHANICAL SPECIFICATIONS: Dimensions, weight, mounting details
+- EFFICIENCY AND POWER FACTOR: Efficiency curves, PFC values
+- DERATING INFORMATION: Load vs temperature curves
+
+ALWAYS provide specific numbers from these sections (e.g., "Voltage adjustment: 22~27V" not "adjustable")
 
 RESPONSE GUIDELINES:
 - For technical specs: Provide exact values from the datasheet (e.g., "Voltage adjustment range: 21.6-27.6V")
@@ -350,49 +358,47 @@ async function fetchPDFContent(url: string): Promise<string> {
     // Extract full PDF content
     let pdfContent = data.text;
     
-    // For LED drivers, extract ALL important sections with longer content
+    // Enhanced extraction for LED drivers - prioritize tables and technical data
     const sections = {
-      // Electrical specs - MOST IMPORTANT
-      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 4000),
-      voltageAdjust: extractSection(pdfContent, ['voltage adjustment', 'adjust range', 'vadj', 'output voltage adjustment'], 2000),
-      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region'], 2000),
+      // Model-specific tables and ordering info - HIGHEST PRIORITY
+      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information', 'model table', 'specifications table', 'model list'], 8000),
       
-      // Other important specs
-      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation'], 2000),
-      features: extractSection(pdfContent, ['features', 'key features'], 1500),
-      mechanical: extractSection(pdfContent, ['mechanical specification', 'dimension'], 1500),
+      // Complete electrical specifications - CRITICAL
+      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec', 'output characteristics', 'input specification'], 8000),
       
-      // Tables and model info
-      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information'], 3000)
+      // Voltage and current adjustment for "A" suffix models
+      voltageAdjust: extractSection(pdfContent, ['voltage adj', 'voltage adjustment', 'vadj', 'output voltage adjustment', 'voltage range', 'adjustable range', 'io adjustment'], 4000),
+      currentAdjust: extractSection(pdfContent, ['current adj', 'current adjustment', 'iadj', 'output current adjustment', 'current range'], 3000),
+      
+      // Constant current region - Essential for LED drivers
+      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region', 'constant current area', 'cc mode'], 4000),
+      
+      // Protection features
+      protection: extractSection(pdfContent, ['protection', 'safety', 'over voltage', 'over current', 'short circuit', 'over temperature'], 3000),
+      
+      // Environmental and mechanical
+      environmental: extractSection(pdfContent, ['environmental specification', 'operating temp', 'storage temp', 'humidity', 'environment'], 3000),
+      mechanical: extractSection(pdfContent, ['mechanical specification', 'mechanical dimension', 'dimension', 'mounting', 'weight', 'case'], 3000),
+      
+      // Dimming capabilities
+      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation', '3-in-1', '0-10v', 'pwm signal', 'timer dimming'], 4000),
+      
+      // Features and applications
+      features: extractSection(pdfContent, ['features', 'key features', 'applications', 'suitable for'], 2500),
+      
+      // Derating curves and graphs descriptions
+      derating: extractSection(pdfContent, ['derating', 'derating curve', 'load vs temperature', 'static characteristics'], 2000),
+      
+      // Efficiency and PFC
+      efficiency: extractSection(pdfContent, ['efficiency', 'typ', 'power factor', 'pfc', 'pf value'], 2000)
     };
     
-    // Combine ALL content - prioritize technical specs
+    // Combine ALL content - prioritize technical specs and tables
     let combinedContent = `COMPLETE DATASHEET CONTENT:
 
 `;
     
-    // Always include electrical specs first
-    if (sections.electrical) {
-      combinedContent += `ELECTRICAL SPECIFICATIONS:
-${sections.electrical}
-
-`;
-    }
-    
-    if (sections.voltageAdjust) {
-      combinedContent += `VOLTAGE ADJUSTMENT:
-${sections.voltageAdjust}
-
-`;
-    }
-    
-    if (sections.constantCurrent) {
-      combinedContent += `CONSTANT CURRENT REGION:
-${sections.constantCurrent}
-
-`;
-    }
-    
+    // PRIORITY 1: Model table and specifications
     if (sections.modelTable) {
       combinedContent += `MODEL/SPECIFICATIONS TABLE:
 ${sections.modelTable}
@@ -400,6 +406,46 @@ ${sections.modelTable}
 `;
     }
     
+    // PRIORITY 2: Complete electrical specifications
+    if (sections.electrical) {
+      combinedContent += `ELECTRICAL SPECIFICATIONS:
+${sections.electrical}
+
+`;
+    }
+    
+    // PRIORITY 3: Adjustment ranges (critical for "A" suffix models)
+    if (sections.voltageAdjust) {
+      combinedContent += `VOLTAGE ADJUSTMENT:
+${sections.voltageAdjust}
+
+`;
+    }
+    
+    if (sections.currentAdjust) {
+      combinedContent += `CURRENT ADJUSTMENT:
+${sections.currentAdjust}
+
+`;
+    }
+    
+    // PRIORITY 4: Constant current region
+    if (sections.constantCurrent) {
+      combinedContent += `CONSTANT CURRENT REGION:
+${sections.constantCurrent}
+
+`;
+    }
+    
+    // PRIORITY 5: Protection features
+    if (sections.protection) {
+      combinedContent += `PROTECTION FEATURES:
+${sections.protection}
+
+`;
+    }
+    
+    // PRIORITY 6: Dimming information
     if (sections.dimming) {
       combinedContent += `DIMMING INFORMATION:
 ${sections.dimming}
@@ -407,26 +453,76 @@ ${sections.dimming}
 `;
     }
     
-    // If sections are missing, include more raw content
-    if (!sections.electrical || !sections.voltageAdjust) {
-      combinedContent += `ADDITIONAL DATASHEET TEXT:
-${pdfContent.substring(0, 4000)}
+    // PRIORITY 7: Environmental specifications
+    if (sections.environmental) {
+      combinedContent += `ENVIRONMENTAL SPECIFICATIONS:
+${sections.environmental}
+
+`;
+    }
+    
+    // PRIORITY 8: Mechanical specifications
+    if (sections.mechanical) {
+      combinedContent += `MECHANICAL SPECIFICATIONS:
+${sections.mechanical}
+
+`;
+    }
+    
+    // PRIORITY 9: Efficiency and PFC
+    if (sections.efficiency) {
+      combinedContent += `EFFICIENCY AND POWER FACTOR:
+${sections.efficiency}
+
+`;
+    }
+    
+    // PRIORITY 10: Derating information
+    if (sections.derating) {
+      combinedContent += `DERATING INFORMATION:
+${sections.derating}
+
+`;
+    }
+    
+    // PRIORITY 11: Features
+    if (sections.features) {
+      combinedContent += `FEATURES:
+${sections.features}
+
+`;
+    }
+    
+    // If critical sections are missing, include raw content from beginning
+    if (!sections.electrical || !sections.modelTable) {
+      combinedContent += `ADDITIONAL DATASHEET TEXT (RAW):
+${pdfContent.substring(0, 8000)}
 `;
     }
     
     // Cache the result with more content
-    const finalContent = combinedContent.substring(0, 20000); // Increased to 20KB for better coverage
+    const finalContent = combinedContent.substring(0, 50000); // Increased to 50KB for comprehensive datasheet coverage
     pdfCache.set(url, {
       content: finalContent,
       timestamp: Date.now()
     });
     
     console.log('PDF extraction complete. Sections found:', {
+      modelTable: !!sections.modelTable,
       electrical: !!sections.electrical,
       voltageAdjust: !!sections.voltageAdjust,
+      currentAdjust: !!sections.currentAdjust,
       constantCurrent: !!sections.constantCurrent,
-      modelTable: !!sections.modelTable
+      protection: !!sections.protection,
+      dimming: !!sections.dimming,
+      environmental: !!sections.environmental,
+      mechanical: !!sections.mechanical,
+      efficiency: !!sections.efficiency,
+      derating: !!sections.derating,
+      features: !!sections.features
     });
+    
+    console.log('Total extracted content length:', finalContent.length);
     
     return finalContent;
   } catch (error) {

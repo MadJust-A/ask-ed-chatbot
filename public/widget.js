@@ -521,50 +521,67 @@
                     align-items: center;
                     justify-content: center;
                 ">
-                    <!-- Hover Effect Background -->
-                    <div id="${WIDGET_ID}-hover-effect" class="hover-effect" style="
+                    <!-- AI Scan Line Effect -->
+                    <div id="${WIDGET_ID}-scanline" style="
                         position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 100px;
-                        height: 100px;
-                        background: linear-gradient(45deg, rgba(0, 90, 166, 0.1), rgba(235, 176, 19, 0.1));
-                        border-radius: 50%;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 2px;
+                        background: linear-gradient(90deg, transparent, #ebb013, transparent);
+                        opacity: 0;
                         pointer-events: none;
-                        z-index: 1;
+                        z-index: 3;
                     "></div>
                     <style>
-                        .hover-effect {
-                            opacity: 0;
-                            transition: all 0.3s ease;
+                        @keyframes scanline {
+                            0% { 
+                                top: 0;
+                                opacity: 0;
+                            }
+                            10% {
+                                opacity: 1;
+                            }
+                            90% {
+                                opacity: 1;
+                            }
+                            100% { 
+                                top: 100%;
+                                opacity: 0;
+                            }
                         }
                         
-                        .hover-active {
-                            opacity: 1 !important;
-                            transform: translate(-50%, -50%) scale(1.3) !important;
-                            background: linear-gradient(45deg, rgba(0, 90, 166, 0.2), rgba(235, 176, 19, 0.2)) !important;
-                            box-shadow: 0 0 30px rgba(0, 90, 166, 0.3), 
-                                        0 0 60px rgba(235, 176, 19, 0.2) !important;
-                            animation: pulse-scale 1.5s ease-in-out infinite !important;
-                        }
-                        
-                        @keyframes pulse-scale {
+                        @keyframes digital-flicker {
                             0%, 100% { 
-                                transform: translate(-50%, -50%) scale(1.3);
-                                box-shadow: 0 0 30px rgba(0, 90, 166, 0.3), 
-                                           0 0 60px rgba(235, 176, 19, 0.2);
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            25% { 
+                                opacity: 0.95;
+                                transform: scale(1.02) rotate(0.5deg);
                             }
                             50% { 
-                                transform: translate(-50%, -50%) scale(1.4);
-                                box-shadow: 0 0 40px rgba(0, 90, 166, 0.4), 
-                                           0 0 80px rgba(235, 176, 19, 0.3);
+                                opacity: 0.98;
+                                transform: scale(1.01) rotate(-0.5deg);
+                            }
+                            75% { 
+                                opacity: 0.96;
+                                transform: scale(1.02) rotate(0.3deg);
                             }
                         }
                         
-                        .logo-hover-scale {
-                            transform: scale(1.05) !important;
-                            filter: drop-shadow(0 4px 15px rgba(0, 90, 166, 0.4)) !important;
+                        .ai-hover-active {
+                            animation: digital-flicker 0.4s ease-in-out !important;
+                        }
+                        
+                        .scanline-active {
+                            animation: scanline 1.5s ease-in-out !important;
+                        }
+                        
+                        .logo-ai-transform {
+                            transform: scale(1.08) !important;
+                            filter: contrast(1.2) brightness(1.1) hue-rotate(10deg) !important;
+                            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
                         }
                     </style>
                     <!-- Logo Image -->
@@ -576,8 +593,7 @@
                         display: block;
                         position: relative;
                         z-index: 2;
-                        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-                    " id="${WIDGET_ID}-glow">
+                    ">
                 </div>
             </div>
         `;
@@ -672,21 +688,44 @@
             }
         }, 2000);
         
-        // Add hover effects for logo button
-        const hoverEffect = document.getElementById(`${WIDGET_ID}-hover-effect`);
+        // Add AI-inspired hover effects for logo button
+        const scanline = document.getElementById(`${WIDGET_ID}-scanline`);
+        let scanlineTimeout;
+        
         toggle.addEventListener('mouseenter', () => {
-            toggle.classList.add('logo-hover-scale');
-            if (hoverEffect) hoverEffect.classList.add('hover-active');
+            toggle.classList.add('logo-ai-transform');
+            toggle.classList.add('ai-hover-active');
+            
+            // Trigger scanning effect
+            if (scanline) {
+                scanline.classList.add('scanline-active');
+                
+                // Remove class after animation completes
+                clearTimeout(scanlineTimeout);
+                scanlineTimeout = setTimeout(() => {
+                    scanline.classList.remove('scanline-active');
+                }, 1500);
+            }
         });
         
         toggle.addEventListener('mouseleave', () => {
-            toggle.classList.remove('logo-hover-scale');
-            if (hoverEffect) hoverEffect.classList.remove('hover-active');
+            toggle.classList.remove('logo-ai-transform');
+            toggle.classList.remove('ai-hover-active');
+            // Ensure no filter effects remain
+            toggle.style.filter = 'none';
         });
 
         // Click logo → toggle search bar or chat window
         toggle.onclick = (e) => {
             e.stopPropagation();
+            
+            // Clear all hover effects and any lingering glow when clicked
+            toggle.classList.remove('logo-ai-transform', 'ai-hover-active');
+            toggle.style.filter = 'none'; // Remove any lingering filter effects
+            if (scanline) {
+                scanline.classList.remove('scanline-active');
+                clearTimeout(scanlineTimeout);
+            }
             
             // If conversation has started, toggle chat window instead
             if (hasConversationStarted) {
@@ -722,7 +761,6 @@
                     // Don't auto-focus to keep placeholder visible
                     isSearchOpen = true;
                     toggle.style.transform = 'scale(1.08)';
-                    toggle.style.filter = 'drop-shadow(0 8px 20px rgba(0,0,0,0.3)) drop-shadow(0 0 70px rgba(0, 90, 166, 1.0)) drop-shadow(0 0 140px rgba(0, 90, 166, 0.8)) drop-shadow(0 0 180px rgba(0, 90, 166, 0.5))';
                 } else {
                     // Close search bar
                     searchbar.style.width = '0';
@@ -731,7 +769,6 @@
                     send.style.opacity = '0';
                     isSearchOpen = false;
                     toggle.style.transform = 'scale(1)';
-                    toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(0, 90, 166, 0.9)) drop-shadow(0 0 90px rgba(0, 90, 166, 0.6)) drop-shadow(0 0 120px rgba(0, 90, 166, 0.3))';
                 }
             }
         };

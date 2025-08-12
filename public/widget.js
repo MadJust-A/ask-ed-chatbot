@@ -521,36 +521,50 @@
                     align-items: center;
                     justify-content: center;
                 ">
-                    <!-- Circular Glow Background -->
-                    <div id="${WIDGET_ID}-glow-bg" style="
+                    <!-- Hover Effect Background -->
+                    <div id="${WIDGET_ID}-hover-effect" class="hover-effect" style="
                         position: absolute;
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        width: 70px;
-                        height: 70px;
-                        background: radial-gradient(circle, rgba(0, 90, 166, 0.9) 0%, rgba(0, 90, 166, 0.5) 60%, transparent 75%);
+                        width: 100px;
+                        height: 100px;
+                        background: linear-gradient(45deg, rgba(0, 90, 166, 0.1), rgba(235, 176, 19, 0.1));
                         border-radius: 50%;
-                        filter: blur(6px);
-                        animation: pulse-glow 3s ease-in-out infinite alternate;
+                        pointer-events: none;
+                        z-index: 1;
                     "></div>
                     <style>
-                        @keyframes pulse-glow {
-                            0% { 
-                                transform: translate(-50%, -50%) scale(1);
-                                opacity: 0.7;
+                        .hover-effect {
+                            opacity: 0;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .hover-active {
+                            opacity: 1 !important;
+                            transform: translate(-50%, -50%) scale(1.3) !important;
+                            background: linear-gradient(45deg, rgba(0, 90, 166, 0.2), rgba(235, 176, 19, 0.2)) !important;
+                            box-shadow: 0 0 30px rgba(0, 90, 166, 0.3), 
+                                        0 0 60px rgba(235, 176, 19, 0.2) !important;
+                            animation: pulse-scale 1.5s ease-in-out infinite !important;
+                        }
+                        
+                        @keyframes pulse-scale {
+                            0%, 100% { 
+                                transform: translate(-50%, -50%) scale(1.3);
+                                box-shadow: 0 0 30px rgba(0, 90, 166, 0.3), 
+                                           0 0 60px rgba(235, 176, 19, 0.2);
                             }
-                            100% { 
-                                transform: translate(-50%, -50%) scale(1.1);
-                                opacity: 1;
+                            50% { 
+                                transform: translate(-50%, -50%) scale(1.4);
+                                box-shadow: 0 0 40px rgba(0, 90, 166, 0.4), 
+                                           0 0 80px rgba(235, 176, 19, 0.3);
                             }
                         }
-                        .glow-bright {
-                            background: radial-gradient(circle, rgba(0, 90, 166, 1.0) 0%, rgba(0, 90, 166, 0.8) 60%, transparent 75%) !important;
-                            filter: blur(6px) !important;
-                            animation: none !important;
-                            transform: translate(-50%, -50%) scale(1.2) !important;
-                            opacity: 1 !important;
+                        
+                        .logo-hover-scale {
+                            transform: scale(1.05) !important;
+                            filter: drop-shadow(0 4px 15px rgba(0, 90, 166, 0.4)) !important;
                         }
                     </style>
                     <!-- Logo Image -->
@@ -659,19 +673,15 @@
         }, 2000);
         
         // Add hover effects for logo button
-        const glowBg = document.getElementById(`${WIDGET_ID}-glow-bg`);
+        const hoverEffect = document.getElementById(`${WIDGET_ID}-hover-effect`);
         toggle.addEventListener('mouseenter', () => {
-            toggle.style.transform = 'scale(1.05)';
-            toggle.style.filter = 'drop-shadow(0 6px 16px rgba(0,0,0,0.25)) drop-shadow(0 0 60px rgba(0, 90, 166, 1.0)) drop-shadow(0 0 120px rgba(0, 90, 166, 0.8)) drop-shadow(0 0 160px rgba(0, 90, 166, 0.4))';
-            if (glowBg) glowBg.classList.add('glow-bright');
+            toggle.classList.add('logo-hover-scale');
+            if (hoverEffect) hoverEffect.classList.add('hover-active');
         });
         
         toggle.addEventListener('mouseleave', () => {
-            if (!isSearchOpen) {
-                toggle.style.transform = 'scale(1)';
-                toggle.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2)) drop-shadow(0 0 45px rgba(0, 90, 166, 0.9)) drop-shadow(0 0 90px rgba(0, 90, 166, 0.6)) drop-shadow(0 0 120px rgba(0, 90, 166, 0.3))';
-            }
-            if (glowBg) glowBg.classList.remove('glow-bright');
+            toggle.classList.remove('logo-hover-scale');
+            if (hoverEffect) hoverEffect.classList.remove('hover-active');
         });
 
         // Click logo → toggle search bar or chat window

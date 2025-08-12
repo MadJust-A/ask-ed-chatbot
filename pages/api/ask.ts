@@ -14,7 +14,8 @@ const pdfCache = new Map<string, { content: string; timestamp: number }>();
 const CACHE_DURATION = 3600000; // 1 hour in milliseconds
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
 });
 
 // Rate limiting storage (in production, use Redis or similar)
@@ -483,8 +484,8 @@ export default async function handler(
   // Debug endpoint to check model
   if (question === "DEBUG_MODEL_CHECK") {
     return res.status(200).json({ 
-      answer: "Currently using model: gpt-4o-mini. Deployment successful!", 
-      model: "gpt-4o-mini",
+      answer: "Currently using model: grok-2-1212. Deployment successful!", 
+      model: "grok-2-1212",
       version: "2024-01-12",
       cacheSize: pdfCache.size
     });
@@ -567,7 +568,7 @@ ${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
 Customer Question: ${question}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "grok-2-1212",
       messages: [
         {
           role: "system",

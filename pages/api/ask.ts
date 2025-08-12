@@ -41,6 +41,7 @@ interface AskResponse {
   model?: string;
   version?: string;
   cacheSize?: number;
+  debug?: string;
 }
 
 // Ask ED Configuration - Easy to modify behavior

@@ -73,7 +73,7 @@ CRITICAL MODEL INTERPRETATION:
 
 If data is unclear or missing, do not guess—use the referral protocol.
 
-UNKNOWN ANSWERS: For any question about a power supply where you lack information from the product page or datasheet, respond: "I don't have that detail available. Please contact a Bravo Power Expert at 408-733-9090 (M-F 8am-5pm PST) or use our web chat below for assistance."
+UNKNOWN ANSWERS: If the exact information is not verbatim in the product page or datasheet excerpt but can be logically inferred (e.g., voltage adjustment from model tables or constant regions), provide it with a verbatim quote or calculation. Only refer to Bravo Power Experts if truly unavailable (e.g., no datasheet access or unrelated query). For example, for HLG-120H-24A, use datasheet specs like 'VOLTAGE ADJ. RANGE: 22 ~ 27V' and 'CURRENT ADJ. RANGE: 2.5 ~ 5A' directly.
 
 PRICING/VOLUME PRICING: If asked about pricing or volume discounts, respond: "For current pricing or volume quotes, please fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a> or speak with a Bravo Team member."
 
@@ -255,23 +255,27 @@ async function fetchPDFContent(url: string): Promise<string> {
     // Extract full PDF content
     let pdfContent = data.text;
     
-    // For LED drivers, extract ALL important sections with longer content
+    // Enhanced datasheet extraction prioritizing model-specific adjustment ranges and tables
     const sections = {
-      // Electrical specs - MOST IMPORTANT
-      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 4000),
-      voltageAdjust: extractSection(pdfContent, ['voltage adjustment', 'adjust range', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range'], 2000),
-      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region'], 2000),
+      // Model-specific tables - HIGHEST PRIORITY
+      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information', 'model table', 'specifications table'], 4000),
+      
+      // Adjustment ranges - CRITICAL for A suffix models
+      voltageAdjust: extractSection(pdfContent, ['voltage adj. range', 'voltage adjustment', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range', 'voltage adj range'], 3000),
+      currentAdjust: extractSection(pdfContent, ['current adj. range', 'current adjustment', 'iadj', 'output current adjustment', 'current adj range'], 2000),
+      
+      // Constant current region - Key for LED drivers
+      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region', 'constant current area'], 2000),
+      
+      // Electrical specifications
+      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 3000),
       
       // Model suffix information
-      suffixInfo: extractSection(pdfContent, ['model suffix', 'suffix code', 'model code', 'ordering information', 'model designation'], 2000),
+      suffixInfo: extractSection(pdfContent, ['model suffix', 'suffix code', 'model code', 'ordering information', 'model designation'], 1500),
       
-      // Other important specs
-      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation'], 2000),
-      features: extractSection(pdfContent, ['features', 'key features'], 1500),
-      mechanical: extractSection(pdfContent, ['mechanical specification', 'dimension'], 1500),
-      
-      // Tables and model info
-      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information'], 3000)
+      // Other specs
+      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation'], 1500),
+      features: extractSection(pdfContent, ['features', 'key features'], 1000)
     };
     
     // Combine ALL content - prioritize technical specs
@@ -290,6 +294,13 @@ ${sections.electrical}
     if (sections.voltageAdjust) {
       combinedContent += `VOLTAGE ADJUSTMENT:
 ${sections.voltageAdjust}
+
+`;
+    }
+    
+    if (sections.currentAdjust) {
+      combinedContent += `CURRENT ADJUSTMENT:
+${sections.currentAdjust}
 
 `;
     }

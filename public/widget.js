@@ -552,34 +552,66 @@
                         }
                         
                         @keyframes digital-flicker {
-                            0%, 100% { 
+                            0% { 
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            15% { 
-                                opacity: 0.98;
-                                transform: scale(1.008) rotate(0.2deg);
+                            12% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
                             }
-                            35% { 
-                                opacity: 0.96;
-                                transform: scale(1.012) rotate(-0.3deg);
+                            14% { 
+                                opacity: 0.94;
+                                transform: scale(1.015) rotate(0.4deg);
+                            }
+                            18% { 
+                                opacity: 0.94;
+                                transform: scale(1.015) rotate(0.4deg);
+                            }
+                            25% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            40% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            42% { 
+                                opacity: 0.92;
+                                transform: scale(1.02) rotate(-0.5deg);
+                            }
+                            46% { 
+                                opacity: 0.92;
+                                transform: scale(1.02) rotate(-0.5deg);
                             }
                             55% { 
-                                opacity: 0.99;
-                                transform: scale(1.006) rotate(0.1deg);
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            70% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            72% { 
+                                opacity: 0.96;
+                                transform: scale(1.01) rotate(0.3deg);
                             }
                             75% { 
-                                opacity: 0.97;
-                                transform: scale(1.01) rotate(0.25deg);
+                                opacity: 0.96;
+                                transform: scale(1.01) rotate(0.3deg);
                             }
-                            90% { 
-                                opacity: 0.995;
-                                transform: scale(1.004) rotate(-0.1deg);
+                            85% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            100% { 
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
                             }
                         }
                         
                         .ai-hover-active {
-                            animation: digital-flicker 2.5s ease-in-out infinite !important;
+                            animation: digital-flicker 8s linear infinite !important;
                         }
                         
                         .scanline-active {

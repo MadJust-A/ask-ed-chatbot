@@ -9,6 +9,10 @@ try {
   console.log('PDF processing not available in this environment:', error instanceof Error ? error.message : String(error));
 }
 
+// In-memory cache for PDF and product data (consider Redis for production)
+const pdfCache = new Map<string, { content: string; timestamp: number }>();
+const CACHE_DURATION = 3600000; // 1 hour in milliseconds
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -307,6 +311,13 @@ function standardizeResponseFormats(answer: string): string {
 }
 
 async function fetchPDFContent(url: string): Promise<string> {
+  // Check cache first
+  const cached = pdfCache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log('Using cached PDF content for:', url);
+    return cached.content;
+  }
+  
   // Skip PDF processing if library not available
   if (!pdfParse) {
     console.log('PDF processing unavailable, skipping:', url);
@@ -321,15 +332,55 @@ async function fetchPDFContent(url: string): Promise<string> {
     }
     
     const buffer = await response.arrayBuffer();
-    const data = await pdfParse(Buffer.from(buffer));
+    const data = await pdfParse(Buffer.from(buffer), {
+      max: 0, // Parse all pages
+      version: 'v2.0.550'
+    });
     
     console.log('PDF processing successful, extracted text length:', data.text.length);
-    // Return first 4000 characters to avoid token limits
-    return data.text.substring(0, 4000);
+    console.log('PDF total pages:', data.numpages);
+    
+    // Extract full PDF content with smart truncation for token limits
+    let pdfContent = data.text;
+    
+    // For LED drivers, focus on key sections
+    const sections = {
+      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation']),
+      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics']),
+      features: extractSection(pdfContent, ['features', 'key features']),
+      mechanical: extractSection(pdfContent, ['mechanical specification', 'dimension']),
+      curves: extractSection(pdfContent, ['derating curve', 'efficiency', 'pf curve'])
+    };
+    
+    // Combine sections with priority
+    let combinedContent = `DATASHEET CONTENT:\n`;
+    if (sections.features) combinedContent += `FEATURES:\n${sections.features}\n\n`;
+    if (sections.dimming) combinedContent += `DIMMING INFO:\n${sections.dimming}\n\n`;
+    if (sections.electrical) combinedContent += `ELECTRICAL SPECS:\n${sections.electrical}\n\n`;
+    
+    // Cache the result
+    pdfCache.set(url, {
+      content: combinedContent.substring(0, 12000), // Increased limit for better coverage
+      timestamp: Date.now()
+    });
+    
+    return combinedContent.substring(0, 12000);
   } catch (error) {
     console.error('PDF fetch error:', error);
     return '';
   }
+}
+
+function extractSection(text: string, keywords: string[]): string {
+  const lowerText = text.toLowerCase();
+  for (const keyword of keywords) {
+    const index = lowerText.indexOf(keyword.toLowerCase());
+    if (index !== -1) {
+      // Extract section (up to 2000 chars after keyword)
+      return text.substring(index, Math.min(index + 2000, text.length));
+    }
+  }
+  return '';
 }
 
 export default async function handler(
@@ -356,12 +407,22 @@ export default async function handler(
 
   const { question, productSpecs, productTitle, datasheetUrl, similarProducts, accessories }: AskRequest = req.body;
   
+  // Enhanced logging for debugging
+  console.log('=== ASK ED REQUEST ===');
+  console.log('Product:', productTitle);
+  console.log('Question:', question);
+  console.log('Has Specs:', !!productSpecs);
+  console.log('Specs include dimming:', productSpecs?.toLowerCase().includes('dimming'));
+  console.log('Is Non-Dimming:', productSpecs?.toLowerCase().includes('non-dimming'));
+  console.log('Has Accessories:', !!accessories);
+  
   // Debug endpoint to check model
   if (question === "DEBUG_MODEL_CHECK") {
     return res.status(200).json({ 
-      answer: "Currently using model: gpt-4-0125-preview. Deployment successful!", 
-      model: "gpt-4-0125-preview",
-      version: "2024-01-12"
+      answer: "Currently using model: gpt-4o-mini. Deployment successful!", 
+      model: "gpt-4o-mini",
+      version: "2024-01-12",
+      cacheSize: pdfCache.size
     });
   }
   const userIP = req.headers['x-forwarded-for']?.toString()?.split(',')[0] || 
@@ -401,10 +462,24 @@ export default async function handler(
       .replace('[SIMILAR_PRODUCTS_AVAILABLE]', similarProducts ? 'YES - Section contains products' : 'NO - Section not available')
       .replace('[ACCESSORIES_AVAILABLE]', accessories ? 'YES - Section contains products' : 'NO - Section not available');
 
-    const userMessage = `CRITICAL INSTRUCTIONS - READ FIRST:
-1. For DIMMING questions: Look at Product Specifications below. If it says "Dimming: Non-Dimming" then this product has NO DIMMING. Do not say it has dimming.
-2. For ACCESSORY/CONNECTOR questions: ${accessories ? 'There IS an Accessories section below - tell customer to check the Accessories section on this page.' : 'There is NO Accessories section - tell customer to contact Bravo Power Experts at 408-733-9090.'}
-3. ONLY use information provided below. Do not use your training data about products.
+    // Pre-process specs to detect dimming explicitly
+    const hasDimmingSpec = productSpecs.toLowerCase().includes('dimming:');
+    const isNonDimming = productSpecs.toLowerCase().includes('dimming: non-dimming') || 
+                         productSpecs.toLowerCase().includes('dimming:non-dimming');
+    
+    const userMessage = `CRITICAL INSTRUCTIONS - YOU MUST FOLLOW THESE EXACTLY:
+
+RULE 1 - DIMMING: ${isNonDimming ? 
+      '⚠️ This product is NON-DIMMING. The specs clearly state "Dimming: Non-Dimming". You MUST tell the customer this is a non-dimming model.' :
+      hasDimmingSpec ? 
+      'Check the Dimming field in specs below for the dimming type.' :
+      'No dimming information found in specs. Check datasheet or contact experts.'}
+
+RULE 2 - ACCESSORIES: ${accessories ? 
+      '✓ Accessories section EXISTS. For any connector/accessory questions, tell customer: "Check the Accessories section on this product page for compatible options."' : 
+      '✗ NO Accessories section. For connector/accessory questions, tell customer: "Contact our Bravo Power Experts at 408-733-9090 for compatible accessories."'}
+
+RULE 3: ONLY use the exact information provided below. Never use your memory or training data.
 
 Product: ${productTitle}
 
@@ -425,7 +500,7 @@ ${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
 Customer Question: ${question}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",

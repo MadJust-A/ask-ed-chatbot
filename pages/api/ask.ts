@@ -167,11 +167,19 @@ UNDERSTANDING CUSTOMER INTENT:
 - Dimming questions include: "can it dim", "is it dimmable", "does it have dimming", "dimming capability", "brightness control"
 - Accessory questions include: "connectors", "cables", "plugs", "accessories", "what do I need to connect"
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
+- Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
+
+IMPORTANT DATASHEET INFORMATION:
+When asked about technical specifications like:
+- Voltage adjustment range: Look in VOLTAGE ADJUSTMENT or ELECTRICAL SPECIFICATIONS sections
+- Constant current region: Look in CONSTANT CURRENT REGION or MODEL/SPECIFICATIONS TABLE
+- Output voltage/current: Check ELECTRICAL SPECIFICATIONS or model tables
+- Always provide specific numbers when available in the datasheet
 
 RESPONSE GUIDELINES:
+- For technical specs: Provide exact values from the datasheet (e.g., "Voltage adjustment range: 21.6-27.6V")
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
-- For accessories when section exists: "Check the Accessories section on this page for compatible [connectors/cables/options]"
-- For missing specs: "I don't see that information in my database. Please check the datasheet for details"
+- For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
 
 CRITICAL ACCURACY RULES:
@@ -339,54 +347,101 @@ async function fetchPDFContent(url: string): Promise<string> {
     console.log('PDF processing successful, extracted text length:', data.text.length);
     console.log('PDF total pages:', data.numpages);
     
-    // Extract full PDF content with smart truncation for token limits
+    // Extract full PDF content
     let pdfContent = data.text;
     
-    // For LED drivers, focus on key sections
+    // For LED drivers, extract ALL important sections with longer content
     const sections = {
-      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation']),
-      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics']),
-      features: extractSection(pdfContent, ['features', 'key features']),
-      mechanical: extractSection(pdfContent, ['mechanical specification', 'dimension']),
-      curves: extractSection(pdfContent, ['derating curve', 'efficiency', 'pf curve'])
+      // Electrical specs - MOST IMPORTANT
+      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 4000),
+      voltageAdjust: extractSection(pdfContent, ['voltage adjustment', 'adjust range', 'vadj', 'output voltage adjustment'], 2000),
+      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region'], 2000),
+      
+      // Other important specs
+      dimming: extractSection(pdfContent, ['dimming', 'dim function', 'dimming operation'], 2000),
+      features: extractSection(pdfContent, ['features', 'key features'], 1500),
+      mechanical: extractSection(pdfContent, ['mechanical specification', 'dimension'], 1500),
+      
+      // Tables and model info
+      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information'], 3000)
     };
     
-    // Combine sections with priority
-    let combinedContent = `DATASHEET CONTENT:
-`;
-    if (sections.features) combinedContent += `FEATURES:
-${sections.features}
+    // Combine ALL content - prioritize technical specs
+    let combinedContent = `COMPLETE DATASHEET CONTENT:
 
 `;
-    if (sections.dimming) combinedContent += `DIMMING INFO:
-${sections.dimming}
-
-`;
-    if (sections.electrical) combinedContent += `ELECTRICAL SPECS:
+    
+    // Always include electrical specs first
+    if (sections.electrical) {
+      combinedContent += `ELECTRICAL SPECIFICATIONS:
 ${sections.electrical}
 
 `;
+    }
     
-    // Cache the result
+    if (sections.voltageAdjust) {
+      combinedContent += `VOLTAGE ADJUSTMENT:
+${sections.voltageAdjust}
+
+`;
+    }
+    
+    if (sections.constantCurrent) {
+      combinedContent += `CONSTANT CURRENT REGION:
+${sections.constantCurrent}
+
+`;
+    }
+    
+    if (sections.modelTable) {
+      combinedContent += `MODEL/SPECIFICATIONS TABLE:
+${sections.modelTable}
+
+`;
+    }
+    
+    if (sections.dimming) {
+      combinedContent += `DIMMING INFORMATION:
+${sections.dimming}
+
+`;
+    }
+    
+    // If sections are missing, include more raw content
+    if (!sections.electrical || !sections.voltageAdjust) {
+      combinedContent += `ADDITIONAL DATASHEET TEXT:
+${pdfContent.substring(0, 4000)}
+`;
+    }
+    
+    // Cache the result with more content
+    const finalContent = combinedContent.substring(0, 20000); // Increased to 20KB for better coverage
     pdfCache.set(url, {
-      content: combinedContent.substring(0, 12000), // Increased limit for better coverage
+      content: finalContent,
       timestamp: Date.now()
     });
     
-    return combinedContent.substring(0, 12000);
+    console.log('PDF extraction complete. Sections found:', {
+      electrical: !!sections.electrical,
+      voltageAdjust: !!sections.voltageAdjust,
+      constantCurrent: !!sections.constantCurrent,
+      modelTable: !!sections.modelTable
+    });
+    
+    return finalContent;
   } catch (error) {
     console.error('PDF fetch error:', error);
     return '';
   }
 }
 
-function extractSection(text: string, keywords: string[]): string {
+function extractSection(text: string, keywords: string[], maxLength: number = 2000): string {
   const lowerText = text.toLowerCase();
   for (const keyword of keywords) {
     const index = lowerText.indexOf(keyword.toLowerCase());
     if (index !== -1) {
-      // Extract section (up to 2000 chars after keyword)
-      return text.substring(index, Math.min(index + 2000, text.length));
+      // Extract section with specified length
+      return text.substring(index, Math.min(index + maxLength, text.length));
     }
   }
   return '';

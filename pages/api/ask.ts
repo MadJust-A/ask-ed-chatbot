@@ -9,9 +9,11 @@ try {
   console.log('PDF processing not available in this environment:', error instanceof Error ? error.message : String(error));
 }
 
-// In-memory cache for PDF and product data (consider Redis for production)
-const pdfCache = new Map<string, { content: string; timestamp: number }>();
-const CACHE_DURATION = 3600000; // 1 hour in milliseconds
+// Enhanced caching system for cost optimization
+const pdfCache = new Map<string, { content: string; timestamp: number; lastUsed: number }>();
+const productPageCache = new Map<string, { content: string; timestamp: number; lastUsed: number }>();
+const CACHE_DURATION = 2592000000; // 30 days in milliseconds
+const MAX_CACHE_SIZE = 1000; // Maximum number of cached items
 
 const openai = new OpenAI({
   apiKey: process.env.XAI_API_KEY,
@@ -44,27 +46,38 @@ interface AskResponse {
   debug?: string;
 }
 
-// CLEAN ASK ED CONFIGURATION - Starting Fresh
+// COST-OPTIMIZED ASK ED CONFIGURATION
 const ASK_ED_CONFIG = {
-  maxTokens: 300,
+  maxTokens: 150, // ~67 tokens for cost optimization ($10.00/1M for Grok-2-1212)
   temperature: 0.1,
-  maxResponseWords: 200
+  maxResponseWords: 100, // Concise responses to minimize output costs
+  maxProductPageTokens: 1600, // ~400 tokens for product page context
+  maxDatasheetTokens: 2000 // ~500 tokens for datasheet excerpt
 };
 
-const ASK_ED_SYSTEM_PROMPT = `You are Ask Ed, a friendly product assistant for Bravo Electro.
+const ASK_ED_SYSTEM_PROMPT = `You are Ask Ed, a professional product assistant for Bravo Electro.
 
-Your job is simple: Answer customer questions about the specific product they're viewing using only the information provided to you.
+CORE GUIDELINES:
 
-CORE RULES:
-1. Only use information from the product specifications provided - never guess or use outside knowledge
-2. If you don't have the information, say "I don't have that information" and suggest checking the datasheet or contacting Bravo experts
-3. Keep responses short and helpful (under 200 words)
-4. Only recommend Bravo Electro products and services
+SCOPE: Respond only about Bravo Electro products. Never mention or suggest other distributors, manufacturers, or external sources. If a question goes beyond Bravo Electro's offerings, politely redirect to Bravo experts.
 
-CONTACT INFO:
-For questions you can't answer: "Contact our Bravo Power Experts at 408-733-9090 or via web chat."
+ACCURACY: Base answers solely on the product page text and datasheet provided. Quote specs verbatim where possible (e.g., "Output: 24 volts, 0~5.0A, 120 watts" for HLG-120H-24A). If data is unclear or missing, do not guess—use the referral protocol.
 
-That's it. Be helpful, accurate, and concise.`;
+UNKNOWN ANSWERS: For any question about a power supply where you lack information from the product page or datasheet, respond: "I don't have that detail available. Please contact a Bravo Power Expert at 408-733-9090 (M-F 8am-5pm PST) or use our web chat below for assistance."
+
+PRICING/VOLUME PRICING: If asked about pricing or volume discounts, respond: "For current pricing or volume quotes, please fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a> or speak with a Bravo Team member."
+
+STOCK AVAILABILITY: If asked about stock or inventory, respond: "For stock details, please speak with a Bravo Team member via chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
+
+HYPERLINKS: When referencing datasheets or RFQ forms, hyperlink the descriptive text using proper HTML format with white color and underline styling.
+
+TONE AND EFFICIENCY: Be helpful, professional, and friendly. Start responses with a direct answer, then add context if needed. End with an offer for more help via Bravo channels if appropriate. Avoid unnecessary details to minimize token usage.
+
+RESPONSE STRUCTURE EXAMPLE:
+User: "Does the HLG-120H-24A have dimming?"
+Response: "The HLG-120H-24A is a non-dimming driver, per the product page. For more details, view the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>. Need help with alternatives? Contact a Bravo Power Expert at 408-733-9090 or use our web chat."
+
+Keep responses concise and cost-effective.`;
 
 function isRateLimited(userIP: string): boolean {
   const now = Date.now();
@@ -113,16 +126,84 @@ function validateInput(question: string): boolean {
   return !suspiciousPatterns.some(pattern => pattern.test(question));
 }
 
-function processAskEdResponse(answer: string, datasheetUrl?: string): string {
-  // Simple URL processing only
+function evictOldCacheEntries(cache: Map<string, { content: string; timestamp: number; lastUsed: number }>) {
+  const now = Date.now();
+  
+  // Remove expired entries
+  for (const [key, value] of cache.entries()) {
+    if (now - value.timestamp > CACHE_DURATION) {
+      cache.delete(key);
+    }
+  }
+  
+  // If still over limit, remove least recently used
+  if (cache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(cache.entries());
+    entries.sort((a, b) => a[1].lastUsed - b[1].lastUsed);
+    const toRemove = entries.slice(0, cache.size - MAX_CACHE_SIZE);
+    toRemove.forEach(([key]) => cache.delete(key));
+  }
+}
+
+function getCachedContent(cache: Map<string, { content: string; timestamp: number; lastUsed: number }>, key: string): string | null {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    cached.lastUsed = Date.now(); // Update last used time
+    return cached.content;
+  }
+  return null;
+}
+
+function setCachedContent(cache: Map<string, { content: string; timestamp: number; lastUsed: number }>, key: string, content: string) {
+  evictOldCacheEntries(cache);
+  cache.set(key, {
+    content,
+    timestamp: Date.now(),
+    lastUsed: Date.now()
+  });
+}
+
+function processAskEdResponse(answer: string, datasheetUrl?: string, productTitle?: string): string {
+  // Replace datasheet URL placeholder
   if (datasheetUrl) {
     answer = answer.replace(/\[DATASHEET_URL\]/g, datasheetUrl);
   }
   
-  // Fix any raw URLs to be hyperlinked
+  // Hyperlink RFQ Form references that aren't already linked
+  answer = answer.replace(
+    /(?<!href=['"][^'"]*)\bRFQ Form\b(?![^<]*<\/a>)/gi,
+    '<a href="https://www.bravoelectro.com/rfq-form" target="_blank" style="color: white; text-decoration: underline;">RFQ Form</a>'
+  );
+  
+  // Hyperlink datasheet references that aren't already linked
+  answer = answer.replace(
+    /(?<!href=['"][^'"]*)\bdatasheet\b(?![^<]*<\/a>)/gi,
+    datasheetUrl ? 
+      `<a href="${datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>` :
+      'datasheet'
+  );
+  
+  // Generate product URLs based on model number (convert to Bravo URL format)
+  if (productTitle) {
+    const modelMatch = productTitle.match(/^([A-Z0-9\-\.]+)/i);
+    if (modelMatch) {
+      const modelNumber = modelMatch[1];
+      const urlSlug = modelNumber.toLowerCase().replace(/\./g, '-');
+      const productUrl = `https://www.bravoelectro.com/${urlSlug}.html`;
+      
+      // Hyperlink product model references
+      const modelRegex = new RegExp(`\\b${modelNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b(?![^<]*<\/a>)`, 'gi');
+      answer = answer.replace(
+        modelRegex,
+        `<a href="${productUrl}" target="_blank" style="color: white; text-decoration: underline;">${modelNumber}</a>`
+      );
+    }
+  }
+  
+  // Fix any remaining raw URLs to be hyperlinked
   answer = answer.replace(
     /(https?:\/\/[^\s<]+)(?![^<]*>)(?![^<]*<\/a>)/gi,
-    '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
+    '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">link</a>'
   );
   
   return answer.trim();
@@ -130,11 +211,11 @@ function processAskEdResponse(answer: string, datasheetUrl?: string): string {
 
 
 async function fetchPDFContent(url: string): Promise<string> {
-  // Check cache first
-  const cached = pdfCache.get(url);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+  // Check cache first using new cache system
+  const cachedContent = getCachedContent(pdfCache, url);
+  if (cachedContent) {
     console.log('Using cached PDF content for:', url);
-    return cached.content;
+    return cachedContent;
   }
   
   // Skip PDF processing if library not available
@@ -223,12 +304,9 @@ ${pdfContent.substring(0, 4000)}
 `;
     }
     
-    // Cache the result with more content
-    const finalContent = combinedContent.substring(0, 20000); // Increased to 20KB for better coverage
-    pdfCache.set(url, {
-      content: finalContent,
-      timestamp: Date.now()
-    });
+    // Cache the result optimized for cost (500 tokens ~= 2000 characters)
+    const finalContent = combinedContent.substring(0, 2000); // ~500 tokens for cost optimization
+    setCachedContent(pdfCache, url, finalContent);
     
     console.log('PDF extraction complete. Sections found:', {
       electrical: !!sections.electrical,
@@ -292,10 +370,12 @@ export default async function handler(
   // Debug endpoint to check model
   if (question === "DEBUG_MODEL_CHECK") {
     return res.status(200).json({ 
-      answer: "Currently using model: grok-2-1212. Deployment successful!", 
+      answer: "Currently using model: grok-2-1212 with enhanced Bravo guidelines and cost optimization. Deployment successful!", 
       model: "grok-2-1212",
-      version: "2024-01-12",
-      cacheSize: pdfCache.size
+      version: "2024-12-16",
+      cacheSize: pdfCache.size,
+      productPageCacheSize: productPageCache.size,
+      maxTokens: ASK_ED_CONFIG.maxTokens
     });
   }
   const userIP = req.headers['x-forwarded-for']?.toString()?.split(',')[0] || 
@@ -330,14 +410,21 @@ export default async function handler(
       }
     }
 
+    // Optimize token usage for cost-effectiveness
+    const truncatedSpecs = productSpecs.substring(0, ASK_ED_CONFIG.maxProductPageTokens);
+    const truncatedDatasheet = datasheetContent.substring(0, ASK_ED_CONFIG.maxDatasheetTokens);
+    
     const userMessage = `Product: ${productTitle}
 
 Product Specifications:
-${productSpecs}
+${truncatedSpecs}
 
-${datasheetUrl ? `Datasheet Available: ${datasheetUrl}` : ''}
+${truncatedDatasheet ? `Datasheet Info:
+${truncatedDatasheet}` : ''}
 
-Customer Question: ${question}`;
+${datasheetUrl ? `Datasheet URL: ${datasheetUrl}` : ''}
+
+Question: ${question}`;
 
     const completion = await openai.chat.completions.create({
       model: "grok-2-1212",
@@ -359,7 +446,7 @@ Customer Question: ${question}`;
                   "I'm sorry, I couldn't process your question. Please contact a Bravo Power Expert for assistance.";
 
     // Enhanced post-processing for Ask ED responses
-    answer = processAskEdResponse(answer, datasheetUrl);
+    answer = processAskEdResponse(answer, datasheetUrl, productTitle);
 
     res.status(200).json({ answer });
 

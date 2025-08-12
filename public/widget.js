@@ -528,7 +528,7 @@
                         left: 0;
                         width: 100%;
                         height: 2px;
-                        background: linear-gradient(90deg, transparent, #ebb013, transparent);
+                        background: linear-gradient(90deg, transparent, #ff0000, transparent);
                         opacity: 0;
                         pointer-events: none;
                         z-index: 3;
@@ -581,7 +581,7 @@
                         /* CURRENT: Digital Flicker Effect (Back to what you liked) */
                         .logo-ai-transform {
                             transform: scale(1.08) !important;
-                            filter: contrast(1.2) brightness(1.1) hue-rotate(10deg) !important;
+                            filter: contrast(1.2) brightness(1.1) hue-rotate(180deg) saturate(1.5) !important;
                             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
                         }
                     </style>

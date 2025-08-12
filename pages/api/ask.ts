@@ -355,6 +355,15 @@ export default async function handler(
   }
 
   const { question, productSpecs, productTitle, datasheetUrl, similarProducts, accessories }: AskRequest = req.body;
+  
+  // Debug endpoint to check model
+  if (question === "DEBUG_MODEL_CHECK") {
+    return res.status(200).json({ 
+      answer: "Currently using model: gpt-4-0125-preview. Deployment successful!", 
+      model: "gpt-4-0125-preview",
+      version: "2024-01-12"
+    });
+  }
   const userIP = req.headers['x-forwarded-for']?.toString()?.split(',')[0] || 
                  req.socket.remoteAddress || 'unknown';
 

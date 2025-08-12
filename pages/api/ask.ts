@@ -44,171 +44,27 @@ interface AskResponse {
   debug?: string;
 }
 
-// Ask ED Configuration - Easy to modify behavior
+// CLEAN ASK ED CONFIGURATION - Starting Fresh
 const ASK_ED_CONFIG = {
-  // Core behavior settings
   maxTokens: 300,
   temperature: 0.1,
-  maxResponseWords: 200,
-  
-  // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
-  ledDriverTerminology: {
-    'dimming': {
-      primarySource: 'Product page Specifications section - look for "Dimming" field',
-      values: ['Non-Dimming', '3-in-1 Dimming', '0-10V Dimming', 'DALI', 'PWM'],
-      secondarySource: 'If dimming exists, check datasheet for dimming curves and details'
-    },
-    'constant current range': {
-      primarySource: 'Datasheet - look for "Constant Current Region" section',
-      note: 'Check the appropriate model row/column in the datasheet table'
-    },
-    'IP rating': {
-      primarySource: 'Product page Specifications - look for "IP Rating" or "Ingress Protection"',
-      secondarySource: 'Datasheet for detailed environmental specifications'
-    },
-    'efficiency': {
-      primarySource: 'Product page Specifications - may show typical efficiency %',
-      secondarySource: 'Datasheet for efficiency curves at different loads'
-    },
-    'PFC': {
-      primarySource: 'Product page Specifications - look for "Power Factor" or "PF"',
-      secondarySource: 'Datasheet for PFC values at different loads'
-    },
-    'THD': {
-      primarySource: 'Datasheet - Total Harmonic Distortion specifications',
-      note: 'Usually not on product page, check datasheet'
-    },
-    'inrush current': {
-      primarySource: 'Datasheet - look for "Inrush Current" or "Surge Current" specifications',
-      note: 'Critical for circuit breaker sizing'
-    },
-    'MTBF': {
-      primarySource: 'Product page Specifications or Features section',
-      secondarySource: 'Datasheet for detailed reliability data and conditions'
-    },
-    'flicker': {
-      primarySource: 'Datasheet - look for "Ripple & Noise" or "Output Ripple" specifications',
-      note: 'Lower ripple = less flicker'
-    },
-    'warranty': {
-      primarySource: 'Product page - usually in Features or Description section',
-      note: 'Typically 5-7 years for Mean Well LED drivers'
-    }
-  },
-  
-  // Response format templates
-  templates: {
-    missingSpec: "I don't see [REQUESTED_SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details.",
-    similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
-    accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts.",
-    accessoriesNotAvailable: "Contact our Bravo Power Experts at 408-733-9090 for compatible connector and accessory options.",
-    alternativeProducts: "Contact our Bravo Power Experts at 408-733-9090 for product recommendations.",
-    dimensions: "For specific mounting hole details, check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a>",
-    technicalCurves: "Detailed curve information requires reviewing the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> graphs.",
-    ledDriverSpecs: "Check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for detailed [TERM] specifications.",
-    nonProductQuestions: "I can answer questions about [PRODUCT_NAME]. For other topics, contact the Bravo Team at 408-733-9090.",
-    pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
-    stock: "Contact the Bravo Team for stock information at 408-733-9090 during business hours (M-F 8am-5pm PST).",
-    expertConsultation: "Consult our Bravo Power Experts for detailed guidance."
-  },
-  
-  // Language standardization rules
-  languageRules: {
-    forbiddenPhrases: [
-      'provided product specifications',
-      'detailed datasheet', 
-      'product specifications or detailed datasheet',
-      'not explicitly provided',
-      'doesn\'t explicitly provide',
-      'not explicitly stated',
-      'thinking',
-      'loading', 
-      'processing'
-    ],
-    replacements: {
-      'my database': ['provided product specifications', 'detailed datasheet', 'product specifications or detailed datasheet'],
-      'I don\'t see this information': ['not explicitly provided', 'doesn\'t explicitly provide', 'not explicitly stated'],
-      'datasheet': ['product manual', 'specification sheet', 'spec sheet'],
-      'checking my database': ['thinking', 'loading', 'processing']
-    }
-  },
-  
-  // Critical accuracy requirements  
-  accuracyRules: [
-    'ONLY provide information for the EXACT product being viewed',
-    'Never mix information from different products or use memory/training data', 
-    'Verify product model/part number matches question context',
-    'Never provide specs from memory or other products',
-    'For plugs/connectors: Only state what\'s explicitly mentioned in specs',
-    'Never assume features unless explicitly stated',
-    'For derating questions: State operating temp range, then refer to datasheet',
-    'DC input vs output: Carefully distinguish - never mix specifications',
-    'NEVER suggest non-Bravo products, competitors, or external solutions',
-    'ONLY recommend Bravo Electro products and services - you are a loyal Bravo employee',
-    'For LED drivers: Common terms like dimming curves, flicker, PWM frequency are in datasheet'
-  ]
+  maxResponseWords: 200
 };
 
-const ASK_ED_SYSTEM_PROMPT = `You are Ask Ed, a helpful Bravo Electro product assistant. 
+const ASK_ED_SYSTEM_PROMPT = `You are Ask Ed, a friendly product assistant for Bravo Electro.
 
-CORE PRINCIPLES:
-1. Use the product specifications provided as your primary source of truth
-2. Apply logical understanding to interpret customer questions naturally
-3. For dimming questions: Check the "Dimming" field in specs - if it says "Non-Dimming", this product does NOT have dimming capability
-4. For accessory/connector questions: If an Accessories section exists, refer customers to it
-5. Only recommend Bravo Electro products and services
-6. Be helpful and understand the intent behind questions, not just literal words
+Your job is simple: Answer customer questions about the specific product they're viewing using only the information provided to you.
 
-INFORMATION SOURCES (Priority Order):
-1. PRIMARY: Product page specifications and sections (Similar Products, Accessories)  
-2. SECONDARY: Linked datasheet (when product page lacks specific info)
-3. FALLBACK: Direct to Bravo experts for missing information
+CORE RULES:
+1. Only use information from the product specifications provided - never guess or use outside knowledge
+2. If you don't have the information, say "I don't have that information" and suggest checking the datasheet or contacting Bravo experts
+3. Keep responses short and helpful (under 200 words)
+4. Only recommend Bravo Electro products and services
 
-SECTION AVAILABILITY CHECK:
-- Similar Products section: [SIMILAR_PRODUCTS_AVAILABLE]
-- Accessories section: [ACCESSORIES_AVAILABLE]
-- Only suggest these sections if they contain actual products
+CONTACT INFO:
+For questions you can't answer: "Contact our Bravo Power Experts at 408-733-9090 or via web chat."
 
-UNDERSTANDING CUSTOMER INTENT:
-- Dimming questions include: "can it dim", "is it dimmable", "does it have dimming", "dimming capability", "brightness control"
-- Accessory questions include: "connectors", "cables", "plugs", "accessories", "what do I need to connect"
-- Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
-- Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
-
-IMPORTANT DATASHEET INFORMATION:
-When asked about technical specifications like:
-- Voltage adjustment range: Look in VOLTAGE ADJUSTMENT or ELECTRICAL SPECIFICATIONS sections
-- Constant current region: Look in CONSTANT CURRENT REGION or MODEL/SPECIFICATIONS TABLE
-- Output voltage/current: Check ELECTRICAL SPECIFICATIONS or model tables
-- Always provide specific numbers when available in the datasheet
-
-RESPONSE GUIDELINES:
-- For technical specs: Provide exact values from the datasheet (e.g., "Voltage adjustment range: 21.6-27.6V")
-- For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
-- For accessories when section exists: "Check the Accessories section on this page for compatible options"
-- Always be helpful and conversational while staying accurate
-
-CRITICAL ACCURACY RULES:
-- Verify product model/part number matches question context
-- Never provide specs from memory or other products  
-- For plugs/connectors: Only state what's explicitly mentioned in specs
-- Never assume features (international plugs, cable types, etc.) unless explicitly stated
-- For derating questions: State operating temp range, then refer to datasheet for curves
-- DC input vs output: Carefully distinguish - never mix input/output specifications
-- NEVER suggest non-Bravo products, competitors, or external solutions under ANY circumstances
-- For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming
-- For connector/accessory questions: ALWAYS refer to Accessories section if available, otherwise Bravo experts
-- Read specifications LITERALLY - "Non-Dimming" means NO dimming capability
-
-PERSONALITY & LOYALTY:
-- Happy, polite, knowledgeable Bravo Electro salesman
-- ONLY recommend Bravo Electro products and services - you are Bravo's best employee
-- Never suggest competitors, other websites, distributors, or non-Bravo solutions
-- Use Similar Products/Accessories sections when available to suggest Bravo alternatives
-- Limit responses to 200 words, keep concise (2-4 sentences for simple questions)
-- For complex technical questions, end with: "Consult our Bravo Power Experts for detailed guidance."
-
-Replace [DATASHEET_URL] with actual datasheet URL. All URLs must be hyperlinked with descriptive text.`;
+That's it. Be helpful, accurate, and concise.`;
 
 function isRateLimited(userIP: string): boolean {
   const now = Date.now();
@@ -258,73 +114,20 @@ function validateInput(question: string): boolean {
 }
 
 function processAskEdResponse(answer: string, datasheetUrl?: string): string {
-  // Apply language corrections using configuration
-  Object.entries(ASK_ED_CONFIG.languageRules.replacements).forEach(([replacement, phrases]) => {
-    phrases.forEach(phrase => {
-      const regex = new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-      answer = answer.replace(regex, replacement);
-    });
-  });
-
-  // URL and link processing
-  answer = processUrls(answer, datasheetUrl);
-  
-  // Response format standardization
-  answer = standardizeResponseFormats(answer);
-  
-  // Final cleanup
-  answer = answer.trim();
-  
-  return answer;
-}
-
-function processUrls(answer: string, datasheetUrl?: string): string {
-  // Fix markdown-style links [text](url) to proper HTML
-  answer = answer.replace(
-    /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gi,
-    '<a href="$2" target="_blank" style="color: white; text-decoration: underline;">$1</a>'
-  );
-  
-  // Replace [DATASHEET_URL] placeholder with actual URL
+  // Simple URL processing only
   if (datasheetUrl) {
     answer = answer.replace(/\[DATASHEET_URL\]/g, datasheetUrl);
   }
   
-  // Fix broken HTML links that are missing proper opening
-  answer = answer.replace(
-    /datasheet\s+target="_blank"\s+style="[^"]*">/gi,
-    '<a href="#" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
-  );
-  
-  // Catch any remaining raw URLs that weren't properly formatted
+  // Fix any raw URLs to be hyperlinked
   answer = answer.replace(
     /(https?:\/\/[^\s<]+)(?![^<]*>)(?![^<]*<\/a>)/gi,
     '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>'
   );
   
-  return answer;
+  return answer.trim();
 }
 
-function standardizeResponseFormats(answer: string): string {
-  // Ensure consistent format for common response patterns
-  const responsePatterns: [RegExp, string][] = [
-    // Standardize expert referral language
-    [/consult.{1,20}(?:bravo|power).{1,20}expert/gi, 'consult our Bravo Power Experts'],
-    [/contact.{1,20}(?:bravo|power).{1,20}(?:expert|team)/gi, 'contact our Bravo Team'],
-    
-    // Standardize phone number format
-    [/408[\-\s\.]*733[\-\s\.]*9090/g, '408-733-9090'],
-    
-    // Standardize business hours
-    [/(?:monday|mon).{1,30}(?:friday|fri).{1,30}(?:8|eight).{1,30}(?:5|five)/gi, 'M-F 8am-5pm PST'],
-  ];
-
-  responsePatterns.forEach(([pattern, replacement]) => {
-    answer = answer.replace(pattern, replacement);
-  });
-  
-  return answer;
-}
 
 async function fetchPDFContent(url: string): Promise<string> {
   // Check cache first
@@ -527,48 +330,12 @@ export default async function handler(
       }
     }
 
-    // Prepare section availability info for prompt
-    const systemPromptWithSections = ASK_ED_SYSTEM_PROMPT
-      .replace('[SIMILAR_PRODUCTS_AVAILABLE]', similarProducts ? 'YES - Section contains products' : 'NO - Section not available')
-      .replace('[ACCESSORIES_AVAILABLE]', accessories ? 'YES - Section contains products' : 'NO - Section not available');
-
-    // Pre-process specs to detect dimming explicitly
-    const hasDimmingSpec = productSpecs.toLowerCase().includes('dimming:');
-    const isNonDimming = productSpecs.toLowerCase().includes('dimming: non-dimming') || 
-                         productSpecs.toLowerCase().includes('dimming:non-dimming');
-    
-    const userMessage = `CONTEXT FOR YOUR RESPONSE:
-
-DIMMING INFO: ${isNonDimming ? 
-      'The specifications show "Dimming: Non-Dimming" - this is a non-dimming model.' :
-      hasDimmingSpec ? 
-      'Check the Dimming field in the specifications for dimming capabilities.' :
-      'No dimming information in specs - check datasheet if asked about dimming.'}
-
-ACCESSORIES INFO: ${accessories ? 
-      'An Accessories section is available on this page with compatible options.' : 
-      'No Accessories section on this page - refer to Bravo experts for accessory questions.'}
-
-Remember: Understand the customer's intent. Common variations:
-- "Can this dim?" = "Does this have dimming?"
-- "Any connectors?" = "What accessories are available?"
-- "Is it dimmable?" = "Does this support dimming?"
-
-Product: ${productTitle}
+    const userMessage = `Product: ${productTitle}
 
 Product Specifications:
 ${productSpecs}
 
-${similarProducts ? `Similar Products Available on This Page:
-${similarProducts}` : ''}
-
-${accessories ? `Accessories Available on This Page:
-${accessories}` : ''}
-
-${datasheetContent ? `Detailed Datasheet Information:
-${datasheetContent}` : ''}
-
-${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
+${datasheetUrl ? `Datasheet Available: ${datasheetUrl}` : ''}
 
 Customer Question: ${question}`;
 
@@ -577,7 +344,7 @@ Customer Question: ${question}`;
       messages: [
         {
           role: "system",
-          content: systemPromptWithSections
+          content: ASK_ED_SYSTEM_PROMPT
         },
         {
           role: "user",

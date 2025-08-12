@@ -578,14 +578,46 @@
                             animation: scanline 1.5s ease-in-out !important;
                         }
                         
-                        /* CURRENT: Pixelated Effect */
+                        /* CURRENT: Pixelated Effect with CSS Filters */
                         .logo-ai-transform {
-                            transform: scale(1.08) !important;
-                            filter: contrast(1.3) brightness(1.1) !important;
+                            transform: scale(1.15) !important;
+                            filter: 
+                                contrast(1.6) 
+                                brightness(1.2) 
+                                saturate(0.8)
+                                sepia(0.3)
+                                hue-rotate(10deg) !important;
                             image-rendering: pixelated !important;
                             image-rendering: -moz-crisp-edges !important;
                             image-rendering: crisp-edges !important;
-                            transition: all 0.2s ease !important;
+                            transition: all 0.2s steps(6, end) !important;
+                        }
+                        
+                        /* Add pixelated overlay effect */
+                        .logo-ai-transform::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: 
+                                repeating-linear-gradient(
+                                    0deg,
+                                    transparent,
+                                    transparent 2px,
+                                    rgba(0, 90, 166, 0.1) 2px,
+                                    rgba(0, 90, 166, 0.1) 4px
+                                ),
+                                repeating-linear-gradient(
+                                    90deg,
+                                    transparent,
+                                    transparent 2px,
+                                    rgba(235, 176, 19, 0.1) 2px,
+                                    rgba(235, 176, 19, 0.1) 4px
+                                );
+                            pointer-events: none;
+                            z-index: 10;
                         }
                         
                         /* PREVIOUS: Digital Flicker Effect - Uncomment to switch back */

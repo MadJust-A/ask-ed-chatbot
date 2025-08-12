@@ -416,7 +416,7 @@ ${datasheetUrl ? `Product Datasheet URL: ${datasheetUrl}` : ''}
 Customer Question: ${question}`;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4-0125-preview",
       messages: [
         {
           role: "system",

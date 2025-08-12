@@ -719,7 +719,7 @@
         
         toggle.addEventListener('mouseenter', () => {
             toggle.classList.add('logo-ai-transform');
-            toggle.classList.add('ai-hover-active'); // Re-enabled digital flicker animation
+            // toggle.classList.add('ai-hover-active'); // Disabled - back to clean effect
             
             // Trigger scanning effect
             if (scanline) {

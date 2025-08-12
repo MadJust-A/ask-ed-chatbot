@@ -556,49 +556,33 @@
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            12% { 
+                            10% { 
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            14% { 
-                                opacity: 0.94;
-                                transform: scale(1.015) rotate(0.4deg);
+                            15% { 
+                                opacity: 0.92;
+                                transform: scale(1.02) rotate(0.5deg);
                             }
-                            18% { 
-                                opacity: 0.94;
-                                transform: scale(1.015) rotate(0.4deg);
-                            }
-                            25% { 
-                                opacity: 1;
-                                transform: scale(1) rotate(0deg);
+                            35% { 
+                                opacity: 0.92;
+                                transform: scale(1.02) rotate(0.5deg);
                             }
                             40% { 
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            42% { 
-                                opacity: 0.92;
-                                transform: scale(1.02) rotate(-0.5deg);
-                            }
-                            46% { 
-                                opacity: 0.92;
-                                transform: scale(1.02) rotate(-0.5deg);
-                            }
                             55% { 
                                 opacity: 1;
                                 transform: scale(1) rotate(0deg);
                             }
-                            70% { 
-                                opacity: 1;
-                                transform: scale(1) rotate(0deg);
+                            60% { 
+                                opacity: 0.88;
+                                transform: scale(1.025) rotate(-0.6deg);
                             }
-                            72% { 
-                                opacity: 0.96;
-                                transform: scale(1.01) rotate(0.3deg);
-                            }
-                            75% { 
-                                opacity: 0.96;
-                                transform: scale(1.01) rotate(0.3deg);
+                            80% { 
+                                opacity: 0.88;
+                                transform: scale(1.025) rotate(-0.6deg);
                             }
                             85% { 
                                 opacity: 1;

@@ -291,7 +291,7 @@ function processUrls(answer: string, datasheetUrl?: string): string {
 
 function standardizeResponseFormats(answer: string): string {
   // Ensure consistent format for common response patterns
-  const responsePatterns = [
+  const responsePatterns: [RegExp, string][] = [
     // Standardize expert referral language
     [/consult.{1,20}(?:bravo|power).{1,20}expert/gi, 'consult our Bravo Power Experts'],
     [/contact.{1,20}(?:bravo|power).{1,20}(?:expert|team)/gi, 'contact our Bravo Team'],

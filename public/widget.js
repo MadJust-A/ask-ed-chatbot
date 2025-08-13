@@ -260,7 +260,107 @@
         const productInfo = extractProductInfo();
         console.log('Product info extracted:', productInfo);
         
-        const widgetHTML = `
+        // Add mobile-specific styles
+        const mobileStyles = `
+            <style>
+                @media (max-width: 768px) {
+                    #${WIDGET_ID} {
+                        right: 10px !important;
+                        bottom: 20px !important;
+                        top: auto !important;
+                        transform: none !important;
+                    }
+                    
+                    #${WIDGET_ID}-chat {
+                        position: fixed !important;
+                        top: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        left: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        max-width: none !important;
+                        max-height: none !important;
+                        border-radius: 0 !important;
+                        margin: 0 !important;
+                        z-index: 99999 !important;
+                    }
+                    
+                    #${WIDGET_ID}-searchbar {
+                        bottom: 80px !important;
+                        right: 10px !important;
+                        max-width: calc(100vw - 120px) !important;
+                    }
+                    
+                    #${WIDGET_ID}-welcome {
+                        right: 80px !important;
+                        bottom: 80px !important;
+                        max-width: 200px !important;
+                        font-size: 12px !important;
+                    }
+                    
+                    #${WIDGET_ID}-toggle {
+                        width: 60px !important;
+                        height: 60px !important;
+                    }
+                    
+                    #${WIDGET_ID} > div:last-child {
+                        width: 60px !important;
+                        height: 60px !important;
+                    }
+                    
+                    #${WIDGET_ID}-messages {
+                        padding: 15px !important;
+                        max-height: calc(100vh - 250px) !important;
+                    }
+                    
+                    #${WIDGET_ID}-chat-input {
+                        font-size: 16px !important;
+                    }
+                    
+                    #${WIDGET_ID}-input {
+                        font-size: 16px !important;
+                    }
+                    
+                    #${WIDGET_ID}-close {
+                        min-width: 44px !important;
+                        min-height: 44px !important;
+                        width: 44px !important;
+                        height: 44px !important;
+                    }
+                    
+                    #${WIDGET_ID}-chat-send {
+                        min-width: 60px !important;
+                        padding: 12px 16px !important;
+                    }
+                    
+                    #${WIDGET_ID}-send {
+                        width: 44px !important;
+                        height: 44px !important;
+                    }
+                    
+                    #${WIDGET_ID}-welcome-msg {
+                        font-size: 14px !important;
+                        padding: 15px !important;
+                    }
+                    
+                    /* Hide scanning effects on mobile for performance */
+                    #${WIDGET_ID}-scanline {
+                        display: none !important;
+                    }
+                }
+                
+                /* Ensure proper touch targets */
+                @media (pointer: coarse) {
+                    button, input, a {
+                        min-height: 44px;
+                        min-width: 44px;
+                    }
+                }
+            </style>
+        `;
+        
+        const widgetHTML = mobileStyles + `
             <div id="${WIDGET_ID}" style="
                 position: fixed;
                 right: 20px;
@@ -650,6 +750,9 @@
         let welcomeShown = false;
         let hasConversationStarted = false;
         
+        // Detect if mobile device
+        const isMobile = () => window.innerWidth <= 768;
+        
         // Update welcome text with product name
         const productName = productInfo.title ? 
             productInfo.title.split(' ').slice(0, 3).join(' ') : 'this product';
@@ -762,6 +865,13 @@
                         chat.style.opacity = '1';
                     }, 10);
                     isChatOpen = true;
+                    
+                    // Prevent body scroll on mobile
+                    if (isMobile()) {
+                        document.body.style.overflow = 'hidden';
+                        document.body.style.position = 'fixed';
+                        document.body.style.width = '100%';
+                    }
                 } else {
                     // Close chat window
                     chat.style.transform = 'translateY(10px)';
@@ -770,6 +880,13 @@
                         chat.style.display = 'none';
                     }, 300);
                     isChatOpen = false;
+                    
+                    // Restore body scroll on mobile
+                    if (isMobile()) {
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                    }
                 }
             } else {
                 // Original behavior - toggle search bar
@@ -806,6 +923,13 @@
                 chat.style.display = 'none';
             }, 300);
             isChatOpen = false;
+            
+            // Restore body scroll on mobile
+            if (isMobile()) {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }
         };
         
         // Close search/chat when clicking outside
@@ -826,6 +950,13 @@
                         chat.style.display = 'none';
                     }, 300);
                     isChatOpen = false;
+                    
+                    // Restore body scroll on mobile
+                    if (isMobile()) {
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                    }
                 }
             }
         });
@@ -937,6 +1068,13 @@
                 chat.style.opacity = '1';
             }, 10);
             isChatOpen = true;
+            
+            // Prevent body scroll on mobile
+            if (isMobile()) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+            }
             
             // Add user message to chat
             addMessage(question, true);

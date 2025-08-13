@@ -165,9 +165,10 @@ INFORMATION SOURCES (Priority Order):
 3. FALLBACK: Direct to Bravo experts for missing information
 
 SECTION AVAILABILITY CHECK:
-- Similar Products section: [SIMILAR_PRODUCTS_AVAILABLE]
-- Accessories section: [ACCESSORIES_AVAILABLE]
-- Only suggest these sections if they contain actual products
+- CRITICAL: Only suggest Similar Products section if similarProducts data is provided and contains actual product information
+- CRITICAL: Only suggest Accessories section if accessories data is provided and contains actual product information
+- NEVER suggest sections that don't exist on the current product page
+- If no similarProducts or accessories data provided, do NOT mention these sections
 
 UNDERSTANDING CUSTOMER INTENT:
 - Dimming questions include: "can it dim", "is it dimmable", "does it have dimming", "dimming capability", "brightness control"
@@ -306,7 +307,27 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
   // CRITICAL: Clean up AI's markdown hyperlinking mistakes
   console.log('Processing response - Original:', answer.substring(0, 200));
   
-  // Step 1: Remove ALL broken/invalid markdown links
+  // Step 1: Convert raw URLs to hyperlinks FIRST (before other processing)
+  answer = answer.replace(/\bhttps?:\/\/[^\s\)]+/gi, (url) => {
+    // Extract descriptive text based on URL pattern
+    let linkText = 'link';
+    
+    if (url.includes('bravoelectro.com/rfq-form')) {
+      linkText = 'RFQ Form';
+    } else if (url.includes('datasheet') || url.includes('.pdf')) {
+      linkText = 'datasheet';
+    } else if (url.includes('bravoelectro.com')) {
+      linkText = 'product page';
+    } else if (url.includes('meanwell')) {
+      linkText = 'datasheet';
+    } else {
+      linkText = 'here';
+    }
+    
+    return `<a href="${url}" target="_blank" style="color: white; text-decoration: underline;">${linkText}</a>`;
+  });
+  
+  // Step 2: Remove ALL broken/invalid markdown links
   // Remove [Mean Well](anything), [Mean](anything), [link](anything)
   answer = answer.replace(/\[(Mean Well|Mean|Meanwell|link)\]\([^)]*\)/gi, '$1');
   
@@ -395,28 +416,7 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
     }
   }
   
-  // Step 5: Convert any remaining raw URLs to hyperlinks
-  // Convert standalone URLs to descriptive hyperlinks
-  processedAnswer = processedAnswer.replace(/\bhttps?:\/\/[^\s\)]+/gi, (url) => {
-    // Extract descriptive text based on URL pattern
-    let linkText = 'link';
-    
-    if (url.includes('bravoelectro.com/rfq-form')) {
-      linkText = 'RFQ Form';
-    } else if (url.includes('datasheet') || url.includes('.pdf')) {
-      linkText = 'datasheet';
-    } else if (url.includes('bravoelectro.com')) {
-      linkText = 'product page';
-    } else if (url.includes('meanwell')) {
-      linkText = 'datasheet';
-    } else {
-      linkText = 'here';
-    }
-    
-    return `<a href="${url}" target="_blank" style="color: white; text-decoration: underline;">${linkText}</a>`;
-  });
-  
-  // Step 6: Clean up any remaining broken markdown or HTML
+  // Step 5: Clean up any remaining broken markdown or HTML
   // Remove empty markdown links
   processedAnswer = processedAnswer.replace(/\[([^\]]+)\]\(\)/g, '$1');
   
@@ -665,6 +665,10 @@ export default async function handler(
       }
     }
 
+    // Check section availability
+    const hasSimilarProducts = similarProducts && similarProducts.trim().length > 10;
+    const hasAccessories = accessories && accessories.trim().length > 10;
+    
     // Optimize token usage for cost-effectiveness
     const truncatedSpecs = productSpecs.substring(0, ASK_ED_CONFIG.maxProductPageTokens);
     const truncatedDatasheet = datasheetContent.substring(0, ASK_ED_CONFIG.maxDatasheetTokens);
@@ -679,14 +683,26 @@ ${truncatedDatasheet}` : ''}
 
 ${datasheetUrl ? `Datasheet URL: ${datasheetUrl}` : ''}
 
+${hasSimilarProducts ? `Similar Products Available:
+${similarProducts}` : 'Similar Products: None available on this page'}
+
+${hasAccessories ? `Accessories Available:
+${accessories}` : 'Accessories: None available on this page'}
+
 Question: ${question}`;
+
+    // Create dynamic system prompt with section availability
+    
+    const dynamicSystemPrompt = ASK_ED_SYSTEM_PROMPT
+      .replace('[SIMILAR_PRODUCTS_AVAILABLE]', hasSimilarProducts ? 'Available' : 'Not Available') 
+      .replace('[ACCESSORIES_AVAILABLE]', hasAccessories ? 'Available' : 'Not Available');
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: ASK_ED_SYSTEM_PROMPT
+          content: dynamicSystemPrompt
         },
         {
           role: "user",

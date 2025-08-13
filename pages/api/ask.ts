@@ -53,6 +53,8 @@ const ASK_ED_CONFIG = {
   maxTokens: 300,
   temperature: 0.1,
   maxResponseWords: 200,
+  maxProductPageTokens: 2000,
+  maxDatasheetTokens: 2000,
   
   // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
   ledDriverTerminology: {
@@ -72,6 +74,38 @@ const ASK_ED_CONFIG = {
     'efficiency': {
       primarySource: 'Product page Specifications - may show typical efficiency %',
       secondarySource: 'Datasheet for efficiency curves at different loads'
+    }
+  },
+  
+  // LED Driver Model Suffix Meanings - CRITICAL FOR ADJUSTABLE FEATURES
+  ledDriverSuffixes: {
+    'blank': {
+      description: 'IP67 with fixed Io (current output) and Vo (voltage output)',
+      adjustable: false,
+      dimming: false,
+      ipRating: 'IP67'
+    },
+    'A': {
+      description: 'IP65 with Io (current output) and Vo (voltage output) adjustable through built-in potentiometer',
+      adjustable: true,
+      adjustmentMethod: 'built-in potentiometer',
+      dimming: false,
+      ipRating: 'IP65'
+    },
+    'B': {
+      description: 'IP67 with 3-in-1 dimming function (1-10Vdc, 10V PWM signal and resistance)',
+      adjustable: false,
+      dimming: true,
+      dimmingTypes: ['1-10Vdc', '10V PWM', 'resistance'],
+      ipRating: 'IP67'
+    },
+    'AB': {
+      description: 'IP65 with Io (current output) and Vo (voltage output) adjustable through built-in potentiometer AND 3-in-1 dimming function',
+      adjustable: true,
+      adjustmentMethod: 'built-in potentiometer',
+      dimming: true,
+      dimmingTypes: ['1-10Vdc', '10V PWM', 'resistance'],
+      ipRating: 'IP65'
     }
   },
   
@@ -106,6 +140,9 @@ const ASK_ED_CONFIG = {
     'Never mix information from different products or use memory/training data', 
     'Verify product model/part number matches question context',
     'For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming',
+    'For LED drivers/power supplies: ALWAYS analyze model suffix to determine adjustable features - A=adjustable, B=dimming, AB=both, blank=fixed',
+    'When asked about adjustability: Check model suffix FIRST, then confirm with datasheet specs',
+    'Be explicit about suffix meanings: "The A suffix indicates adjustable output through built-in potentiometer"',
     'NEVER suggest non-Bravo products, competitors, or external solutions',
     'ONLY recommend Bravo Electro products and services - you are a loyal Bravo employee'
   ]
@@ -133,6 +170,7 @@ SECTION AVAILABILITY CHECK:
 
 UNDERSTANDING CUSTOMER INTENT:
 - Dimming questions include: "can it dim", "is it dimmable", "does it have dimming", "dimming capability", "brightness control"
+- Adjustable output questions include: "adjustable", "variable", "can I adjust", "potentiometer", "trim pot", "voltage adjustment", "current adjustment"
 - Accessory questions include: "connectors", "cables", "plugs", "accessories", "what do I need to connect"
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
@@ -154,6 +192,17 @@ CRITICAL ACCURACY RULES:
 - For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming
 - For connector/accessory questions: ALWAYS refer to Accessories section if available, otherwise Bravo experts
 - Read specifications LITERALLY - "Non-Dimming" means NO dimming capability
+
+LED DRIVER SUFFIX ANALYSIS - CRITICAL FOR ADJUSTABLE FEATURES:
+- ALWAYS analyze the model suffix (letters after the base model number) to determine adjustable features
+- Suffix meanings for LED drivers/power supplies:
+  • NO SUFFIX (blank): Fixed output current and voltage (not adjustable)
+  • "A" suffix: Output current AND voltage are ADJUSTABLE via built-in potentiometer (also changes IP rating to IP65)
+  • "B" suffix: Has 3-in-1 dimming function (1-10Vdc, PWM, resistance) but output is NOT adjustable
+  • "AB" suffix: BOTH adjustable output AND dimming functions (IP65 rating)
+- Examples: HLG-120H-12A = adjustable output, HLG-120H-12AB = adjustable + dimming, HLG-120H-12 = fixed output
+- When asked about adjustability: Check suffix FIRST, then confirm with datasheet specifications
+- Be explicit: "The 'A' suffix indicates this model has adjustable current and voltage output through a built-in potentiometer"
 
 PERSONALITY & LOYALTY:
 - Happy, polite, knowledgeable Bravo Electro salesman

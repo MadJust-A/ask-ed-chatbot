@@ -1,9 +1,20 @@
-# Ask ED Behavior Improvement Agent
+# Ask ED System Documentation & Behavior Guide
+
+## Current System Status
+- **Model**: GPT-4o-mini 
+- **API**: OpenAI (not XAI/Grok)
+- **Version**: Updated 2024-01-12
+- **Configuration**: Enhanced with structured `ASK_ED_CONFIG` object
 
 ## Purpose
-This file serves as a guide for creating a dedicated AI agent to help improve Ask ED's behavior based on user observations and feedback.
+This file serves as the complete documentation for Ask ED's behavior system and provides guidance for making improvements based on user feedback.
 
-## Agent Specification
+## System Architecture
+
+### Core Files
+1. **`/pages/api/ask.ts`** - Main API logic, system prompt, and configuration
+2. **`/public/widget.js`** - Frontend widget and product data extraction
+3. **`/config/ask-ed-behavior.md`** - Detailed behavior configuration reference
 
 ### Agent Identity
 - **Name**: Ask ED Behavior Analyst
@@ -16,28 +27,46 @@ This file serves as a guide for creating a dedicated AI agent to help improve As
 3. **Code Improvements**: Update post-processing functions and logic
 4. **Testing Guidance**: Suggest test cases to verify fixes
 
-### Configuration Areas for Easy Updates
+## Current ASK_ED_CONFIG Structure
 
-#### 1. Response Templates (`ASK_ED_CONFIG.templates`)
+### 1. Core Behavior Settings
+```javascript
+{
+  maxTokens: 300,          // Response length limit
+  temperature: 0.1,        // Response creativity (0.0-1.0)
+  maxResponseWords: 200    // Word count target
+}
+```
+
+### 2. LED Driver Terminology Guide
+- **Purpose**: Define where to find specific information
+- **Includes**: dimming, constant current range, IP rating, efficiency
+- **Usage**: References for consistent responses about technical specs
+
+### 3. Response Templates (`ASK_ED_CONFIG.templates`)
 - **When to modify**: User reports consistent response format issues
-- **Examples**:
-  - Pricing inquiries getting wrong response format
-  - Missing spec responses need different phrasing
-  - Similar product recommendations need adjustment
+- **Available templates**:
+  - `missingSpec`: When specification not available
+  - `similarProducts`: Referring to Similar Products section
+  - `accessories`: Referring to Accessories section  
+  - `pricing`: Pricing/quote inquiries
+  - `expertConsultation`: Complex technical questions
 
-#### 2. Language Rules (`ASK_ED_CONFIG.languageRules`)
-- **When to modify**: User reports forbidden phrases or incorrect language
+### 4. Language Rules (`ASK_ED_CONFIG.languageRules`)
+- **Purpose**: Standardize language and avoid forbidden phrases
+- **forbiddenPhrases**: Array of phrases to avoid
+- **replacements**: Object mapping replacements for forbidden phrases
 - **Examples**:
-  - AI says "thinking" instead of "checking my database"
-  - AI uses "product manual" instead of "datasheet"
-  - AI mentions "provided specifications" instead of "my database"
+  - Replace "provided specifications" → "my database"
+  - Replace "not explicitly provided" → "I don't see this information"
 
-#### 3. Accuracy Rules (`ASK_ED_CONFIG.accuracyRules`)
-- **When to modify**: User reports accuracy issues with specific scenarios
-- **Examples**:
-  - AI mixing up input/output specifications
-  - AI assuming features not explicitly mentioned
-  - AI providing wrong product information
+### 5. Accuracy Rules (`ASK_ED_CONFIG.accuracyRules`)
+- **Purpose**: Critical accuracy requirements as array of rules
+- **Key rules**:
+  - Only provide info for exact product being viewed
+  - Never mix information from different products
+  - Always check "Dimming" field first for LED drivers
+  - Never suggest non-Bravo products
 
 ### Common User Feedback Patterns & Solutions
 
@@ -99,27 +128,42 @@ Agent suggests test cases:
 - Edge cases to verify
 ```
 
-### Quick Reference: File Locations
+## Quick Reference: File Locations & Functions
 
-#### Primary Configuration
-- **File**: `/pages/api/ask.ts`
+### Primary Configuration
+- **File**: `/pages/api/ask.ts` (Lines 51-112)
 - **Object**: `ASK_ED_CONFIG`
-- **Purpose**: All behavioral settings and rules
+- **Purpose**: All behavioral settings, templates, rules, and terminology
 
-#### System Prompt
-- **File**: `/pages/api/ask.ts`
+### System Prompt  
+- **File**: `/pages/api/ask.ts` (Lines 114-166)
 - **Variable**: `ASK_ED_SYSTEM_PROMPT`
-- **Purpose**: Core AI instructions
+- **Purpose**: Core AI instructions and behavior guidelines
 
-#### Post-Processing
+### API Configuration
+- **Model**: `gpt-4o-mini` (Line 613)
+- **API Key**: `process.env.OPENAI_API_KEY` (Line 19)
+- **Temperature**: `ASK_ED_CONFIG.temperature` (0.1)
+- **Max Tokens**: `ASK_ED_CONFIG.maxTokens` (300)
+
+### Post-Processing Functions
 - **File**: `/pages/api/ask.ts`
-- **Functions**: `processAskEdResponse()`, `processUrls()`, `standardizeResponseFormats()`
-- **Purpose**: Clean and standardize AI responses
+- **Functions**: 
+  - `processAskEdResponse()` - Main response processing
+  - `processUrls()` - URL and hyperlink processing  
+  - `standardizeResponseFormats()` - Response standardization
+- **Purpose**: Clean, format, and enhance AI responses
 
-#### Data Extraction
+### Data Extraction (Frontend)
 - **File**: `/public/widget.js`
 - **Function**: `extractProductInfo()`
 - **Purpose**: Extract product specs, similar products, accessories from page
+- **Returns**: Object with title, specs, datasheetUrl, similarProducts, accessories
+
+### Debug & Testing
+- **Debug Command**: Type "DEBUG_MODEL_CHECK" in Ask ED
+- **Returns**: Current model, version, cache size, configuration
+- **Deployment Check**: Verifies GPT-4o-mini is active
 
 ### Example Agent Interaction
 

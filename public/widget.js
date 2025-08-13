@@ -304,23 +304,23 @@
                     
                     #${WIDGET_ID}-welcome {
                         position: fixed !important;
-                        right: 80px !important;
+                        right: 100px !important;
                         bottom: 30px !important;
                         left: 10px !important;
                         width: auto !important;
-                        max-width: calc(100vw - 100px) !important;
+                        max-width: calc(100vw - 120px) !important;
                         font-size: 16px !important;
                     }
                     
                     #${WIDGET_ID}-toggle {
-                        width: 60px !important;
+                        width: 80px !important;
                         height: auto !important;
                         object-fit: contain !important;
                     }
                     
                     #${WIDGET_ID} > div:last-child {
-                        width: 60px !important;
-                        height: 60px !important;
+                        width: 80px !important;
+                        height: 80px !important;
                     }
                     
                     #${WIDGET_ID}-messages {

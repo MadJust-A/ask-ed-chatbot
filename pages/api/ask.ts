@@ -54,7 +54,7 @@ const ASK_ED_CONFIG = {
   temperature: 0.1,
   maxResponseWords: 200,
   maxProductPageTokens: 2000,
-  maxDatasheetTokens: 3000,
+  maxDatasheetTokens: 5000,
   
   // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
   ledDriverTerminology: {
@@ -463,10 +463,24 @@ async function fetchPDFContent(url: string): Promise<string> {
     // Extract full PDF content
     let pdfContent = data.text;
     
-    // Enhanced datasheet extraction prioritizing model-specific adjustment ranges and tables
+    // Enhanced datasheet extraction - capturing full specification tables and embedded data
     const sections = {
-      // Model-specific tables - HIGHEST PRIORITY
-      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information', 'model table', 'specifications table'], 4000),
+      // CRITICAL: Extract full specification tables where constant current info lives
+      specificationTable: extractSection(pdfContent, [
+        'output voltage', 'output current', 'rated power', 'rated current',
+        'model', 'dc output', 'output', 'specification', 'electrical characteristics',
+        'electrical specification', 'specifications'
+      ], 8000), // Much larger to capture full tables
+      
+      // Model-specific tables and ordering info
+      modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information', 'model table', 'model list'], 4000),
+      
+      // Voltage/Current specifications - where constant current info is embedded
+      outputSpecs: extractSection(pdfContent, [
+        'voltage range', 'current range', 'output voltage range', 'output current range',
+        'constant current', 'cc region', 'constant voltage', 'cv region',
+        'voltage', 'current', 'vdc', 'adc', 'output'
+      ], 5000),
       
       // Adjustment ranges - CRITICAL for A suffix models
       voltageAdjust: extractSection(pdfContent, ['voltage adj. range', 'voltage adjustment', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range', 'voltage adj range'], 3000),
@@ -474,18 +488,6 @@ async function fetchPDFContent(url: string): Promise<string> {
       
       // Mechanical specifications - for mounting/installation questions
       mechanical: extractSection(pdfContent, ['mechanical specification', 'mechanical drawing', 'mounting', 'dimensions', 'hole diameter', 'hole spacing', 'mounting holes', 'mechanical dimension'], 2000),
-      
-      // Constant current region - Key for LED drivers - EXPANDED KEYWORDS AND LENGTH
-      constantCurrent: extractSection(pdfContent, [
-        'constant current region', 'constant current voltage range', 'constant current area', 'constant current zone',
-        'cc region', 'cc voltage range', 'cc area', 'current region', 'current area',
-        'constant current', 'constant current operation', 'constant current mode',
-        'output voltage range', 'voltage range for constant current', 'voltage range (constant current)',
-        'led voltage range', 'forward voltage range', 'operating voltage range'
-      ], 4000),
-      
-      // Electrical specifications
-      electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 3000),
       
       // Model suffix information
       suffixInfo: extractSection(pdfContent, ['model suffix', 'suffix code', 'model code', 'ordering information', 'model designation'], 1500),
@@ -500,18 +502,18 @@ async function fetchPDFContent(url: string): Promise<string> {
 
 `;
     
-    // Prioritize constant current region for LED drivers - HIGHEST PRIORITY
-    if (sections.constantCurrent) {
-      combinedContent += `CONSTANT CURRENT REGION:
-${sections.constantCurrent}
+    // HIGHEST PRIORITY: Full specification tables (where constant current info lives)
+    if (sections.specificationTable) {
+      combinedContent += `SPECIFICATION TABLE:
+${sections.specificationTable}
 
 `;
     }
     
-    // Always include electrical specs second
-    if (sections.electrical) {
-      combinedContent += `ELECTRICAL SPECIFICATIONS:
-${sections.electrical}
+    // Output specifications including voltage/current ranges
+    if (sections.outputSpecs) {
+      combinedContent += `OUTPUT SPECIFICATIONS:
+${sections.outputSpecs}
 
 `;
     }
@@ -559,22 +561,22 @@ ${sections.dimming}
     }
     
     // If critical sections are missing, include more raw content
-    if (!sections.constantCurrent || !sections.electrical || !sections.voltageAdjust) {
+    if (!sections.specificationTable || !sections.outputSpecs) {
       combinedContent += `ADDITIONAL DATASHEET TEXT:
-${pdfContent.substring(0, 4000)}
+${pdfContent.substring(0, 6000)}
 `;
     }
     
-    // Cache the result optimized for cost (750 tokens ~= 3000 characters)
-    const finalContent = combinedContent.substring(0, 3000); // ~750 tokens for better comprehension
+    // Increased limit for better specification table comprehension
+    const finalContent = combinedContent.substring(0, 5000); // ~1250 tokens for full spec tables
     setCachedContent(pdfCache, url, finalContent);
     
     console.log('PDF extraction complete. Sections found:', {
-      electrical: !!sections.electrical,
+      specificationTable: !!sections.specificationTable,
+      outputSpecs: !!sections.outputSpecs,
       voltageAdjust: !!sections.voltageAdjust,
       currentAdjust: !!sections.currentAdjust,
       mechanical: !!sections.mechanical,
-      constantCurrent: !!sections.constantCurrent,
       modelTable: !!sections.modelTable
     });
     

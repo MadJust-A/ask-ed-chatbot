@@ -143,6 +143,7 @@ const ASK_ED_CONFIG = {
     'For LED drivers/power supplies: ALWAYS analyze model suffix to determine adjustable features - A=adjustable, B=dimming, AB=both, blank=fixed',
     'When asked about adjustability: Check model suffix FIRST, then confirm with datasheet specs',
     'Be explicit about suffix meanings: "The A suffix indicates adjustable output through built-in potentiometer"',
+    'NEVER include raw URLs in responses - all URLs must be hyperlinked to descriptive text',
     'NEVER suggest non-Bravo products, competitors, or external solutions',
     'ONLY recommend Bravo Electro products and services - you are a loyal Bravo employee'
   ]
@@ -180,6 +181,7 @@ RESPONSE GUIDELINES:
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
 - For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
+- NEVER include raw URLs in responses - all URLs must be hyperlinked to descriptive text
 
 CRITICAL ACCURACY RULES:
 - Verify product model/part number matches question context
@@ -393,7 +395,28 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
     }
   }
   
-  // Step 5: Clean up any remaining broken markdown or HTML
+  // Step 5: Convert any remaining raw URLs to hyperlinks
+  // Convert standalone URLs to descriptive hyperlinks
+  processedAnswer = processedAnswer.replace(/\bhttps?:\/\/[^\s\)]+/gi, (url) => {
+    // Extract descriptive text based on URL pattern
+    let linkText = 'link';
+    
+    if (url.includes('bravoelectro.com/rfq-form')) {
+      linkText = 'RFQ Form';
+    } else if (url.includes('datasheet') || url.includes('.pdf')) {
+      linkText = 'datasheet';
+    } else if (url.includes('bravoelectro.com')) {
+      linkText = 'product page';
+    } else if (url.includes('meanwell')) {
+      linkText = 'datasheet';
+    } else {
+      linkText = 'here';
+    }
+    
+    return `<a href="${url}" target="_blank" style="color: white; text-decoration: underline;">${linkText}</a>`;
+  });
+  
+  // Step 6: Clean up any remaining broken markdown or HTML
   // Remove empty markdown links
   processedAnswer = processedAnswer.replace(/\[([^\]]+)\]\(\)/g, '$1');
   

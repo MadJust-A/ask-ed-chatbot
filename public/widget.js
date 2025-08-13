@@ -287,15 +287,27 @@
                     }
                     
                     #${WIDGET_ID}-searchbar {
-                        bottom: 80px !important;
+                        position: fixed !important;
+                        bottom: 90px !important;
                         right: 10px !important;
-                        max-width: calc(100vw - 120px) !important;
+                        left: auto !important;
+                        width: 280px !important;
+                        max-width: calc(100vw - 90px) !important;
+                        z-index: 10000 !important;
+                    }
+                    
+                    #${WIDGET_ID}-input {
+                        width: calc(100% - 60px) !important;
+                        pointer-events: auto !important;
                     }
                     
                     #${WIDGET_ID}-welcome {
+                        position: fixed !important;
                         right: 80px !important;
-                        bottom: 80px !important;
-                        max-width: 200px !important;
+                        bottom: 30px !important;
+                        left: 10px !important;
+                        width: auto !important;
+                        max-width: calc(100vw - 100px) !important;
                         font-size: 12px !important;
                     }
                     
@@ -816,43 +828,59 @@
             }
         }, 2000);
         
-        // Add AI-inspired hover effects for logo button
+        // Add AI-inspired hover effects for logo button (desktop only)
         const scanline = document.getElementById(`${WIDGET_ID}-scanline`);
         let scanlineTimeout;
+        let animationTimeout;
         
-        toggle.addEventListener('mouseenter', () => {
-            toggle.classList.add('logo-ai-transform');
-            // toggle.classList.add('ai-hover-active'); // Disabled - back to clean effect
-            
-            // Trigger scanning effect
-            if (scanline) {
-                scanline.classList.add('scanline-active');
+        if (!isMobile()) {
+            toggle.addEventListener('mouseenter', () => {
+                toggle.classList.add('logo-ai-transform');
+                // toggle.classList.add('ai-hover-active'); // Disabled - back to clean effect
                 
-                // Remove class after animation completes
-                clearTimeout(scanlineTimeout);
-                scanlineTimeout = setTimeout(() => {
-                    scanline.classList.remove('scanline-active');
-                }, 1500);
-            }
-        });
-        
-        toggle.addEventListener('mouseleave', () => {
-            toggle.classList.remove('logo-ai-transform');
-            toggle.classList.remove('ai-hover-active');
-            // Ensure no filter effects remain
-            toggle.style.filter = 'none';
-        });
+                // Trigger scanning effect
+                if (scanline) {
+                    scanline.classList.add('scanline-active');
+                    
+                    // Remove class after animation completes
+                    clearTimeout(scanlineTimeout);
+                    scanlineTimeout = setTimeout(() => {
+                        scanline.classList.remove('scanline-active');
+                    }, 1500);
+                }
+            });
+            
+            toggle.addEventListener('mouseleave', () => {
+                toggle.classList.remove('logo-ai-transform');
+                toggle.classList.remove('ai-hover-active');
+                // Ensure no filter effects remain
+                toggle.style.filter = 'none';
+            });
+        }
 
         // Click logo → toggle search bar or chat window
         toggle.onclick = (e) => {
             e.stopPropagation();
             
-            // Clear all hover effects and any lingering glow when clicked
-            toggle.classList.remove('logo-ai-transform', 'ai-hover-active');
-            toggle.style.filter = 'none'; // Remove any lingering filter effects
-            if (scanline) {
-                scanline.classList.remove('scanline-active');
-                clearTimeout(scanlineTimeout);
+            // On mobile, trigger animation on click
+            if (isMobile()) {
+                // Add animation effect
+                toggle.classList.add('logo-ai-transform');
+                
+                // Remove animation after a short delay
+                clearTimeout(animationTimeout);
+                animationTimeout = setTimeout(() => {
+                    toggle.classList.remove('logo-ai-transform');
+                    toggle.style.filter = 'none';
+                }, 600);
+            } else {
+                // Clear all hover effects and any lingering glow when clicked (desktop)
+                toggle.classList.remove('logo-ai-transform', 'ai-hover-active');
+                toggle.style.filter = 'none'; // Remove any lingering filter effects
+                if (scanline) {
+                    scanline.classList.remove('scanline-active');
+                    clearTimeout(scanlineTimeout);
+                }
             }
             
             // If conversation has started, toggle chat window instead

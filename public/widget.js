@@ -290,15 +290,16 @@
                         position: fixed !important;
                         bottom: 90px !important;
                         right: 10px !important;
-                        left: auto !important;
-                        width: 280px !important;
-                        max-width: calc(100vw - 90px) !important;
+                        left: 10px !important;
+                        width: calc(100% - 20px) !important;
+                        max-width: none !important;
                         z-index: 10000 !important;
                     }
                     
                     #${WIDGET_ID}-input {
                         width: calc(100% - 60px) !important;
                         pointer-events: auto !important;
+                        font-size: 16px !important;
                     }
                     
                     #${WIDGET_ID}-welcome {
@@ -308,12 +309,13 @@
                         left: 10px !important;
                         width: auto !important;
                         max-width: calc(100vw - 100px) !important;
-                        font-size: 12px !important;
+                        font-size: 16px !important;
                     }
                     
                     #${WIDGET_ID}-toggle {
                         width: 60px !important;
-                        height: 60px !important;
+                        height: auto !important;
+                        object-fit: contain !important;
                     }
                     
                     #${WIDGET_ID} > div:last-child {
@@ -327,10 +329,6 @@
                     }
                     
                     #${WIDGET_ID}-chat-input {
-                        font-size: 16px !important;
-                    }
-                    
-                    #${WIDGET_ID}-input {
                         font-size: 16px !important;
                     }
                     
@@ -352,13 +350,13 @@
                     }
                     
                     #${WIDGET_ID}-welcome-msg {
-                        font-size: 14px !important;
+                        font-size: 16px !important;
                         padding: 15px !important;
                     }
                     
-                    /* Hide scanning effects on mobile for performance */
+                    /* Enable scanning effects on mobile for click animation */
                     #${WIDGET_ID}-scanline {
-                        display: none !important;
+                        display: block !important;
                     }
                 }
                 
@@ -866,6 +864,17 @@
             if (isMobile()) {
                 // Add animation effect
                 toggle.classList.add('logo-ai-transform');
+                
+                // Trigger scanning effect on mobile
+                if (scanline) {
+                    scanline.classList.add('scanline-active');
+                    
+                    // Remove scanline class after animation completes
+                    clearTimeout(scanlineTimeout);
+                    scanlineTimeout = setTimeout(() => {
+                        scanline.classList.remove('scanline-active');
+                    }, 1500);
+                }
                 
                 // Remove animation after a short delay
                 clearTimeout(animationTimeout);

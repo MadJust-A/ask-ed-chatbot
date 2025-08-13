@@ -54,7 +54,7 @@ const ASK_ED_CONFIG = {
   temperature: 0.1,
   maxResponseWords: 200,
   maxProductPageTokens: 2000,
-  maxDatasheetTokens: 2000,
+  maxDatasheetTokens: 3000,
   
   // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
   ledDriverTerminology: {
@@ -64,8 +64,9 @@ const ASK_ED_CONFIG = {
       secondarySource: 'If dimming exists, check datasheet for dimming curves and details'
     },
     'constant current range': {
-      primarySource: 'Datasheet - look for "Constant Current Region" section',
-      note: 'Check the appropriate model row/column in the datasheet table'
+      primarySource: 'Datasheet - look for "Constant Current Region", "Constant Current Voltage Range", or "CC Region" section',
+      note: 'Check the appropriate model row/column in the datasheet table - often expressed as voltage range (e.g., 18-36V)',
+      aliases: ['constant current voltage range', 'cc region', 'led voltage range', 'forward voltage range']
     },
     'IP rating': {
       primarySource: 'Product page Specifications - look for "IP Rating" or "Ingress Protection"',
@@ -474,8 +475,14 @@ async function fetchPDFContent(url: string): Promise<string> {
       // Mechanical specifications - for mounting/installation questions
       mechanical: extractSection(pdfContent, ['mechanical specification', 'mechanical drawing', 'mounting', 'dimensions', 'hole diameter', 'hole spacing', 'mounting holes', 'mechanical dimension'], 2000),
       
-      // Constant current region - Key for LED drivers
-      constantCurrent: extractSection(pdfContent, ['constant current region', 'constant current', 'cc region', 'current region', 'constant current area'], 2000),
+      // Constant current region - Key for LED drivers - EXPANDED KEYWORDS AND LENGTH
+      constantCurrent: extractSection(pdfContent, [
+        'constant current region', 'constant current voltage range', 'constant current area', 'constant current zone',
+        'cc region', 'cc voltage range', 'cc area', 'current region', 'current area',
+        'constant current', 'constant current operation', 'constant current mode',
+        'output voltage range', 'voltage range for constant current', 'voltage range (constant current)',
+        'led voltage range', 'forward voltage range', 'operating voltage range'
+      ], 4000),
       
       // Electrical specifications
       electrical: extractSection(pdfContent, ['electrical specification', 'electrical characteristics', 'electrical spec'], 3000),
@@ -493,7 +500,15 @@ async function fetchPDFContent(url: string): Promise<string> {
 
 `;
     
-    // Always include electrical specs first
+    // Prioritize constant current region for LED drivers - HIGHEST PRIORITY
+    if (sections.constantCurrent) {
+      combinedContent += `CONSTANT CURRENT REGION:
+${sections.constantCurrent}
+
+`;
+    }
+    
+    // Always include electrical specs second
     if (sections.electrical) {
       combinedContent += `ELECTRICAL SPECIFICATIONS:
 ${sections.electrical}
@@ -529,13 +544,6 @@ ${sections.suffixInfo}
 `;
     }
     
-    if (sections.constantCurrent) {
-      combinedContent += `CONSTANT CURRENT REGION:
-${sections.constantCurrent}
-
-`;
-    }
-    
     if (sections.modelTable) {
       combinedContent += `MODEL/SPECIFICATIONS TABLE:
 ${sections.modelTable}
@@ -550,15 +558,15 @@ ${sections.dimming}
 `;
     }
     
-    // If sections are missing, include more raw content
-    if (!sections.electrical || !sections.voltageAdjust) {
+    // If critical sections are missing, include more raw content
+    if (!sections.constantCurrent || !sections.electrical || !sections.voltageAdjust) {
       combinedContent += `ADDITIONAL DATASHEET TEXT:
 ${pdfContent.substring(0, 4000)}
 `;
     }
     
-    // Cache the result optimized for cost (500 tokens ~= 2000 characters)
-    const finalContent = combinedContent.substring(0, 2000); // ~500 tokens for cost optimization
+    // Cache the result optimized for cost (750 tokens ~= 3000 characters)
+    const finalContent = combinedContent.substring(0, 3000); // ~750 tokens for better comprehension
     setCachedContent(pdfCache, url, finalContent);
     
     console.log('PDF extraction complete. Sections found:', {

@@ -658,9 +658,9 @@ export default async function handler(
   // Debug endpoint to check model
   if (question === "DEBUG_MODEL_CHECK") {
     return res.status(200).json({ 
-      answer: "Currently using model: gpt-4o-mini with enhanced Bravo guidelines. Deployment successful!", 
-      model: "gpt-4o-mini",
-      version: "2024-01-12",
+      answer: "Currently using hybrid model: gpt-4o for technical specs, gpt-4o-mini for general questions. Deployment successful!", 
+      model: "hybrid: gpt-4o + gpt-4o-mini",
+      version: "2024-12-17",
       cacheSize: pdfCache.size,
       productPageCacheSize: productPageCache.size,
       maxTokens: ASK_ED_CONFIG.maxTokens
@@ -688,6 +688,26 @@ export default async function handler(
   }
 
   try {
+    // Determine which model to use based on question type
+    const technicalSpecKeywords = [
+      'constant current', 'voltage range', 'current range', 'adjustment range',
+      'voltage adj', 'current adj', 'output voltage', 'output current',
+      'electrical spec', 'power rating', 'efficiency', 'power factor',
+      'derating', 'temperature', 'protection', 'ripple', 'regulation',
+      'cc region', 'cv region', 'adjustable', 'potentiometer'
+    ];
+    
+    const questionLower = question.toLowerCase();
+    const isTechnicalSpec = technicalSpecKeywords.some(keyword => questionLower.includes(keyword));
+    const hasAdjustableSuffix = productTitle.includes('-A') || productTitle.includes('-AB');
+    
+    // Use GPT-4o for technical specs, tables, and adjustable models
+    const useAdvancedModel = isTechnicalSpec || (hasAdjustableSuffix && questionLower.includes('adjust'));
+    const selectedModel = useAdvancedModel ? "gpt-4o" : "gpt-4o-mini";
+    
+    console.log('Question type:', isTechnicalSpec ? 'Technical Specification' : 'General');
+    console.log('Selected model:', selectedModel);
+    
     // Fetch PDF datasheet content if available
     let datasheetContent = '';
     if (datasheetUrl) {
@@ -731,7 +751,7 @@ Question: ${question}`;
       .replace('[ACCESSORIES_AVAILABLE]', hasAccessories ? 'Available' : 'Not Available');
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: selectedModel,
       messages: [
         {
           role: "system",
@@ -751,8 +771,14 @@ Question: ${question}`;
 
     // Enhanced post-processing for Ask ED responses
     answer = processAskEdResponse(answer, datasheetUrl, productTitle);
+    
+    // Add model info to response for debugging (remove in production if desired)
+    const responseData: AskResponse = { 
+      answer,
+      model: selectedModel
+    };
 
-    res.status(200).json({ answer });
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error('OpenAI API error:', error);

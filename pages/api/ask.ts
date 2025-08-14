@@ -181,24 +181,35 @@ UNDERSTANDING CUSTOMER INTENT:
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
 
-INTERPRETING SPECIFICATION TABLES - CRITICAL MODEL MATCHING:
+INTERPRETING SPECIFICATION TABLES - CRITICAL MODEL AND COLUMN MATCHING:
 - MOST IMPORTANT: You MUST match the EXACT model number being viewed (provided as "Product:")
 - Specification tables contain MULTIPLE rows for different model variants (e.g., HLG-120H-12A, HLG-120H-24A, HLG-120H-36A, HLG-120H-48A)
 - NEVER provide specs from a different model row - this is a critical error
 - Process for finding specs:
   1. Identify the EXACT model number from "Product:" (e.g., HLG-120H-48A)
   2. Find that EXACT model's row in the specification table
-  3. Read the values from THAT ROW ONLY
-  4. VERIFY: Before answering, confirm the model number matches
-- "Constant Current Region" column shows voltage range for THAT specific model
-- "Voltage ADJ. Range" column shows adjustment range for THAT specific model
-- Example: For HLG-120H-48A, use ONLY the HLG-120H-48A row, NOT HLG-120H-36A or HLG-120H-42
-- If you cannot find the exact model match, say "I cannot find specifications for this exact model"
+  3. Identify the CORRECT COLUMN for the requested specification
+  4. Read the value from the INTERSECTION of the correct row AND column
+  5. VERIFY: Confirm you're reading the right column (not confusing similar columns)
+
+CRITICAL COLUMN DIFFERENTIATION:
+- "Constant Current Region" column: Shows the voltage range where constant current is maintained (e.g., "24~48V")
+- "Voltage ADJ. Range" column: Shows the adjustment range for output voltage via potentiometer (e.g., "43.2~52.8V")
+- These are TWO DIFFERENT columns with DIFFERENT values
+- When asked for "voltage adjustment range" → Read "Voltage ADJ. Range" column ONLY
+- When asked for "constant current region/range" → Read "Constant Current Region" column ONLY
+- DO NOT confuse these columns - they contain different information
+- Example for HLG-120H-48A:
+  • Constant Current Region might be: "24~48V"
+  • Voltage ADJ. Range might be: "43.2~52.8V"
+  • These are DIFFERENT specifications from DIFFERENT columns
 
 RESPONSE GUIDELINES:
-- For constant current region: Look for "Constant Current Region" in the specification table and provide the exact range (e.g., "The constant current region is 18-36V")
-- For voltage adjustment: Look for "Voltage ADJ. Range" in the specification table and provide the exact range (e.g., "The voltage adjustment range is 21.6-27.6V")
-- For technical specs: Always provide exact values from the datasheet tables, not calculated or assumed values
+- For constant current region: Look ONLY at "Constant Current Region" column, provide exact value (e.g., "The constant current region is 24-48V")
+- For voltage adjustment: Look ONLY at "Voltage ADJ. Range" column, provide exact value (e.g., "The voltage adjustment range is 43.2-52.8V")
+- CRITICAL: These are DIFFERENT columns - never give constant current values when asked for adjustment range
+- For current adjustment: Look for "Current ADJ. Range" column if available
+- For technical specs: Always provide exact values from the correct column in the datasheet tables
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
 - For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
@@ -692,9 +703,10 @@ export default async function handler(
     const technicalSpecKeywords = [
       'constant current', 'voltage range', 'current range', 'adjustment range',
       'voltage adj', 'current adj', 'output voltage', 'output current',
+      'voltage adjustment', 'current adjustment', 'adjust the voltage', 'adjust the current',
       'electrical spec', 'power rating', 'efficiency', 'power factor',
       'derating', 'temperature', 'protection', 'ripple', 'regulation',
-      'cc region', 'cv region', 'adjustable', 'potentiometer'
+      'cc region', 'cv region', 'adjustable', 'potentiometer', 'trim', 'tuning'
     ];
     
     const questionLower = question.toLowerCase();

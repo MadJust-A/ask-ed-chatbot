@@ -54,7 +54,7 @@ const ASK_ED_CONFIG = {
   temperature: 0.1,
   maxResponseWords: 200,
   maxProductPageTokens: 2000,
-  maxDatasheetTokens: 5000,
+  maxDatasheetTokens: 8000,
   
   // LED Driver Terminology Guide - WHERE TO FIND SPECIFIC INFO
   ledDriverTerminology: {
@@ -174,12 +174,24 @@ SECTION AVAILABILITY CHECK:
 UNDERSTANDING CUSTOMER INTENT:
 - Dimming questions include: "can it dim", "is it dimmable", "does it have dimming", "dimming capability", "brightness control"
 - Adjustable output questions include: "adjustable", "variable", "can I adjust", "potentiometer", "trim pot", "voltage adjustment", "current adjustment"
+- Constant current questions include: "constant current region", "constant current voltage range", "cc region", "cc voltage range", "led voltage range"
 - Accessory questions include: "connectors", "cables", "plugs", "accessories", "what do I need to connect"
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
 
+INTERPRETING SPECIFICATION TABLES - CRITICAL:
+- Specification tables contain rows for different model variants with columns for specs
+- "Constant Current Region" appears as a column showing voltage range (e.g., "18-36V", "24-48V")
+- "Voltage ADJ. Range" appears as a column showing adjustment range (e.g., "21.6-27.6V", "43.2-55.2V")
+- Match the exact model number to find the correct row in the table
+- Look for both the specification name AND the values in the same row
+- Common table headers: Model, Output Voltage, Output Current, Constant Current Region, Voltage ADJ. Range
+- If a spec shows a range like "18-36V", that IS the answer - provide it exactly
+
 RESPONSE GUIDELINES:
-- For technical specs: Provide exact values from the datasheet (e.g., "Voltage adjustment range: 21.6-27.6V")
+- For constant current region: Look for "Constant Current Region" in the specification table and provide the exact range (e.g., "The constant current region is 18-36V")
+- For voltage adjustment: Look for "Voltage ADJ. Range" in the specification table and provide the exact range (e.g., "The voltage adjustment range is 21.6-27.6V")
+- For technical specs: Always provide exact values from the datasheet tables, not calculated or assumed values
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
 - For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
@@ -467,20 +479,22 @@ async function fetchPDFContent(url: string): Promise<string> {
     const sections = {
       // CRITICAL: Extract full specification tables where constant current info lives
       specificationTable: extractSection(pdfContent, [
+        'constant current region', 'voltage adj. range', 'voltage adj range', 'adj. range',
         'output voltage', 'output current', 'rated power', 'rated current',
         'model', 'dc output', 'output', 'specification', 'electrical characteristics',
-        'electrical specification', 'specifications'
-      ], 8000), // Much larger to capture full tables
+        'electrical specification', 'specifications', 'electrical spec'
+      ], 10000), // Maximum extraction to capture full tables with all columns
       
       // Model-specific tables and ordering info
       modelTable: extractSection(pdfContent, ['model no', 'part number', 'ordering information', 'model table', 'model list'], 4000),
       
       // Voltage/Current specifications - where constant current info is embedded
       outputSpecs: extractSection(pdfContent, [
+        'constant current region', 'voltage adj. range', 'voltage adj range', 'adj. range',
         'voltage range', 'current range', 'output voltage range', 'output current range',
         'constant current', 'cc region', 'constant voltage', 'cv region',
-        'voltage', 'current', 'vdc', 'adc', 'output'
-      ], 5000),
+        'voltage', 'current', 'vdc', 'adc', 'output', 'v adj', 'i adj'
+      ], 6000),
       
       // Adjustment ranges - CRITICAL for A suffix models
       voltageAdjust: extractSection(pdfContent, ['voltage adj. range', 'voltage adjustment', 'vadj', 'output voltage adjustment', 'potentiometer', 'trim pot', 'adjustment range', 'voltage adj range'], 3000),
@@ -567,8 +581,8 @@ ${pdfContent.substring(0, 6000)}
 `;
     }
     
-    // Increased limit for better specification table comprehension
-    const finalContent = combinedContent.substring(0, 5000); // ~1250 tokens for full spec tables
+    // Maximum extraction for complete specification tables
+    const finalContent = combinedContent.substring(0, 8000); // ~2000 tokens for complete tables
     setCachedContent(pdfCache, url, finalContent);
     
     console.log('PDF extraction complete. Sections found:', {

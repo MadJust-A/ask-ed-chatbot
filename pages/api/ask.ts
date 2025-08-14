@@ -137,9 +137,11 @@ const ASK_ED_CONFIG = {
   
   // Critical accuracy requirements  
   accuracyRules: [
-    'ONLY provide information for the EXACT product being viewed',
+    'ONLY provide information for the EXACT product model being viewed - match model number precisely',
+    'When reading tables, use ONLY the row for the current model (e.g., HLG-120H-48A row for HLG-120H-48A)',
+    'NEVER mix information from different model variants in the same table',
     'Never mix information from different products or use memory/training data', 
-    'Verify product model/part number matches question context',
+    'Verify product model/part number matches question context exactly',
     'For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming',
     'For LED drivers/power supplies: ALWAYS analyze model suffix to determine adjustable features - A=adjustable, B=dimming, AB=both, blank=fixed',
     'When asked about adjustability: Check model suffix FIRST, then confirm with datasheet specs',
@@ -179,14 +181,19 @@ UNDERSTANDING CUSTOMER INTENT:
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
 
-INTERPRETING SPECIFICATION TABLES - CRITICAL:
-- Specification tables contain rows for different model variants with columns for specs
-- "Constant Current Region" appears as a column showing voltage range (e.g., "18-36V", "24-48V")
-- "Voltage ADJ. Range" appears as a column showing adjustment range (e.g., "21.6-27.6V", "43.2-55.2V")
-- Match the exact model number to find the correct row in the table
-- Look for both the specification name AND the values in the same row
-- Common table headers: Model, Output Voltage, Output Current, Constant Current Region, Voltage ADJ. Range
-- If a spec shows a range like "18-36V", that IS the answer - provide it exactly
+INTERPRETING SPECIFICATION TABLES - CRITICAL MODEL MATCHING:
+- MOST IMPORTANT: You MUST match the EXACT model number being viewed (provided as "Product:")
+- Specification tables contain MULTIPLE rows for different model variants (e.g., HLG-120H-12A, HLG-120H-24A, HLG-120H-36A, HLG-120H-48A)
+- NEVER provide specs from a different model row - this is a critical error
+- Process for finding specs:
+  1. Identify the EXACT model number from "Product:" (e.g., HLG-120H-48A)
+  2. Find that EXACT model's row in the specification table
+  3. Read the values from THAT ROW ONLY
+  4. VERIFY: Before answering, confirm the model number matches
+- "Constant Current Region" column shows voltage range for THAT specific model
+- "Voltage ADJ. Range" column shows adjustment range for THAT specific model
+- Example: For HLG-120H-48A, use ONLY the HLG-120H-48A row, NOT HLG-120H-36A or HLG-120H-42
+- If you cannot find the exact model match, say "I cannot find specifications for this exact model"
 
 RESPONSE GUIDELINES:
 - For constant current region: Look for "Constant Current Region" in the specification table and provide the exact range (e.g., "The constant current region is 18-36V")
@@ -198,7 +205,9 @@ RESPONSE GUIDELINES:
 - NEVER include raw URLs in responses - all URLs must be hyperlinked to descriptive text
 
 CRITICAL ACCURACY RULES:
-- Verify product model/part number matches question context
+- ABSOLUTE PRIORITY: Verify product model/part number matches EXACTLY - no exceptions
+- When reading specification tables, ONLY use data from the row matching the current product model
+- NEVER provide specs from a different model variant (e.g., don't give HLG-120H-36A specs for HLG-120H-48A)
 - Never provide specs from memory or other products  
 - For plugs/connectors: Only state what's explicitly mentioned in specs
 - Never assume features (international plugs, cable types, etc.) unless explicitly stated
@@ -697,12 +706,12 @@ export default async function handler(
     const truncatedSpecs = productSpecs.substring(0, ASK_ED_CONFIG.maxProductPageTokens);
     const truncatedDatasheet = datasheetContent.substring(0, ASK_ED_CONFIG.maxDatasheetTokens);
     
-    const userMessage = `Product: ${productTitle}
+    const userMessage = `CURRENT PRODUCT MODEL (IMPORTANT - MATCH EXACTLY): ${productTitle}
 
 Product Specifications:
 ${truncatedSpecs}
 
-${truncatedDatasheet ? `Datasheet Info:
+${truncatedDatasheet ? `Datasheet Info (USE ONLY DATA FOR MODEL: ${productTitle}):
 ${truncatedDatasheet}` : ''}
 
 ${datasheetUrl ? `Datasheet URL: ${datasheetUrl}` : ''}

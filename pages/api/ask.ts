@@ -112,11 +112,11 @@ const ASK_ED_CONFIG = {
   
   // Response format templates
   templates: {
-    missingSpec: "I don't have that information in my database. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details or contact a Bravo Power Expert.",
+    missingSpec: "I don't have that information in my database. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details or contact a Bravo Power Expert via web chat or call 408-733-9090.",
     similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
-    accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts.",
+    accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts via web chat or call 408-733-9090.",
     pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
-    expertConsultation: "Consult our Bravo Power Experts for detailed guidance."
+    expertConsultation: "Consult our Bravo Power Experts via web chat or call 408-733-9090 for detailed guidance."
   },
   
   // Language standardization rules
@@ -222,7 +222,7 @@ RESPONSE GUIDELINES:
 - For 3-in-1 dimming: If it includes the asked method, say YES and explain all methods
 - Example: Asked about 0-10V, has "3-in-1 with 0-10V, PWM, resistance" → "Yes, this model has 0-10V dimming as part of its 3-in-1 dimming capability"
 - CRITICAL: Answer the actual question - if they ask about X and product has X, say YES
-- When you don't know: Say "I don't have that information in my database" and refer to datasheet or Bravo Power Experts
+- When you don't know: Say "I don't have that information in my database" and refer to datasheet or Bravo Power Experts via web chat or call 408-733-9090
 - NEVER say "not in product specifications" or "not in documentation" - always say "not in my database"
 - For technical specs: Always provide exact values from the correct column in the datasheet tables
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
@@ -266,7 +266,7 @@ PERSONALITY & LOYALTY:
 - Never suggest competitors, other websites, distributors, or non-Bravo solutions
 - Use Similar Products/Accessories sections when available to suggest Bravo alternatives
 - Limit responses to 200 words, keep concise (2-4 sentences for simple questions)
-- For complex technical questions, end with: "Consult our Bravo Power Experts for detailed guidance."
+- For complex technical questions, end with: "Consult our Bravo Power Experts via web chat or call 408-733-9090 for detailed guidance."
 
 Replace [DATASHEET_URL] with actual datasheet URL. All URLs must be hyperlinked with descriptive text.`;
 
@@ -823,7 +823,7 @@ Question: ${question}`;
     });
 
     let answer = completion.choices[0].message.content || 
-                  "I'm sorry, I couldn't process your question. Please contact a Bravo Power Expert for assistance.";
+                  "I'm sorry, I couldn't process your question. Please contact a Bravo Power Expert via web chat or call 408-733-9090 for assistance.";
 
     // Enhanced post-processing for Ask ED responses
     answer = processAskEdResponse(answer, datasheetUrl, productTitle);

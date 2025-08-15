@@ -408,7 +408,7 @@
                         padding: 8px 20px;
                         border-radius: 20px 20px 0 0;
                         display: flex;
-                        justify-content: space-between;
+                        justify-content: center;
                         align-items: center;
                         position: relative;
                         overflow: hidden;
@@ -420,7 +420,7 @@
                                 100% { background-position: 0% 50%; }
                             }
                         </style>
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; width: 100%;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
                             <img src="${WIDGET_API_BASE}/ask-ed-logo.png" style="
                                 width: 75px;
                                 height: 75px;
@@ -445,6 +445,9 @@
                             border-radius: 50%;
                             transition: all 0.2s ease;
                             z-index: 1;
+                            position: absolute;
+                            right: 10px;
+                            top: 10px;
                         ">×</button>
                     </div>
                     
@@ -795,7 +798,7 @@
         }
         console.log('Extracted part number:', partNumber);
         
-        let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently in beta, always check the `;
+        let messageContent = `👋 Hi! I'm Ask ED, ask me general questions about the ${partNumber} and I'll do my best to answer them. I'm currently learning (in beta), always check the `;
         
         if (productInfo.datasheetUrl) {
             messageContent += `<a href="${productInfo.datasheetUrl}" target="_blank" style="color: white; text-decoration: underline;">datasheet</a>`;

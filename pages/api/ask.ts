@@ -414,8 +414,13 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
   let processedAnswer = answer;
   
   // Step 3: Process valid markdown links (ONLY FIRST OCCURRENCE)
-  // Handle RFQ Form markdown links
+  // Handle RFQ Form markdown links - including broken patterns like [RFQ Form](RFQ Form)
   let rfqLinked = false;
+  
+  // Fix broken RFQ Form markdown patterns first
+  processedAnswer = processedAnswer.replace(/\[RFQ Form\]\(RFQ Form\)/gi, '[RFQ Form](https://www.bravoelectro.com/rfq-form)');
+  
+  // Then process proper RFQ Form markdown links
   processedAnswer = processedAnswer.replace(/\[RFQ Form\]\(https:\/\/www\.bravoelectro\.com\/rfq-form\)/gi, (match) => {
     if (rfqLinked) return 'RFQ Form'; // Already linked, return plain text
     rfqLinked = true;

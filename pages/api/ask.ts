@@ -112,7 +112,7 @@ const ASK_ED_CONFIG = {
   
   // Response format templates
   templates: {
-    missingSpec: "I don't see [REQUESTED_SPEC] in my database for this product. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details.",
+    missingSpec: "I don't have that information in my database. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details or contact a Bravo Power Expert.",
     similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
     accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts.",
     pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
@@ -195,25 +195,33 @@ INTERPRETING SPECIFICATION TABLES - CRITICAL MODEL AND COLUMN MATCHING:
 CRITICAL COLUMN DIFFERENTIATION:
 - "Constant Current Region" column: Shows the voltage range where constant current is maintained (e.g., "24~48V")
 - "Voltage ADJ. Range" column: Shows the adjustment range for output voltage via potentiometer (e.g., "43.2~52.8V")
-- These are TWO DIFFERENT columns with DIFFERENT values
+- "Current ADJ. Range" column: Shows the adjustment range for output current via potentiometer (e.g., "8.0~10.0A")
+- These are THREE DIFFERENT columns with DIFFERENT values
 - When asked for "voltage adjustment range" → Read "Voltage ADJ. Range" column ONLY
+- When asked for "current adjustment range" → Read "Current ADJ. Range" column ONLY
 - When asked for "constant current region/range" → Read "Constant Current Region" column ONLY
 - DO NOT confuse these columns - they contain different information
 - Example for HLG-120H-48A:
   • Constant Current Region might be: "24~48V"
   • Voltage ADJ. Range might be: "43.2~52.8V"
+  • Current ADJ. Range might be: "2.0~2.5A"
   • These are DIFFERENT specifications from DIFFERENT columns
 
 RESPONSE GUIDELINES:
 - For constant current region: Look ONLY at "Constant Current Region" column, provide exact value (e.g., "The constant current region is 24-48V")
 - For voltage adjustment: Look ONLY at "Voltage ADJ. Range" column, provide exact value (e.g., "The voltage adjustment range is 43.2-52.8V")
+- For current adjustment: Look ONLY at "Current ADJ. Range" column, provide exact value (e.g., "The current adjustment range is 2.0-2.5A")
 - CRITICAL: These are DIFFERENT columns - never give constant current values when asked for adjustment range
-- For current adjustment: Look for "Current ADJ. Range" column if available
+- For mounting holes: Provide product dimensions and refer to "Mechanical Specification" in the datasheet for mounting hole placement
+- For dimming precision: Be exact - distinguish between "0-10V" vs "1-10V" dimming (they are different)
+- When you don't know: Say "I don't have that information in my database" and refer to datasheet or Bravo Power Experts
+- NEVER say "not in product specifications" or "not in documentation" - always say "not in my database"
 - For technical specs: Always provide exact values from the correct column in the datasheet tables
 - For non-dimming products: "This is a non-dimming model" or "This model doesn't have dimming capability"
 - For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
 - NEVER include raw URLs in responses - all URLs must be hyperlinked to descriptive text
+- When recommending other part numbers, they will be automatically hyperlinked
 
 CRITICAL ACCURACY RULES:
 - ABSOLUTE PRIORITY: Verify product model/part number matches EXACTLY - no exceptions
@@ -336,6 +344,12 @@ function setCachedContent(cache: Map<string, { content: string; timestamp: numbe
   });
 }
 
+function createPartNumberURL(partNumber: string): string {
+  // Convert part number to URL format: replace dots with dashes and make lowercase
+  const urlSlug = partNumber.replace(/\./g, '-').toLowerCase();
+  return `https://www.bravoelectro.com/${urlSlug}.html`;
+}
+
 function processAskEdResponse(answer: string, datasheetUrl?: string, productTitle?: string): string {
   // CRITICAL: Clean up AI's markdown hyperlinking mistakes
   console.log('Processing response - Original:', answer.substring(0, 200));
@@ -449,7 +463,25 @@ function processAskEdResponse(answer: string, datasheetUrl?: string, productTitl
     }
   }
   
-  // Step 5: Clean up any remaining broken markdown or HTML
+  // Step 5: Auto-hyperlink part numbers mentioned in recommendations
+  // Match part number patterns (letters, numbers, dashes, dots) but exclude already hyperlinked ones
+  processedAnswer = processedAnswer.replace(/\b([A-Z]{2,}[-\w\.]*[A-Z0-9])\b(?![^<]*>)/gi, (match) => {
+    // Skip if it's already the current product or already hyperlinked
+    if (match === productTitle?.match(/^([A-Z0-9\-\.]+)/i)?.[1] || 
+        processedAnswer.includes(`<a[^>]*>${match}</a>`)) {
+      return match;
+    }
+    
+    // Check if it looks like a valid part number (has letters and numbers)
+    if (/[A-Z]/.test(match) && /[0-9]/.test(match)) {
+      const url = createPartNumberURL(match);
+      return `<a href="${url}" target="_blank" style="color: white; text-decoration: underline;">${match}</a>`;
+    }
+    
+    return match;
+  });
+  
+  // Step 6: Clean up any remaining broken markdown or HTML
   // Remove empty markdown links
   processedAnswer = processedAnswer.replace(/\[([^\]]+)\]\(\)/g, '$1');
   

@@ -112,12 +112,12 @@ const ASK_ED_CONFIG = {
   
   // Response format templates
   templates: {
-    missingSpec: "I don't have that information in my database. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details or contact a Bravo Power Expert via web chat or call 408-733-9090.",
+    missingSpec: "I don't have that information in my database. Please check the [datasheet]([DATASHEET_URL]) for complete details or contact a Bravo Power Expert via web chat or call 408-733-9090.",
     similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
     accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts via web chat or call 408-733-9090.",
-    pricing: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
-    volumePricing: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
-    stockInfo: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
+    pricing: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form).",
+    volumePricing: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form).",
+    stockInfo: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form).",
     expertConsultation: "Consult our Bravo Power Experts via web chat or call 408-733-9090 for detailed guidance."
   },
   
@@ -233,6 +233,7 @@ RESPONSE GUIDELINES:
 - For accessories when section exists: "Check the Accessories section on this page for compatible options"
 - Always be helpful and conversational while staying accurate
 - NEVER include raw URLs in responses - all URLs must be hyperlinked to descriptive text
+- NEVER include raw HTML in responses - use markdown format for links [text](URL)
 - When recommending other part numbers, they will be automatically hyperlinked
 
 CRITICAL ACCURACY RULES:
@@ -255,9 +256,9 @@ CRITICAL ACCURACY RULES:
 
 PRICING AND STOCK INQUIRY HANDLING:
 - ALWAYS refer pricing questions to Bravo Team - NEVER provide actual prices, costs, or inventory levels
-- For pricing questions, respond with: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
-- For volume/bulk/quantity pricing, respond with: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
-- For stock/availability questions, respond with: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
+- For pricing questions, respond with: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form)."
+- For volume/bulk/quantity pricing, respond with: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form)."
+- For stock/availability questions, respond with: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our [RFQ Form](https://www.bravoelectro.com/rfq-form)."
 - Keywords to watch for:
   • Pricing: "price", "cost", "how much", "volume pricing", "bulk pricing", "quantity pricing", "better price", "discount"
   • Stock: "stock", "availability", "in stock", "inventory", "lead time", "shipping", "delivery", "when available"
@@ -378,6 +379,12 @@ function createPartNumberURL(partNumber: string): string {
 function processAskEdResponse(answer: string, datasheetUrl?: string, productTitle?: string): string {
   // CRITICAL: Clean up AI's markdown hyperlinking mistakes
   console.log('Processing response - Original:', answer.substring(0, 200));
+  
+  // Step 0: Remove any stray HTML tags that AI might have included (safety check)
+  answer = answer.replace(/<a href=['"][^'"]*['"][^>]*>/gi, '');
+  answer = answer.replace(/<\/a>/gi, '');
+  answer = answer.replace(/target=['"]_blank['"][^>]*>/gi, '');
+  answer = answer.replace(/style=['"][^'"]*['"][^>]*>/gi, '');
   
   // Step 1: Convert raw URLs to hyperlinks FIRST (before other processing)
   answer = answer.replace(/\bhttps?:\/\/[^\s\)]+/gi, (url) => {

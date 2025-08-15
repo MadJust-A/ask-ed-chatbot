@@ -115,7 +115,9 @@ const ASK_ED_CONFIG = {
     missingSpec: "I don't have that information in my database. Please check the <a href='[DATASHEET_URL]' target='_blank' style='color: white; text-decoration: underline;'>datasheet</a> for complete details or contact a Bravo Power Expert via web chat or call 408-733-9090.",
     similarProducts: "Check the 'Similar Products' section on this product page for Bravo alternatives.",
     accessories: "Check the 'Accessories' section on this product page for compatible connectors and add-ons. If you don't see what you need, contact our Bravo Power Experts via web chat or call 408-733-9090.",
-    pricing: "Contact our team at 408-733-9090 or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
+    pricing: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
+    volumePricing: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
+    stockInfo: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>.",
     expertConsultation: "Consult our Bravo Power Experts via web chat or call 408-733-9090 for detailed guidance."
   },
   
@@ -183,6 +185,8 @@ UNDERSTANDING CUSTOMER INTENT:
 - Accessory questions include: "connectors", "cables", "plugs", "accessories", "what do I need to connect"
 - Alternative questions include: "other options", "similar products", "alternatives", "cross reference"
 - Technical specs include: "voltage adjustment", "constant current", "output range", "efficiency", "power factor"
+- PRICING QUESTIONS: "price", "cost", "how much", "volume pricing", "bulk pricing", "quantity pricing", "better price", "discount"
+- STOCK QUESTIONS: "stock", "availability", "in stock", "inventory", "lead time", "shipping", "delivery", "when available"
 
 INTERPRETING SPECIFICATION TABLES - CRITICAL MODEL AND COLUMN MATCHING:
 - MOST IMPORTANT: You MUST match the EXACT model number being viewed (provided as "Product:")
@@ -248,6 +252,15 @@ CRITICAL ACCURACY RULES:
 - For LED drivers: ALWAYS check "Dimming" field on product page FIRST - if it says "Non-Dimming" the unit has NO dimming
 - For connector/accessory questions: ALWAYS refer to Accessories section if available, otherwise Bravo experts
 - Read specifications LITERALLY - "Non-Dimming" means NO dimming capability
+
+PRICING AND STOCK INQUIRY HANDLING:
+- ALWAYS refer pricing questions to Bravo Team - NEVER provide actual prices, costs, or inventory levels
+- For pricing questions, respond with: "For pricing information, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
+- For volume/bulk/quantity pricing, respond with: "For volume pricing, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
+- For stock/availability questions, respond with: "For current stock status and availability, contact a Bravo Team member via web chat, call 408-733-9090, or fill out our <a href='https://www.bravoelectro.com/rfq-form' target='_blank' style='color: white; text-decoration: underline;'>RFQ Form</a>."
+- Keywords to watch for:
+  • Pricing: "price", "cost", "how much", "volume pricing", "bulk pricing", "quantity pricing", "better price", "discount"
+  • Stock: "stock", "availability", "in stock", "inventory", "lead time", "shipping", "delivery", "when available"
 
 LED DRIVER SUFFIX ANALYSIS - CRITICAL FOR ADJUSTABLE FEATURES:
 - ALWAYS analyze the model suffix (letters after the base model number) to determine adjustable features
